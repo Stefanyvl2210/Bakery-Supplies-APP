@@ -1,13 +1,18 @@
 import React from "react";
 import { Route, Switch } from "react-router-dom";
 
+// components
+import NavBar from "../components/NavBar";
+
 // pages
+import Home from "../pages/home";
 import Login from "../pages/login";
+import Register from "../pages/register";
 import Cart from "../pages/shopping-cart";
 import Utensils from "../pages/utensisl-and-ingredients";
 
 const ROUTES = [
-  { path: "/home", key: "ROOT", exact: true, component: () => <h1>Log in</h1> },
+  { path: "/", key: "ROOT", exact: true, component: () => <Home /> },
   {
     path: "/login",
     key: "login",
@@ -15,7 +20,13 @@ const ROUTES = [
     component: () => <Login />,
   },
   {
-    path: "/cart",
+    path: "/register",
+    key: "register",
+    exact: true,
+    component: () => <Register />,
+  },
+  {
+    path: "/shopping-cart",
     key: "shop",
     exact: true,
     component: () => <Cart />,
@@ -49,11 +60,14 @@ function RouteWithSubRoutes(route) {
  */
 export function RenderRoutes({ routes }) {
   return (
-    <Switch>
-      {routes.map((route, i) => {
-        return <RouteWithSubRoutes key={route.key} {...route} />;
-      })}
-      <Route component={() => <h1>Not Found!</h1>} />
-    </Switch>
+    <>
+      <NavBar />
+      <Switch>
+        {routes.map((route, i) => {
+          return <RouteWithSubRoutes key={route.key} {...route} />;
+        })}
+        <Route component={() => <h1>Not Found!</h1>} />
+      </Switch>
+    </>
   );
 }
