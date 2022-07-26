@@ -32,8 +32,8 @@ const ROUTES = [
     component: () => <Cart />,
   },
   {
-    path: "/utensils-and-ingredients",
-    key: "utensils",
+    path: "/products",
+    key: "products",
     exact: true,
     component: () => <Utensils />,
   },

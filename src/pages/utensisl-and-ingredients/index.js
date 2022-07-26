@@ -91,7 +91,8 @@ const useStyles = makeStyles((theme) => ({
   },
   container: {
     padding: "0 70px",
-    width: "1440px !important",
+    maxWidth: "1440px !important",
+    width: "100%",
     margin: "0 auto !important",
   },
   inputContent: {

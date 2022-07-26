@@ -40,7 +40,7 @@ const Product = () => {
   return (
     <>
       {productList.map((product, i) => (
-        <Grid item xs={4} key={i} display="flex" justifyContent="center">
+        <Grid item xs={12} sm={12} md={4} key={i} display="flex" justifyContent="center">
           <div className={classes.container}>
             <img src={product.image} alt={product.alt} />
 

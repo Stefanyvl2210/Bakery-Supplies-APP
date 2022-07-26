@@ -6,6 +6,7 @@ import { Button, Divider, Grid, Typography } from "@mui/material";
 // images
 import Dessert from "../../assets/images/home-desserts.png";
 import Utensil from "../../assets/images/home-utensils.png";
+import { Link, useHistory } from "react-router-dom";
 
 const dessert = {
   name: "Desserts",
@@ -20,14 +21,15 @@ const utensil = {
 };
 
 const Home = () => {
+  const history = useHistory();
   const classes = useStyles();
   return (
     <>
       <Grid container className={classes.container}>
-        <Grid item xs={6} className={classes.imageWrapper}>
+        <Grid item xs={12} sm={12} md={6} className={classes.imageWrapper}>
           <img src={Dessert} width={450} height={278} alt="dessert" />
         </Grid>
-        <Grid item xs={6}>
+        <Grid item xs={12} sm={12} md={6}>
           <h4 className={classes.productName}>{dessert.name}</h4>
 
           <Typography gutterBottom className={classes.description}>
@@ -39,6 +41,7 @@ const Home = () => {
               color="primary"
               variant="contained"
               className={classes.button}
+              onClick={() => history.push('/products')}
             >
               See more
             </Button>
@@ -57,13 +60,16 @@ const Home = () => {
           </Typography>
 
           <div className={classes.buttonWrapper}>
-            <Button
-              color="primary"
-              variant="contained"
-              className={classes.button}
-            >
-              See more
-            </Button>
+            <Link to={"/products"}>
+              <Button
+                color="primary"
+                variant="contained"
+                className={classes.button}
+              >
+                See more
+              </Button>
+            </Link>
+            
           </div>
         </Grid>
         <Grid item xs={6} className={classes.imageWrapper}>
