@@ -11,6 +11,7 @@ import {
   MenuItem,
   Select,
   TextField,
+  Button
 } from "@mui/material";
 import { makeStyles } from "@mui/styles";
 import SearchIcon from "@mui/icons-material/Search";
@@ -29,62 +30,76 @@ const Products = () => {
   
   return (
     <>
-      <Grid container className={classes.container} justifyContent="space-between">
+      <Grid container className={classes.container}>
         <Grid item xs={12} > 
           <h2 className={classes.title}>{location.state.title}</h2>
         </Grid>
 
         <Grid
-          item
-          xs={6}
-          className={classnames(classes.inputContent, classes.mleft)}
+          container
+          direction="row"
+          justifyContent="space-between"
+          alignItems="center"
         >
-          <TextField
-            field="search"
-            width="100%"
-            label="Search"
-            onChange={setSearch}
-            fullWidth
-            className={classes.input}
-            InputProps={{
-              endAdornment: (
-                <InputAdornment position="end">
-                  <SearchIcon />
-                </InputAdornment>
-              ),
-            }}
-          />
-        </Grid>
-
-        <Grid
-          item
-          xs={6}
-          className={classnames(classes.inputContent, classes.mleft)}
-        >
-          <FormControl fullWidth sx={{ m: 1, minWidth: 120 }} size="small">
-            <InputLabel id="demo-simple-select-label">Filter by</InputLabel>
-            <Select
-              labelId="demo-simple-select-label"
-              id="demo-simple-select"
-              value={filter}
-              label="filter by"
-              placeholder="filter by..."
-              onChange={handleChange}
+          <Grid 
+            item xs={12} sm={6} md={6}
+            className={classnames(classes.inputContent)} 
+          > 
+            <TextField
+              field="search"
+              width="300px !important"
+              label="Search"
+              onChange={setSearch}
               fullWidth
-              className={classnames(classes.input)}
-            >
-              <MenuItem value="">
-                <em>None</em>
-              </MenuItem>
-              <MenuItem value={10}>Subcategory 1</MenuItem>
-              <MenuItem value={20}>Subcategory 2</MenuItem>
-              <MenuItem value={30}>Subcategory 3</MenuItem>
-            </Select>
-          </FormControl>
+              className={classes.input}
+              InputProps={{
+                endAdornment: (
+                  <InputAdornment position="end">
+                    <SearchIcon />
+                  </InputAdornment>
+                ),
+              }}
+            />
+          </Grid>
+          <Grid
+            item xs={12} sm={6} md={6}
+            className={classnames(classes.inputContent, classes.filter)}
+          >
+            <FormControl size="small" style={{minWidth: 300}}>
+              <InputLabel id="demo-simple-select-label">Filter by</InputLabel>
+              <Select
+                labelId="demo-simple-select-label"
+                id="demo-simple-select"
+                value={filter}
+                label="filter by"
+                placeholder="filter by..."
+                onChange={handleChange}
+                fullWidth
+                className={classnames(classes.input)}
+              >
+                <MenuItem value="">
+                  <em>None</em>
+                </MenuItem>
+                <MenuItem value={10}>Subcategory 1</MenuItem>
+                <MenuItem value={20}>Subcategory 2</MenuItem>
+                <MenuItem value={30}>Subcategory 3</MenuItem>
+              </Select>
+            </FormControl>
+          </Grid>
         </Grid>
       </Grid>
       <Grid container className={classes.container}>
         <Product />
+        <Grid item xs={12} sx={{textAlign: 'center'}}>
+          <Button
+            color="primary"
+            variant="contained"
+            className={classes.button}
+            onClick={() => console.log('load more')}
+          >
+            Load More
+          </Button>
+        </Grid>
       </Grid>
     </>
   );
@@ -95,7 +110,6 @@ const useStyles = makeStyles((theme) => ({
     textAlign: "center",
     fontFamily: 'Poiret One',
     fontSize: '40px !important',
-    lineHeight: '20px !important',
     margin: "0 !important"
   },
   container: {
@@ -103,10 +117,12 @@ const useStyles = makeStyles((theme) => ({
     margin: "60px auto !important",
   },
   inputContent: {
-    marginTop: "57px !important",
+    marginTop: "60px !important",
   },
-  mleft: {
-    // paddingLeft: "70px !important",
+  filter: {
+    display:"flex",
+    justifyContent: "flex-end",
+    minWidth: 300,
   },
   total: {
     maxWidth: 600,
@@ -115,7 +131,9 @@ const useStyles = makeStyles((theme) => ({
     fontSize: 18,
   },
   input: {
-    maxWidth: 500,
+    justifyContent: 'flex-end',
+    maxWidth: '300px',
+    width: '100%'
   },
 }));
 

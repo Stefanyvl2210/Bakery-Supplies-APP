@@ -108,7 +108,7 @@ const Product = () => {
 
 const useStyles = makeStyles((theme) => ({
   container: {
-    marginTop: 67,
+    marginBottom: 60,
     textAlign: "center",
   },
   productName: {

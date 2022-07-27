@@ -41,13 +41,13 @@ export default function NavBar() {
                 alignItems="flex-start"
                 xs={6}
             >
-                <Grid item sx={{paddingLeft: '10px'}}>
+                <Grid item sx={{paddingLeft: '8px'}}>
                     <img src={Logo} alt="logo" />
                 </Grid>
                 <Button
                     color="inherit"
                     variant="text"
-                    className={location.pathname === "/cart" ? classes.underlined : ""}
+                    className={classes.menuItem}
                     onClick={() => navigate("/")}
                 >
                 Home
@@ -55,13 +55,13 @@ export default function NavBar() {
 
                 <Button
                     color="inherit"
-                    className={location.pathname === "/products" && location.state.category == "dessert" ? classes.underlined : ""}
+                    className={classes.menuItem}
                     onClick={() =>
-                    navigate("/products", {
-                        state: {
-                        category: "dessert",
-                        },
-                    })
+                        navigate("/products", {
+                            state: {
+                            category: "dessert",
+                            },
+                        })
                     }
                     >
                     Desserts
@@ -69,8 +69,14 @@ export default function NavBar() {
 
                 <Button
                     color="inherit"
-                    className={location.pathname === "/" ? classes.underlined : ""}
-                    onClick={() => navigate("/")}
+                    className={classes.menuItem}
+                    onClick={() =>
+                        navigate("/products", {
+                            state: {
+                            category: "utensils-and-ingredients",
+                            },
+                        })
+                    }
                     >
                     Utensils & ingredients
                 </Button>
@@ -137,5 +143,11 @@ const useStyles = makeStyles((theme) => ({
         margin: "0px",
         color: '#4E4E4E',
         fontWeight: '600'
+    },
+    menuItem: {
+        fontWeight: '400 !important',
+        fontSize: '14px !important',
+        lineHeight: '20px !important',
+        justifyContent: "start !important"
     }
 }));

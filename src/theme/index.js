@@ -30,7 +30,7 @@ export const theme = createTheme({
             textTransform: 'none',
             minWidth: '150px',
             maxWidth: '100%',
-            height: 55,
+            height: 50,
             margin: '5px 10px',
             color: '#fff'
           },
@@ -55,7 +55,7 @@ export const theme = createTheme({
             color: "#4E4E4E",
           },
           "& .MuiOutlinedInput-root": {
-            height: 55,
+            height: 50,
             maxWidth: 280,
             width: '100%',
             "& .MuiOutlinedInput-notchedOutline": {
