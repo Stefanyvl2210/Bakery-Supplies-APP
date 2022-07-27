@@ -56,7 +56,7 @@ const ShoppingCart = () => {
 
   return (
     <>
-      <Grid container>
+      <Grid container className={classes.container}>
         <Grid item xs={12}>
           <h2 className={classes.title}>Shopping Cart</h2>
         </Grid>
@@ -107,9 +107,16 @@ const ShoppingCart = () => {
 };
 
 const useStyles = makeStyles((theme) => ({
+  container: {
+    maxWidth: 1280,
+    margin: "60px auto !important",
+  },
   title: {
     textAlign: "center",
-    marginTop: 50,
+    fontFamily: 'Poiret One',
+    fontSize: '40px !important',
+    lineHeight: '20px !important',
+    marginTop: "0 !important"
   },
   table: {
     marginTop: "45px !important",

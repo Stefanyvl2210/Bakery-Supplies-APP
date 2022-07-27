@@ -9,9 +9,11 @@ import { makeStyles } from "@mui/styles";
 
 // components
 import CustomInput from "../../components/input";
+import { useNavigate } from "react-router-dom";
 
 const Login = () => {
   const classes = useStyles();
+  const navigate = useNavigate();
 
   // form structure
   const {
@@ -23,7 +25,7 @@ const Login = () => {
 
   return (
     <>
-      <Grid container>
+      <Grid container className={classes.container}>
         <Grid item xs={12}>
           <h2 className={classes.title}>Login</h2>
         </Grid>
@@ -81,7 +83,7 @@ const Login = () => {
         </Grid>
 
         <Grid item xs={16} className={classes.buttonWrapper}>
-          <Button type="submit" variant="contained" className={classes.button}>
+          <Button type="submit" variant="contained" className={classes.button} onClick={() => navigate("/register")}>
             <span className={classes.buttonText}>Create Account</span>
           </Button>
         </Grid>
@@ -91,9 +93,16 @@ const Login = () => {
 };
 
 const useStyles = makeStyles((theme) => ({
+  container: {
+    maxWidth: 1280,
+    margin: "60px auto !important",
+  },
   title: {
     textAlign: "center",
-    marginTop: 50,
+    fontFamily: 'Poiret One',
+    fontSize: '40px !important',
+    lineHeight: '20px !important',
+    marginTop: "0 !important"
   },
   card: {
     backgroundColor: "#D9D9D9 !important",

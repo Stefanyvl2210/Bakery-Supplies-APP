@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 
 import classnames from "classnames";
 
@@ -19,10 +19,9 @@ import { useLocation } from "react-router-dom";
 
 const Products = () => {
   const location = useLocation();
-  // console.log(location)
   const classes = useStyles();
   const [search, setSearch] = useState("");
-  const [filter, setFilter] = useState(10);
+  const [filter, setFilter] = useState("");
 
   const handleChange = (event) => {
     setFilter(event.target.value);
@@ -30,9 +29,9 @@ const Products = () => {
   
   return (
     <>
-      <Grid container spacing={2} className={classes.container}>
-        <Grid item xs={12}>
-          <h2 className={classes.title}>Utensils & Ingredients</h2>
+      <Grid container className={classes.container} justifyContent="space-between">
+        <Grid item xs={12} > 
+          <h2 className={classes.title}>{location.state.title}</h2>
         </Grid>
 
         <Grid
@@ -41,10 +40,9 @@ const Products = () => {
           className={classnames(classes.inputContent, classes.mleft)}
         >
           <TextField
-            field="email"
+            field="search"
             width="100%"
-            label="Email"
-            placeholder="jdoe@gmail.com"
+            label="Search"
             onChange={setSearch}
             fullWidth
             className={classes.input}
@@ -63,24 +61,29 @@ const Products = () => {
           xs={6}
           className={classnames(classes.inputContent, classes.mleft)}
         >
-          <FormControl fullWidth>
+          <FormControl fullWidth sx={{ m: 1, minWidth: 120 }} size="small">
             <InputLabel id="demo-simple-select-label">Filter by</InputLabel>
             <Select
               labelId="demo-simple-select-label"
               id="demo-simple-select"
               value={filter}
-              label="filter"
+              label="filter by"
+              placeholder="filter by..."
               onChange={handleChange}
               fullWidth
               className={classnames(classes.input)}
             >
-              <MenuItem value={10}>Ten</MenuItem>
-              <MenuItem value={20}>Twenty</MenuItem>
-              <MenuItem value={30}>Thirty</MenuItem>
+              <MenuItem value="">
+                <em>None</em>
+              </MenuItem>
+              <MenuItem value={10}>Subcategory 1</MenuItem>
+              <MenuItem value={20}>Subcategory 2</MenuItem>
+              <MenuItem value={30}>Subcategory 3</MenuItem>
             </Select>
           </FormControl>
         </Grid>
-
+      </Grid>
+      <Grid container className={classes.container}>
         <Product />
       </Grid>
     </>
@@ -90,19 +93,20 @@ const Products = () => {
 const useStyles = makeStyles((theme) => ({
   title: {
     textAlign: "center",
-    marginTop: 50,
+    fontFamily: 'Poiret One',
+    fontSize: '40px !important',
+    lineHeight: '20px !important',
+    margin: "0 !important"
   },
   container: {
-    padding: "0 70px",
-    maxWidth: "1440px !important",
-    width: "100%",
-    margin: "0 auto !important",
+    maxWidth: 1280,
+    margin: "60px auto !important",
   },
   inputContent: {
     marginTop: "57px !important",
   },
   mleft: {
-    paddingLeft: "70px !important",
+    // paddingLeft: "70px !important",
   },
   total: {
     maxWidth: 600,

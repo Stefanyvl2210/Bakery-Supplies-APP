@@ -3,43 +3,64 @@ import { Button, Grid } from "@mui/material";
 import { makeStyles } from "@mui/styles";
 
 import Muffin from "../../assets/images/muffin.png";
+// import Muffin from "../../assets/images/muffin.png";
+// import Muffin from "../../assets/images/muffin.png";
+import BakingSheet from "../../assets/images/baking-sheet.png";
+import Strainer from "../../assets/images/strainer.png";
+import CakeTable from "../../assets/images/cake-table.png";
 import CustomDialog from "../productModal";
+import { useLocation } from "react-router-dom";
 
 const productList = [
   {
     name: "Baking sheet",
-    image: Muffin,
-    alt: "muffin",
-    price: "$5",
+    image: BakingSheet,
+    alt: "BakingSheet",
+    price: "$7",
+    category: "utensils-and-ingredients",
     description:
       "Aliquyam clita sed lorem diam. Sanctus feugait rebum sea dolor te elitr cum clita augue veniam takimata feugiat vero dolore amet dolore. Autem nulla dolore dolore vulputate et justo ea ut labore accumsan at et nulla nostrud. Dolor sea sed euismod amet dolores tempor elitr. Feugiat est justo. Takimata sit ut rebum nisl diam ea amet labore ut elitr.",
   },
   {
     name: "Cake table",
-    image: Muffin,
+    image: CakeTable,
     alt: "table",
     price: "$5",
+    category: "utensils-and-ingredients",
     description:
       "Aliquyam clita sed lorem diam. Sanctus feugait rebum sea dolor te elitr cum clita augue veniam takimata feugiat vero dolore amet dolore. Autem nulla dolore dolore vulputate et justo ea ut labore accumsan at et nulla nostrud. Dolor sea sed euismod amet dolores tempor elitr. Feugiat est justo. Takimata sit ut rebum nisl diam ea amet labore ut elitr.",
   },
   {
     name: "Strainer",
-    image: Muffin,
+    image: Strainer,
     alt: "strainer",
-    price: "$5",
+    price: "$3",
+    category: "utensils-and-ingredients",
+    description:
+      "Aliquyam clita sed lorem diam. Sanctus feugait rebum sea dolor te elitr cum clita augue veniam takimata feugiat vero dolore amet dolore. Autem nulla dolore dolore vulputate et justo ea ut labore accumsan at et nulla nostrud. Dolor sea sed euismod amet dolores tempor elitr. Feugiat est justo. Takimata sit ut rebum nisl diam ea amet labore ut elitr.",
+  },
+  {
+    name: "Cupcake",
+    image: Muffin,
+    alt: "Cupcake",
+    price: "$2",
+    category: "dessert",
     description:
       "Aliquyam clita sed lorem diam. Sanctus feugait rebum sea dolor te elitr cum clita augue veniam takimata feugiat vero dolore amet dolore. Autem nulla dolore dolore vulputate et justo ea ut labore accumsan at et nulla nostrud. Dolor sea sed euismod amet dolores tempor elitr. Feugiat est justo. Takimata sit ut rebum nisl diam ea amet labore ut elitr.",
   },
 ];
 
+
 const Product = () => {
   const classes = useStyles();
+  const location = useLocation();
   const [openDialog, setOpenDialog] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState({});
   
   return (
     <>
       {productList.map((product, i) => (
+        product.category == location.state.category ?
         <Grid item xs={12} sm={12} md={4} key={i} display="flex" justifyContent="center">
           <div className={classes.container}>
             <img src={product.image} alt={product.alt} />
@@ -68,7 +89,7 @@ const Product = () => {
               </Button>
             </div>
           </div>
-        </Grid>
+        </Grid> : ''
       ))}
 
       {openDialog && (
@@ -88,6 +109,7 @@ const Product = () => {
 const useStyles = makeStyles((theme) => ({
   container: {
     marginTop: 67,
+    textAlign: "center",
   },
   productName: {
     textAlign: "center",

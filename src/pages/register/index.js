@@ -10,9 +10,11 @@ import { makeStyles } from "@mui/styles";
 // components
 import CustomInput from "../../components/input";
 import classNames from "classnames";
+import { useLocation } from "react-router-dom";
 
 const Register = () => {
   const classes = useStyles();
+  const location = useLocation();
 
   // form structure
   const {
@@ -24,7 +26,7 @@ const Register = () => {
 
   return (
     <>
-      <Grid container>
+      <Grid container className={classes.container}>
         <Grid item xs={12}>
           <h2 className={classes.title}>Register</h2>
         </Grid>
@@ -72,6 +74,7 @@ const Register = () => {
                     label="Email"
                     placeholder="jdoe@gmail.com"
                     type="email"
+                    // value={location.state && location.state.email}
                   />
                 </Grid>
 
@@ -145,10 +148,16 @@ const Register = () => {
 };
 
 const useStyles = makeStyles((theme) => ({
+  container: {
+    maxWidth: 1280,
+    margin: "60px auto !important",
+  },
   title: {
     textAlign: "center",
-    marginTop: 50,
-    fontSize: 32,
+    fontFamily: 'Poiret One',
+    fontSize: '40px !important',
+    lineHeight: '20px !important',
+    marginTop: "0 !important"
   },
   card: {
     backgroundColor: "#D9D9D9 !important",

@@ -13,7 +13,6 @@ export default function ButtonAppBar() {
   const classes = useStyles();
   const navigate = useNavigate();
   const location = useLocation();
-  console.log(location);
 
   return (
     <AppBar position="static" className={classes.container}>
@@ -37,6 +36,7 @@ export default function ButtonAppBar() {
               navigate("/products", {
                 state: {
                   category: "dessert",
+                  title: "Desserts",
                 },
               })
             }
@@ -50,6 +50,7 @@ export default function ButtonAppBar() {
               navigate("/products", {
                 state: {
                   category: "utensils-and-ingredients",
+                  title: "Utensils and Ingredients",
                 },
               })
             }
@@ -63,7 +64,7 @@ export default function ButtonAppBar() {
           >
             Cart
           </Button>
-          <LoginIcon />
+          <LoginIcon onClick={() => navigate("/login")} />
           {/* <Button color="inherit" onClick={() => navigate('/account')}>Account</Button> */}
         </div>
       </Toolbar>

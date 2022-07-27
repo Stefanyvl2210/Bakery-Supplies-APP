@@ -3,7 +3,7 @@ import { createTheme } from "@mui/material/styles";
 export const theme = createTheme({
   typography: {
     fontFamily: `"Open Sans"`,
-    fontSize: 14,
+    fontSize: 20,
     fontWeightLight: 300,
     fontWeightRegular: 400,
     fontWeightMedium: 500,
@@ -28,9 +28,9 @@ export const theme = createTheme({
           props: { variant: 'contained', color: 'primary' },
           style: {
             textTransform: 'none',
-            maxWidth: 160,
-            width: '100%',
-            height: 50,
+            minWidth: '150px',
+            maxWidth: '100%',
+            height: 55,
             margin: '5px 10px',
             color: '#fff'
           },
@@ -42,6 +42,29 @@ export const theme = createTheme({
           },
         },
       ],
+    },
+    MuiTextField: {
+      styleOverrides: {
+        root: {
+          minWidth: '280px',
+          width: '100%',
+          label : {
+            fontWeight: '400',
+            fontSize: '16px',
+            lineHeight: '20px',
+            color: "#4E4E4E",
+          },
+          "& .MuiOutlinedInput-root": {
+            height: 55,
+            maxWidth: 280,
+            width: '100%',
+            "& .MuiOutlinedInput-notchedOutline": {
+              borderColor: "#C86B85",
+              borderWidth: 2
+            }
+          }
+        }
+      }
     }
   }
 });
