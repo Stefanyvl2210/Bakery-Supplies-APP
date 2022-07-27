@@ -9,7 +9,7 @@ import { makeStyles } from "@mui/styles";
 import Logo from "../../assets/images/header-logo.png";
 import LoginIcon from "@mui/icons-material/Login";
 
-export default function ButtonAppBar() {
+export default function NavBar() {
   const classes = useStyles();
   const navigate = useNavigate();
   const location = useLocation();
