@@ -4,7 +4,7 @@ import ROUTES, { RenderRoutes } from "./routing/index";
 function App() {
   return (
     <div className="App">
-      <RenderRoutes routes={ROUTES} />
+      <RenderRoutes />
     </div>
   );
 }

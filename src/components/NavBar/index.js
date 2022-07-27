@@ -3,13 +3,18 @@ import AppBar from "@mui/material/AppBar";
 import Box from "@mui/material/Box";
 import Toolbar from "@mui/material/Toolbar";
 import Button from "@mui/material/Button";
-
+import { useNavigate, useLocation } from "react-router-dom";
 import { makeStyles } from "@mui/styles";
 
 import Logo from "../../assets/images/header-logo.png";
+import LoginIcon from "@mui/icons-material/Login";
 
 export default function ButtonAppBar() {
   const classes = useStyles();
+  const navigate = useNavigate();
+  const location = useLocation();
+  console.log(location);
+
   return (
     <AppBar position="static" className={classes.container}>
       <Toolbar className={classes.toolbar}>
@@ -17,12 +22,49 @@ export default function ButtonAppBar() {
           <img src={Logo} alt="logo" />
         </div>
 
-        <div>
-          <Button color="inherit">Home</Button>
-          <Button color="inherit">Desserts</Button>
-          <Button color="inherit">Utensils & ingredientes</Button>
-          <Button color="inherit">Cart</Button>
-          <Button color="inherit">Account</Button>
+        <div className={classes.menuItems}>
+          <Button
+            color="inherit"
+            className={location.pathname === "/" ? classes.underlined : ""}
+            onClick={() => navigate("/")}
+          >
+            Home
+          </Button>
+          <Button
+            color="inherit"
+            className={location.pathname === "/products" && location.state.category == "dessert" ? classes.underlined : ""}
+            onClick={() =>
+              navigate("/products", {
+                state: {
+                  category: "dessert",
+                },
+              })
+            }
+          >
+            Desserts
+          </Button>
+          <Button
+            color="inherit"
+            className={location.pathname === "/products" && location.state.category == "utensils-and-ingredients" ? classes.underlined : ""}
+            onClick={() =>
+              navigate("/products", {
+                state: {
+                  category: "utensils-and-ingredients",
+                },
+              })
+            }
+          >
+            Utensils & ingredients
+          </Button>
+          <Button
+            color="inherit"
+            className={location.pathname === "/cart" ? classes.underlined : ""}
+            onClick={() => navigate("/cart")}
+          >
+            Cart
+          </Button>
+          <LoginIcon />
+          {/* <Button color="inherit" onClick={() => navigate('/account')}>Account</Button> */}
         </div>
       </Toolbar>
     </AppBar>
@@ -30,21 +72,30 @@ export default function ButtonAppBar() {
 }
 
 const useStyles = makeStyles((theme) => ({
+  underlined: {
+    borderRadius: "4px 4px 0px 0px !important",
+    paddingBottom: "4px !important",
+    borderBottom: "2px solid #4E4E4E !important"
+  },
   container: {
     boxShadow: "none !important",
-    backgroundColor: "#D9D9D9 !important",
+    backgroundColor: "#E6A4B4 !important",
   },
   toolbar: {
-    height: 76,
+    minHeight: "80px !important",
     display: "flex !important",
     justifyContent: "space-between",
     alignItems: "center",
-    color: "#767676",
-    fontSize: 16,
+    color: "#4E4E4E",
 
     "& button": {
-      margin: " 0 18px",
+      margin: " 0 15px",
       fontWeight: "600 !important",
+      fontSize: "16px !important",
     },
+  },
+  menuItems: {
+    display: "flex",
+    alignItems: "center",
   },
 }));

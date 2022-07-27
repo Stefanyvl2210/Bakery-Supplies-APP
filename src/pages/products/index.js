@@ -15,19 +15,22 @@ import {
 import { makeStyles } from "@mui/styles";
 import SearchIcon from "@mui/icons-material/Search";
 import Product from "../../components/Product";
+import { useLocation } from "react-router-dom";
 
-const ShoppingCart = () => {
+const Products = () => {
+  const location = useLocation();
+  // console.log(location)
   const classes = useStyles();
-  const [search, setSeatch] = useState("");
+  const [search, setSearch] = useState("");
   const [filter, setFilter] = useState(10);
 
   const handleChange = (event) => {
     setFilter(event.target.value);
   };
-
+  
   return (
     <>
-      <Grid container className={classes.container}>
+      <Grid container spacing={2} className={classes.container}>
         <Grid item xs={12}>
           <h2 className={classes.title}>Utensils & Ingredients</h2>
         </Grid>
@@ -42,7 +45,7 @@ const ShoppingCart = () => {
             width="100%"
             label="Email"
             placeholder="jdoe@gmail.com"
-            onChange={setSeatch}
+            onChange={setSearch}
             fullWidth
             className={classes.input}
             InputProps={{
@@ -112,4 +115,4 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default ShoppingCart;
+export default Products;

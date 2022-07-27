@@ -10,7 +10,38 @@ export const theme = createTheme({
   },
   palette: {
     primary: {
-      main: "#074EE8",
+      main: "#C86B85",
     },
   },
+  components: {
+    MuiDivider: {
+      styleOverrides: {
+        root: {
+          borderColor: "#E5E5E5",
+          margin: '50px 0px'
+        }        
+      }
+    },
+    MuiButton: {
+      variants: [
+        {
+          props: { variant: 'contained', color: 'primary' },
+          style: {
+            textTransform: 'none',
+            maxWidth: 160,
+            width: '100%',
+            height: 50,
+            margin: '5px 10px',
+            color: '#fff'
+          },
+        },
+        {
+          props: { color: 'secondary' },
+          style: {
+            border: `4px dashed #000`,
+          },
+        },
+      ],
+    }
+  }
 });

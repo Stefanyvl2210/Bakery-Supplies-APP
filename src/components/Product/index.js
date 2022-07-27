@@ -36,7 +36,7 @@ const Product = () => {
   const classes = useStyles();
   const [openDialog, setOpenDialog] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState({});
-
+  
   return (
     <>
       {productList.map((product, i) => (
@@ -97,12 +97,6 @@ const useStyles = makeStyles((theme) => ({
   buttonWrapper: {
     display: "flex",
     justifyContent: "space-between",
-  },
-  button: {
-    width: 130,
-    height: 40,
-    backgroundColor: "#767676 !important",
-    padding: "7px 26px !important",
   },
 }));
 
