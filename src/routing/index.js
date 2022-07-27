@@ -3,6 +3,7 @@ import { Route, Routes } from "react-router-dom";
 
 // components
 import NavBar from "../components/NavBar";
+import Footer from "../components/Footer";
 
 // pages
 import Home from "../pages/home";
@@ -26,6 +27,7 @@ export function RenderRoutes() {
         <Route path="/cart" element={<Cart />} />
         <Route path="*" element={<h1>404 Not Found!</h1>} />
       </Routes>
+      <Footer />
     </>
   );
 }
