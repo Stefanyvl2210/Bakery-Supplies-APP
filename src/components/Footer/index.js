@@ -8,7 +8,6 @@ import { makeStyles } from "@mui/styles";
 import Logo from "../../assets/images/footer-logo.svg";
 import LogoFB from "../../assets/images/facebook-logo.svg";
 import LogoIG from "../../assets/images/instagram-logo.svg";
-import LoginIcon from "@mui/icons-material/Login";
 
 import {Box, Grid} from '@mui/material';
 
@@ -23,12 +22,10 @@ export default function NavBar() {
         container
         direction="column"
         justifyContent="center"
-        alignItems="center"
     >
         
         <Grid
             container
-            item
             direction="row"
             justifyContent="space-between"
             alignItems="center"
@@ -40,13 +37,9 @@ export default function NavBar() {
         >
             <Grid 
                 container
-                item
                 direction="column"
-                justifyContent="center"
                 alignItems="flex-start"
                 xs={6}
-                
-                //className={classes.links}
             >
                 <Grid item sx={{paddingLeft: '10px'}}>
                     <img src={Logo} alt="logo" />
@@ -84,16 +77,12 @@ export default function NavBar() {
             </Grid>
             <Grid 
                 container
-                item
                 direction="column"
-                justifyContent="space-between"
                 alignContent="flex-end"
                 xs={6}
-                //className={classes.contact}
             >
                 <Grid
-                item
-                direction="column"
+                item 
                 sx={{marginBottom:'40px'}}
                 >
                     <Grid item sx={{marginBottom:'5px',
@@ -104,7 +93,6 @@ export default function NavBar() {
                 
                 <Grid
                 item
-                direction="column"
                 >
                     <Grid item sx={{marginBottom:'5px',
                                     fontWeight: 'bold'}}>
@@ -123,7 +111,6 @@ export default function NavBar() {
                             <img src={LogoIG} alt="logo" />
                         </Grid> 
                     </Grid>
-                    
                 </Grid>
             </Grid>
         </Grid> 
@@ -132,14 +119,13 @@ export default function NavBar() {
             container
             direction="row"
             justifyContent="center"
-            alignItems="center"
             sx={{ backgroundColor: '#E6A4B4' ,
             padding: '10px',
-            color: '#4E4E4E'}}
+            }}
         >
-            <Box>
+            <p className={classes.subFooter}>
                 ©2022 Bakery Supplies, LLC. All Rights Reserved.
-            </Box>
+            </p>
         </Grid>
     </Grid>
     
@@ -147,12 +133,9 @@ export default function NavBar() {
 }
 
 const useStyles = makeStyles((theme) => ({
-    links: {
-        display: "flex !important",
-        flexDirection: "column !important"
-         
-    },
-    titles:{
-
+    subFooter: {
+        margin: "0px",
+        color: '#4E4E4E',
+        fontWeight: '600'
     }
 }));
