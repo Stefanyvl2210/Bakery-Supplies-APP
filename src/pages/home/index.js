@@ -48,7 +48,7 @@ const Home = () => {
                   email: 'test@gmail.com'
                 }})}
               >
-                Enter
+                Start
               </Button>
             </div>
           </Grid>

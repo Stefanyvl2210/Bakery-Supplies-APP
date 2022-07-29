@@ -50,7 +50,7 @@ export const theme = createTheme({
           width: '100%',
           label : {
             fontWeight: '400',
-            fontSize: '16px',
+            fontSize: '18px',
             lineHeight: '20px',
             color: "#4E4E4E",
           },
@@ -59,7 +59,6 @@ export const theme = createTheme({
             maxWidth: 280,
             width: '100%',
             "& .MuiOutlinedInput-notchedOutline": {
-              borderColor: "#C86B85",
               borderWidth: 2
             }
           }
