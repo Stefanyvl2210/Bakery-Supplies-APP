@@ -2,7 +2,7 @@ import { createTheme } from "@mui/material/styles";
 
 export const theme = createTheme({
   typography: {
-    fontFamily: `"Open Sans"`,
+    fontFamily: `"Open Sans", "Poiret One"`,
     fontSize: 20,
     fontWeightLight: 300,
     fontWeightRegular: 400,
