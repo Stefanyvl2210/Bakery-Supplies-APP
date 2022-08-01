@@ -106,6 +106,15 @@ const useStyles = makeStyles((theme) => ({
     maxWidth: "1240px",
     margin: "0 auto",
     padding: "60px 0 10px 0",
+
+    "& input::-webkit-outer-spin-button, input::-webkit-inner-spin-button": {
+      WebkitAppearance: "none",
+      margin: 0,
+    },
+
+    "input[type=number]": {
+      MozAppearance: "textfield",
+    },
   },
   title: {
     margin: "20px 0 !important",
@@ -169,6 +178,7 @@ const useStyles = makeStyles((theme) => ({
     "& span": {
       fontSize: 20,
       cursor: "pointer",
+      paddingBottom: 5,
     },
   },
   quantityInput: {
