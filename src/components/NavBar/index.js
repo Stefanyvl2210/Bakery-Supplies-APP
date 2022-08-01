@@ -2,9 +2,9 @@ import * as React from "react";
 import AppBar from "@mui/material/AppBar";
 import Box from "@mui/material/Box";
 import Toolbar from "@mui/material/Toolbar";
-import Button from "@mui/material/Button";
 import { useNavigate, useLocation } from "react-router-dom";
 import { makeStyles } from "@mui/styles";
+import Button from "@mui/material/Button";
 
 import Logo from "../../assets/images/header-logo.png";
 import LoginIcon from "@mui/icons-material/Login";
@@ -14,6 +14,24 @@ export default function NavBar() {
   const navigate = useNavigate();
   const location = useLocation();
 
+  const [anchorElNav, setAnchorElNav] = React.useState(null);
+  const [anchorElUser, setAnchorElUser] = React.useState(null);
+
+  const handleOpenNavMenu = (event) => {
+    setAnchorElNav(event.currentTarget);
+  };
+  const handleOpenUserMenu = (event) => {
+    setAnchorElUser(event.currentTarget);
+  };
+
+  const handleCloseNavMenu = () => {
+    setAnchorElNav(null);
+  };
+
+  const handleCloseUserMenu = () => {
+    setAnchorElUser(null);
+  };
+
   return (
     <AppBar position="static" className={classes.container}>
       <Toolbar className={classes.toolbar}>
@@ -21,7 +39,10 @@ export default function NavBar() {
           <img src={Logo} alt="logo" />
         </div>
 
-        <div className={classes.menuItems}>
+        <Box
+          sx={{ flexGrow: 1, display: { xs: "none", md: "flex" }, justifyContent: 'flex-end'}}
+          className={classes.menuItems}
+        >
           <Button
             color="inherit"
             className={location.pathname === "/" ? classes.underlined : ""}
@@ -31,7 +52,12 @@ export default function NavBar() {
           </Button>
           <Button
             color="inherit"
-            className={location.pathname === "/products" && location.state.category == "dessert" ? classes.underlined : ""}
+            className={
+              location.pathname === "/products" &&
+              location.state.category == "dessert"
+                ? classes.underlined
+                : ""
+            }
             onClick={() =>
               navigate("/products", {
                 state: {
@@ -45,7 +71,12 @@ export default function NavBar() {
           </Button>
           <Button
             color="inherit"
-            className={location.pathname === "/products" && location.state.category == "utensils-and-ingredients" ? classes.underlined : ""}
+            className={
+              location.pathname === "/products" &&
+              location.state.category == "utensils-and-ingredients"
+                ? classes.underlined
+                : ""
+            }
             onClick={() =>
               navigate("/products", {
                 state: {
@@ -66,7 +97,7 @@ export default function NavBar() {
           </Button>
           <LoginIcon onClick={() => navigate("/login")} />
           {/* <Button color="inherit" onClick={() => navigate('/account')}>Account</Button> */}
-        </div>
+        </Box>
       </Toolbar>
     </AppBar>
   );
@@ -76,7 +107,7 @@ const useStyles = makeStyles((theme) => ({
   underlined: {
     borderRadius: "4px 4px 0px 0px !important",
     paddingBottom: "4px !important",
-    borderBottom: "2px solid #4E4E4E !important"
+    borderBottom: "2px solid #4E4E4E !important",
   },
   container: {
     boxShadow: "none !important",
