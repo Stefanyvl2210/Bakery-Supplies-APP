@@ -9,7 +9,7 @@ import BakingSheet from "../../assets/images/baking-sheet.png";
 import Strainer from "../../assets/images/strainer.png";
 import CakeTable from "../../assets/images/cake-table.png";
 import CustomDialog from "../productModal";
-import { useLocation } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 
 const productList = [
   {
@@ -50,47 +50,59 @@ const productList = [
   },
 ];
 
-
 const Product = () => {
   const classes = useStyles();
   const location = useLocation();
   const [openDialog, setOpenDialog] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState({});
-  
+
   return (
     <>
-      {productList.map((product, i) => (
-        product.category == location.state.category ?
-        <Grid item xs={12} sm={12} md={4} key={i} display="flex" justifyContent="center">
-          <div className={classes.container}>
-            <img src={product.image} alt={product.alt} />
+      {productList.map((product, i) =>
+        product.category == location.state.category ? (
+          <Grid
+            item
+            xs={12}
+            sm={12}
+            md={4}
+            key={i}
+            display="flex"
+            justifyContent="center"
+          >
+            <div className={classes.container}>
+              <img src={product.image} alt={product.alt} />
 
-            <p className={classes.productName}>{product.name}</p>
+              <p className={classes.productName}>{product.name}</p>
 
-            <div className={classes.buttonWrapper}>
-              <Button
-                color="primary"
-                variant="contained"
-                className={classes.button}
-                onClick={() => {
-                  setOpenDialog(true);
-                  setSelectedProduct(product);
-                }}
-              >
-                Preview
-              </Button>
+              <div className={classes.buttonWrapper}>
+                <Button
+                  color="primary"
+                  variant="contained"
+                  className={classes.button}
+                  onClick={() => {
+                    setOpenDialog(true);
+                    setSelectedProduct(product);
+                  }}
+                >
+                  Preview
+                </Button>
 
-              <Button
-                color="primary"
-                variant="contained"
-                className={classes.button}
-              >
-                Details
-              </Button>
+                <Link to="/detail">
+                  <Button
+                    color="primary"
+                    variant="contained"
+                    className={classes.button}
+                  >
+                    Details
+                  </Button>
+                </Link>
+              </div>
             </div>
-          </div>
-        </Grid> : ''
-      ))}
+          </Grid>
+        ) : (
+          ""
+        )
+      )}
 
       {openDialog && (
         <CustomDialog
@@ -110,6 +122,10 @@ const useStyles = makeStyles((theme) => ({
   container: {
     marginBottom: 60,
     textAlign: "center",
+
+    "& a": {
+      textDecoration: "none",
+    },
   },
   productName: {
     textAlign: "center",

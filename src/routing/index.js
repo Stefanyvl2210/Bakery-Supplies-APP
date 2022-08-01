@@ -11,6 +11,7 @@ import Login from "../pages/login";
 import Register from "../pages/register";
 import Cart from "../pages/shopping-cart";
 import Products from "../pages/products";
+import ProductDetail from "../pages/detail";
 
 /**
  * Use this component for any new section of routes (any config object that has a "routes" property
@@ -24,6 +25,7 @@ export function RenderRoutes() {
         <Route path="/register" element={<Register />} />
         <Route path="/login" element={<Login />} />
         <Route path="/products" element={<Products />} />
+        <Route path="/detail" element={<ProductDetail />} />
         <Route path="/cart" element={<Cart />} />
         <Route path="*" element={<h1>404 Not Found!</h1>} />
       </Routes>
