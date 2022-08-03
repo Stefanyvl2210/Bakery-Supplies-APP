@@ -32,7 +32,9 @@ export const theme = createTheme({
             maxWidth: '100%',
             height: 50,
             margin: '5px 10px',
-            color: '#fff'
+            color: '#fff',
+            boxShadow: 'none',
+            fontWeight: '400'
           },
         },
         {

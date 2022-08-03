@@ -10,11 +10,16 @@ import { makeStyles } from "@mui/styles";
 // components
 import CustomInput from "../../components/input";
 import classNames from "classnames";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 
 const Register = () => {
   const classes = useStyles();
-  const location = useLocation();
+  const navigate = useNavigate();
+
+  const { state } = useLocation();
+  const emailToRegister = state && state.email;
+
+  console.log('params', state)
 
   // form structure
   const {
@@ -22,7 +27,16 @@ const Register = () => {
     handleSubmit,
     formState: { errors },
   } = useForm();
-  const onSubmit = (data) => console.log(data);
+
+  // const [items, setItems] = useState([]);
+  // useEffect(() => {
+  //   localStorage.setItem('items', JSON.stringify(items));
+  // }, [items]);
+
+  const onSubmit = (data) => {
+    console.log('register',data)
+    navigate("/verify-email");
+  };
 
   return (
     <>
@@ -41,11 +55,10 @@ const Register = () => {
                     fullWidth={true}
                     width="100%"
                     classname={classNames(
-                      classes.inputWrapper,
                       classes.shortInput
                     )}
                     label="First Name"
-                    placeholder="jhon"
+                    placeholder=" "
                   />
                 </Grid>
 
@@ -55,9 +68,8 @@ const Register = () => {
                     field="lastName"
                     fullWidth={true}
                     width="100%"
-                    classname={classNames(classes.inputWrapper)}
                     label="Last Name"
-                    placeholder="Doe"
+                    placeholder=" "
                   />
                 </Grid>
 
@@ -72,9 +84,9 @@ const Register = () => {
                       classes.fullWidth
                     )}
                     label="Email"
-                    placeholder="jdoe@gmail.com"
+                    placeholder=" "
                     type="email"
-                    // value={location.state && location.state.email}
+                    // value={emailToRegister ? emailToRegister : ''}
                   />
                 </Grid>
 
@@ -89,7 +101,7 @@ const Register = () => {
                       classes.fullWidth
                     )}
                     label="Phone number"
-                    placeholder="12345678"
+                    placeholder=" "
                   />
                 </Grid>
 
@@ -103,9 +115,9 @@ const Register = () => {
                       classes.inputWrapper,
                       classes.shortInput
                     )}
-                    label="password"
-                    placeholder="12345678"
+                    label="Password"
                     type="password"
+                    placeholder=" "
                   />
                 </Grid>
 
@@ -117,8 +129,8 @@ const Register = () => {
                     width="100%"
                     classname={classNames(classes.inputWrapper)}
                     label="Confirm Password"
-                    placeholder="12345678"
                     type="password"
+                    placeholder=" "
                   />
                 </Grid>
               </Grid>
@@ -127,7 +139,7 @@ const Register = () => {
         </Grid>
 
         <Grid item xs={16} display="flex" justifyContent="center">
-          <p className={classes.hasAccountText}>
+          <p className={classes.hasAccountText} onClick={() => navigate("/login")}>
             Already have an account? Login
           </p>
         </Grid>
@@ -138,6 +150,7 @@ const Register = () => {
             type="submit"
             variant="contained"
             className={classes.button}
+            onClick={handleSubmit(onSubmit)}
           >
             <span className={classes.buttonText}>Register</span>
           </Button>
@@ -157,14 +170,15 @@ const useStyles = makeStyles((theme) => ({
     fontFamily: 'Poiret One',
     fontSize: '40px !important',
     lineHeight: '20px !important',
-    marginTop: "0 !important"
+    marginTop: "0 !important",
+    fontWeight: "300"
   },
   card: {
-    backgroundColor: "#D9D9D9 !important",
+    backgroundColor: "#F5EEE6 !important",
     marginTop: 20,
     width: "100%",
     maxWidth: 600,
-    padding: "35px 44px 100px 44px",
+    padding: "35px 44px",
     borderRadius: "5px !important",
     boxShadow: "unset !important",
   },
@@ -185,15 +199,9 @@ const useStyles = makeStyles((theme) => ({
     marginTop: 37,
   },
   button: {
-    width: 215,
-    height: 60,
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
-  },
-  buttonText: {
-    color: "#fff !important",
-    fontSize: 20,
   },
   forgotPassText: {
     color: "#000",
@@ -204,6 +212,7 @@ const useStyles = makeStyles((theme) => ({
     margin: "20px 0 30px 0",
     fontSize: 18,
     fontWeight: "500",
+    cursor: "pointer",
   },
 }));
 

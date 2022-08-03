@@ -15,7 +15,6 @@ export default function NavBar() {
   const classes = useStyles();
   const navigate = useNavigate();
   const location = useLocation();
-  console.log(location);
 
   return (
     <Grid

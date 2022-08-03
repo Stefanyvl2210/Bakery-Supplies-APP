@@ -96,7 +96,6 @@ export default function NavBar() {
             Cart
           </Button>
           <LoginIcon onClick={() => navigate("/login")} />
-          {/* <Button color="inherit" onClick={() => navigate('/account')}>Account</Button> */}
         </Box>
       </Toolbar>
     </AppBar>

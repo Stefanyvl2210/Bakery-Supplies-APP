@@ -116,7 +116,8 @@ const useStyles = makeStyles((theme) => ({
     fontFamily: 'Poiret One',
     fontSize: '40px !important',
     lineHeight: '20px !important',
-    marginTop: "0 !important"
+    marginTop: "0 !important",
+    fontWeight: "300"
   },
   table: {
     marginTop: "45px !important",

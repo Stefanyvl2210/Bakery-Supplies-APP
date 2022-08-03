@@ -8,7 +8,8 @@ import Footer from "../components/Footer";
 // pages
 import Home from "../pages/home";
 import Login from "../pages/login";
-import Register from "../pages/register";
+import Register from "../pages/register/index";
+import VerifyEmail from "../pages/register/verify-email";
 import Cart from "../pages/shopping-cart";
 import Products from "../pages/products";
 import ProductDetail from "../pages/detail";
@@ -23,6 +24,7 @@ export function RenderRoutes() {
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/register" element={<Register />} />
+        <Route path="/verify-email" element={<VerifyEmail />} />
         <Route path="/login" element={<Login />} />
         <Route path="/products" element={<Products />} />
         <Route path="/detail" element={<ProductDetail />} />

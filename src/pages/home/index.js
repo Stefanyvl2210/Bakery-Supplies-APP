@@ -27,6 +27,17 @@ const utensil = {
 
 const Home = () => {
   const navigate = useNavigate();
+
+  const [values, setValues] = React.useState({
+    email: '',
+  });
+
+  console.log('userLogged?', localStorage.getItem('userLogged'))
+
+
+  const handleChange = (prop) => (event) => {
+    setValues({ ...values, [prop]: event.target.value });
+  };
   
   const classes = useStyles();
   return (
@@ -39,13 +50,19 @@ const Home = () => {
               Prepare your favorite recipe or buy your favorite dessert without leaving home!
             </Typography>
             <div className={classes.registerInput}>
-              <TextField id="email-register" label="Email" variant="outlined" />
+              <TextField 
+                id="email-register" 
+                label="Email" 
+                variant="outlined" 
+                value={values.email}
+                onChange={handleChange('email')}
+              />
               <Button
                 color="primary"
                 variant="contained"
                 className={classes.button}
                 onClick={() => navigate('/register', {state: {
-                  email: 'test@gmail.com'
+                  email: values.email
                 }})}
               >
                 Start

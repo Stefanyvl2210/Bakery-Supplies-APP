@@ -11,6 +11,8 @@ import { makeStyles } from "@mui/styles";
 import CustomInput from "../../components/input";
 import { useNavigate } from "react-router-dom";
 
+import LogoSimple from "../../assets/images/logo-simple.svg";
+
 const Login = () => {
   const classes = useStyles();
   const navigate = useNavigate();
@@ -21,11 +23,18 @@ const Login = () => {
     handleSubmit,
     formState: { errors },
   } = useForm();
-  const onSubmit = (data) => console.log(data);
+  const onSubmit = (data) => {
+    console.log('login',data)
+    localStorage.setItem('userLogged', true);
+    navigate("/");
+  };
 
   return (
     <>
-      <Grid container className={classes.container}>
+      <Grid 
+        container 
+        className={classes.container} 
+      >
         <Grid item xs={12}>
           <h2 className={classes.title}>Login</h2>
         </Grid>
@@ -33,7 +42,10 @@ const Login = () => {
           <Card className={classes.card}>
             <form onSubmit={handleSubmit(onSubmit)}>
               <Grid container>
-                <Grid item xs={16}>
+                <Grid item xs={12} className={classes.logoContainer}>
+                  <img src={LogoSimple} width={104} height={104} alt="Bakery Supplies" />
+                </Grid>
+                <Grid item xs={12}>
                   <CustomInput
                     register={register}
                     field="email"
@@ -45,7 +57,7 @@ const Login = () => {
                   />
                 </Grid>
 
-                <Grid item xs={16}>
+                <Grid item xs={12}>
                   <CustomInput
                     register={register}
                     field="password"
@@ -70,6 +82,7 @@ const Login = () => {
                   type="submit"
                   variant="contained"
                   className={classes.button}
+                  onClick={handleSubmit(onSubmit)}
                 >
                   <span className={classes.buttonText}>Enter</span>
                 </Button>
@@ -83,7 +96,13 @@ const Login = () => {
         </Grid>
 
         <Grid item xs={16} className={classes.buttonWrapper}>
-          <Button type="submit" variant="contained" className={classes.button} onClick={() => navigate("/register")}>
+          <Button 
+            color="primary" 
+            type="submit" 
+            variant="contained" 
+            className={classes.button} 
+            onClick={() => navigate("/register")}
+          >
             <span className={classes.buttonText}>Create Account</span>
           </Button>
         </Grid>
@@ -102,35 +121,33 @@ const useStyles = makeStyles((theme) => ({
     fontFamily: 'Poiret One',
     fontSize: '40px !important',
     lineHeight: '20px !important',
-    marginTop: "0 !important"
+    marginTop: "0 !important",
+    fontWeight: "300"
+  },
+  logoContainer: {
+    textAlign: "center"
   },
   card: {
-    backgroundColor: "#D9D9D9 !important",
+    backgroundColor: "#F5EEE6 !important",
     marginTop: 20,
     width: "100%",
     maxWidth: 500,
-    padding: "126px 44px 35px 44px",
+    padding: "35px 44px",
     borderRadius: "5px !important",
     boxShadow: "unset !important",
   },
   inputWrapper: {
-    marginTop: "27px !important",
+    marginTop: "20px !important",
   },
   buttonWrapper: {
     display: "flex",
     justifyContent: "center",
-    marginTop: 37,
+    marginTop: 14,
   },
   button: {
-    width: 215,
-    height: 60,
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
-    backgroundColor: "#fff !important",
-  },
-  buttonText: {
-    color: "#000 !important",
   },
   forgotPassText: {
     color: "#000",

@@ -110,7 +110,8 @@ const useStyles = makeStyles((theme) => ({
     textAlign: "center",
     fontFamily: 'Poiret One',
     fontSize: '40px !important',
-    margin: "0 !important"
+    margin: "0 !important",
+    fontWeight: "300"
   },
   container: {
     maxWidth: 1280,
