@@ -88,7 +88,7 @@ const Products = () => {
           </Grid>
         </Grid>
       </Grid>
-      <Grid container className={classes.container}>
+      <Grid container className={classes.containerProduct}>
         <Product />
         <Grid item xs={12} sx={{textAlign: 'center'}}>
           <Button
@@ -115,7 +115,20 @@ const useStyles = makeStyles((theme) => ({
   },
   container: {
     maxWidth: 1280,
-    margin: "60px auto !important",
+    marginTop: "60px !important",
+    marginLeft: "auto !important",
+    marginRight: "auto !important",
+  },
+  containerProduct: {
+    marginTop: "30px !important",
+    marginBottom: "60px !important"
+  },
+  button:{
+    margin: "0px !important",
+    paddingTop: "0px !important",
+    paddingBottom: "0px !important",
+    paddingRight: "37.5px !important",
+    paddingLeft: "37.5px !important"
   },
   inputContent: {
     marginTop: "60px !important",

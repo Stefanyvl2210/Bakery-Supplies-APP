@@ -70,7 +70,7 @@ const Product = () => {
             justifyContent="center"
           >
             <div className={classes.container}>
-              <img src={product.image} alt={product.alt} />
+              <img src={product.image} alt={product.alt} width = "330" height = "220" />
 
               <p className={classes.productName}>{product.name}</p>
 
@@ -78,6 +78,7 @@ const Product = () => {
                 <Button
                   color="primary"
                   variant="contained"
+                  sx={{marginRight: '15px !important'}}
                   className={classes.button}
                   onClick={() => {
                     setOpenDialog(true);
@@ -91,6 +92,7 @@ const Product = () => {
                   <Button
                     color="primary"
                     variant="contained"
+                    sx={{marginLeft: '15px !important'}}
                     className={classes.button}
                   >
                     Details
@@ -121,6 +123,7 @@ const Product = () => {
 const useStyles = makeStyles((theme) => ({
   container: {
     marginBottom: 60,
+    marginTop: 0,
     textAlign: "center",
 
     "& a": {
@@ -131,11 +134,17 @@ const useStyles = makeStyles((theme) => ({
     textAlign: "center",
     fontSize: 24,
     fontWeight: "400",
+    marginTop: "30px !important",
+    marginBottom: "30px !important",
   },
   buttonWrapper: {
     display: "flex",
     justifyContent: "space-between",
   },
+  button: {
+    margin:"0px !important",
+    padding:"0px !important",
+  }
 }));
 
 export default Product;
