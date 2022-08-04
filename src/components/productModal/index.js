@@ -8,6 +8,9 @@ import DialogContent from "@mui/material/DialogContent";
 import CloseIcon from "@mui/icons-material/Close";
 import Typography from "@mui/material/Typography";
 import { Button, Grid, IconButton } from "@mui/material";
+import shoppingCart from "../../utils/shoppingCart";
+
+
 
 const BootstrapDialog = styled(Dialog)(({ theme }) => ({
   "& .MuiDialogContent-root": {
@@ -57,7 +60,6 @@ export default function CustomDialog(props) {
   const { open, handleClose, selectedProduct } = props;
 
   const classes = useStyles();
-
   return (
     <div>
       <BootstrapDialog
@@ -98,6 +100,7 @@ export default function CustomDialog(props) {
                   color="primary"
                   variant="contained"
                   className={classes.button}
+                  onClick={() => { shoppingCart().addItemToCart(selectedProduct.name, selectedProduct.price, 1) }}
                 >
                   Add to Cart
                 </Button>

@@ -1,11 +1,16 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 
 // components
 import Table from "../../components/table";
 
+/*
+* Shopping Cart
+*/
+import shoppingCart from "../../utils/shoppingCart";
+
 // material ui components
-import { 
-  Grid, 
+import {
+  Grid,
   Divider,
   FormControl,
   InputLabel,
@@ -26,13 +31,7 @@ function createData(product, unitPrice, quantity, subtotal) {
   return { product, unitPrice, quantity, subtotal };
 }
 
-const rows = [
-  createData("Item 1", 0, 0, 0, 0),
-  createData("Item 2", 0, 0, 0, 0),
-  createData("Item 3", 0, 0, 0, 0),
-  createData("Item 4", 0, 0, 0, 0),
-  createData("Item 5", 0, 0, 0, 0),
-];
+const rows = [];
 
 const columns = [
   {
@@ -58,6 +57,14 @@ const ShoppingCart = () => {
   const classes = useStyles();
   const [filter, setFilter] = useState(10);
   const [delivery, setDelivery] = useState('');
+  const [products, setProducts] = useState(shoppingCart().listCart());
+
+  useEffect(() => {
+    setProducts(shoppingCart().listCart());
+    products.forEach(item => {
+      rows.push(createData(item.name, item.price, item.count, item.total));
+    });
+  }, []);
 
   const handleChange = (event) => {
     setFilter(event.target.value);
@@ -72,6 +79,8 @@ const ShoppingCart = () => {
         <Grid item xs={12}>
           <h2 className={classes.title}>Shopping Cart</h2>
         </Grid>
+
+
 
         <Grid
           item

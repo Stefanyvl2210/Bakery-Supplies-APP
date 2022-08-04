@@ -5,6 +5,8 @@ import Toolbar from "@mui/material/Toolbar";
 import { useNavigate, useLocation } from "react-router-dom";
 import { makeStyles } from "@mui/styles";
 import Button from "@mui/material/Button";
+import Badge from "@mui/material/Badge";
+import shoppingCart from "../../utils/shoppingCart";
 
 import Logo from "../../assets/images/header-logo.png";
 import LoginIcon from "@mui/icons-material/Login";
@@ -18,6 +20,8 @@ export default function NavBar() {
   const location = useLocation();
   const userIsLogged = localStorage.getItem('userLogged');
   const anchorRef = React.useRef(null);
+
+
 
   const [anchorElNav, setAnchorElNav] = React.useState(null);
   const [anchorElUser, setAnchorElUser] = React.useState(null);
@@ -82,7 +86,7 @@ export default function NavBar() {
         </div>
 
         <Box
-          sx={{ flexGrow: 1, display: { xs: "none", md: "flex" }, justifyContent: 'flex-end'}}
+          sx={{ flexGrow: 1, display: { xs: "none", md: "flex" }, justifyContent: 'flex-end' }}
           className={classes.menuItems}
         >
           <Button
@@ -96,7 +100,7 @@ export default function NavBar() {
             color="inherit"
             className={
               location.pathname === "/products" &&
-              location.state.category == "dessert"
+                location.state.category == "dessert"
                 ? classes.underlined
                 : ""
             }
@@ -115,7 +119,7 @@ export default function NavBar() {
             color="inherit"
             className={
               location.pathname === "/products" &&
-              location.state.category == "utensils-and-ingredients"
+                location.state.category == "utensils-and-ingredients"
                 ? classes.underlined
                 : ""
             }
@@ -135,9 +139,12 @@ export default function NavBar() {
             className={location.pathname === "/cart" ? classes.underlined : ""}
             onClick={() => navigate("/cart")}
           >
-            Cart
+            <Badge badgeContent={shoppingCart().totalCount()} color="primary">
+              Cart
+            </Badge>
+
           </Button>
-          { userIsLogged &&
+          {userIsLogged &&
             <>
               <Button
                 color="inherit"
@@ -148,7 +155,7 @@ export default function NavBar() {
                 aria-haspopup="true"
                 onClick={handleToggle}
                 className={location.pathname === "/my-account" ? classes.underlined : ""}
-                // onClick={() => navigate("/my-account")}
+              // onClick={() => navigate("/my-account")}
               >
                 Account
                 <ExpandMoreIcon fontSize="small" />
@@ -189,7 +196,7 @@ export default function NavBar() {
               <LogoutIcon className={classes.logButton} onClick={handleLogout} />
             </>
           }
-          { !userIsLogged &&
+          {!userIsLogged &&
             <LoginIcon className={classes.logButton} onClick={() => navigate("/login")} />
           }
         </Box>

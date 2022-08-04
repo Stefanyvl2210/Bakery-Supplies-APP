@@ -1,6 +1,7 @@
 import * as React from "react";
 import { makeStyles } from "@mui/styles";
 import { Button, Divider, Grid, TextField, Typography } from "@mui/material";
+import shoppingCart from "../../utils/shoppingCart";
 
 // carousel
 import RelatedProducts from "../../components/ProductCarousel";
@@ -80,6 +81,7 @@ export default function CustomDialog(props) {
                 color="primary"
                 variant="contained"
                 className={classes.button}
+                onClick={() => { shoppingCart().addItemToCart("Baking sheet", 12, quantity) }}
               >
                 Add to Cart
               </Button>

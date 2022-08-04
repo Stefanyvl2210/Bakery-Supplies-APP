@@ -16,7 +16,7 @@ const productList = [
     name: "Baking sheet",
     image: BakingSheet,
     alt: "BakingSheet",
-    price: "$7",
+    price: 7,
     category: "utensils-and-ingredients",
     description:
       "Aliquyam clita sed lorem diam. Sanctus feugait rebum sea dolor te elitr cum clita augue veniam takimata feugiat vero dolore amet dolore. Autem nulla dolore dolore vulputate et justo ea ut labore accumsan at et nulla nostrud. Dolor sea sed euismod amet dolores tempor elitr. Feugiat est justo. Takimata sit ut rebum nisl diam ea amet labore ut elitr.",
@@ -25,7 +25,7 @@ const productList = [
     name: "Cake table",
     image: CakeTable,
     alt: "table",
-    price: "$5",
+    price: 5,
     category: "utensils-and-ingredients",
     description:
       "Aliquyam clita sed lorem diam. Sanctus feugait rebum sea dolor te elitr cum clita augue veniam takimata feugiat vero dolore amet dolore. Autem nulla dolore dolore vulputate et justo ea ut labore accumsan at et nulla nostrud. Dolor sea sed euismod amet dolores tempor elitr. Feugiat est justo. Takimata sit ut rebum nisl diam ea amet labore ut elitr.",
@@ -34,7 +34,7 @@ const productList = [
     name: "Strainer",
     image: Strainer,
     alt: "strainer",
-    price: "$3",
+    price: 3,
     category: "utensils-and-ingredients",
     description:
       "Aliquyam clita sed lorem diam. Sanctus feugait rebum sea dolor te elitr cum clita augue veniam takimata feugiat vero dolore amet dolore. Autem nulla dolore dolore vulputate et justo ea ut labore accumsan at et nulla nostrud. Dolor sea sed euismod amet dolores tempor elitr. Feugiat est justo. Takimata sit ut rebum nisl diam ea amet labore ut elitr.",
@@ -43,7 +43,7 @@ const productList = [
     name: "Cupcake",
     image: Muffin,
     alt: "Cupcake",
-    price: "$2",
+    price: 2,
     category: "dessert",
     description:
       "Aliquyam clita sed lorem diam. Sanctus feugait rebum sea dolor te elitr cum clita augue veniam takimata feugiat vero dolore amet dolore. Autem nulla dolore dolore vulputate et justo ea ut labore accumsan at et nulla nostrud. Dolor sea sed euismod amet dolores tempor elitr. Feugiat est justo. Takimata sit ut rebum nisl diam ea amet labore ut elitr.",
