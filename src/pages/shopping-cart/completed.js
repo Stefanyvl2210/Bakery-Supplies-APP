@@ -30,9 +30,9 @@ const OrderCompleted = () => {
                 type="submit"
                 variant="contained"
                 className={classes.button}
-                onClick={() => navigate("/")}
+                onClick={() => navigate("/order-detail")}
             >
-                <span className={classes.buttonText}>Home</span>
+                <span className={classes.buttonText}>Next</span>
             </Button>
         </Grid>
       </Grid>

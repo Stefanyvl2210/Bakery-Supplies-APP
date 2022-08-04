@@ -13,7 +13,8 @@ import VerifyEmail from "../pages/register/verify-email";
 import Cart from "../pages/shopping-cart/index";
 import Completed from "../pages/shopping-cart/completed";
 import Products from "../pages/products";
-import ProductDetail from "../pages/detail";
+import ProductDetail from "../pages/detail/index";
+import OrderDetail from "../pages/detail/order";
 
 /**
  * Use this component for any new section of routes (any config object that has a "routes" property
@@ -31,6 +32,7 @@ export function RenderRoutes() {
         <Route path="/detail" element={<ProductDetail />} />
         <Route path="/cart" element={<Cart />} />
         <Route path="/order-completed" element={<Completed />} />
+        <Route path="/order-detail" element={<OrderDetail />} />
         <Route path="*" element={<h1>404 Not Found!</h1>} />
       </Routes>
       <Footer />

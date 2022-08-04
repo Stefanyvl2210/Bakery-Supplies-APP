@@ -70,7 +70,7 @@ const ShoppingCart = () => {
     <>
       <Grid container className={classes.container}>
         <Grid item xs={12}>
-          <h2 className={classes.title}>Shopping Cart</h2>
+          <h2 className={classes.title}>Order detail</h2>
         </Grid>
 
         <Grid
@@ -83,85 +83,14 @@ const ShoppingCart = () => {
           <Table rows={rows} columns={columns} maxWidth={600} />
         </Grid>
 
-        <Grid item xs={12}>
-          <div className={classes.total}>
-            <p>Delivery: $0</p>
-            <p>Total before taxes: $0</p>
-            <p>Total: $0</p>
-          </div>
-
-          <Divider className={classes.divider} />
-        </Grid>
-
-        <Grid item xs={12}>
-          <p className={classes.total}>Choose a payment method</p>
-
-          <FormControl fullWidth className={classes.paymentSelect}>
-            <InputLabel id="payment-select-label">Payment</InputLabel>
-            <Select
-              labelId="payment-select"
-              id="payment-select"
-              value={filter}
-              label="filter"
-              onChange={handleChange}
-              fullWidth
-              className={classNames(classes.input)}
-            >
-              <MenuItem value="">
-                <em>None</em>
-              </MenuItem>
-              <MenuItem value={10}>Option 1</MenuItem>
-              <MenuItem value={20}>Option 2</MenuItem>
-              <MenuItem value={30}>Option 3</MenuItem>
-            </Select>
-          </FormControl>
-        </Grid>
-
-        <Grid item xs={12}>
-          <p className={classes.total}>Choose a shipping address</p>
-
-          <FormControl fullWidth className={classes.paymentSelect}>
-            <InputLabel id="address-select-label">Address</InputLabel>
-            <Select
-              labelId="address-select"
-              id="address-select"
-              value={filter}
-              label="filter"
-              onChange={handleChange}
-              fullWidth
-              className={classNames(classes.input)}
-            >
-              <MenuItem value="">
-                <em>None</em>
-              </MenuItem>
-              <MenuItem value={10}>Option 1</MenuItem>
-              <MenuItem value={20}>Option 2</MenuItem>
-              <MenuItem value={30}>Option 3</MenuItem>
-            </Select>
-          </FormControl>
-        </Grid>
-        <Grid item xs={12}>
-          <FormControl fullWidth className={classes.paymentSelect}>
-            <FormLabel id="demo-controlled-radio-buttons-group" className={classes.subtitle}>Choose a delivery option</FormLabel>
-            <RadioGroup
-              aria-labelledby="demo-controlled-radio-buttons-group"
-              name="controlled-radio-buttons-group"
-              value={delivery}
-              onChange={handleChangeDelivery}
-            >
-              <FormControlLabel value="standard" control={<Radio size="small" />} label={<Typography className={classes.formControlLabel}>Standard <span className={classes.grayText}>(1-2 working days)</span></Typography>} />
-              <FormControlLabel value="express" control={<Radio size="small" />} label={<Typography className={classes.formControlLabel}>Express <span className={classes.grayText}>(12 hours, extra charge) </span></Typography>} />
-            </RadioGroup>
-          </FormControl>
-        </Grid>
         <Grid item xs={12} container justifyContent="center">
           <Button
             color="primary"
             variant="contained"
             className={classes.button}
-            onClick={() => navigate('/order-completed')}
+            onClick={() => navigate('/')}
           >
-            Order
+            Home
           </Button>
         </Grid>
       </Grid>
@@ -189,7 +118,8 @@ const useStyles = makeStyles((theme) => ({
   table: {
     "& thead": {
       "& th": {
-        borderBottom: "none !important",
+        backgroundColor: "#F5EEE6",
+        borderBottom: "1px solid #AAAAAA !important",
       },
     },
     "& tbody": {
