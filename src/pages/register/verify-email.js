@@ -26,9 +26,10 @@ const VerifyEmail = () => {
                 Please enter the 6-digit verification code sent by test@gmail.com. The code will be active for 30 minutes.
             </Typography>
             <div className={classes.codeInput}>
+              <p className={classes.textInput}>Email verification code</p>
               <TextField 
                 id="verification-code" 
-                label="Email verification code" 
+                label=" " 
                 variant="outlined" 
                 // value={values.email}
                 // onChange={handleChange('email')}
@@ -83,6 +84,13 @@ const useStyles = makeStyles((theme) => ({
   },
   codeInput: {
     margin: "30px 0"
+  },
+  textInput: {
+    margin: "4px 0px",
+    fontWeight: "400",
+    fontSize: "14px",
+    lineHeight: "16px",
+    color: "#767676",
   }
 }));
 

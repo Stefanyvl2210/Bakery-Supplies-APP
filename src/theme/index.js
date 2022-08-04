@@ -66,6 +66,29 @@ export const theme = createTheme({
           }
         }
       }
+    },
+    MuiTypography: {
+      styleOverrides: {
+        root: {
+          fontSize: '18px',
+          fontWeight: '400',
+          lineHeight: '20px'
+        }
+      }
+    },
+    MuiRadio: {
+      styleOverrides: {
+        root: {
+          padding: "3px 9px"
+        }
+      }
+    },
+    MuiTableContainer: {
+      styleOverrides: {
+        root: {
+          boxShadow: 'none'
+        }
+      }
     }
   }
 });
