@@ -8,14 +8,20 @@ import Button from "@mui/material/Button";
 
 import Logo from "../../assets/images/header-logo.png";
 import LoginIcon from "@mui/icons-material/Login";
+import LogoutIcon from '@mui/icons-material/Logout';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import { ClickAwayListener, Grow, MenuItem, MenuList, Paper, Popper } from "@mui/material";
 
 export default function NavBar() {
   const classes = useStyles();
   const navigate = useNavigate();
   const location = useLocation();
+  const userIsLogged = localStorage.getItem('userLogged');
+  const anchorRef = React.useRef(null);
 
   const [anchorElNav, setAnchorElNav] = React.useState(null);
   const [anchorElUser, setAnchorElUser] = React.useState(null);
+  const [open, setOpen] = React.useState(false);
 
   const handleOpenNavMenu = (event) => {
     setAnchorElNav(event.currentTarget);
@@ -31,6 +37,42 @@ export default function NavBar() {
   const handleCloseUserMenu = () => {
     setAnchorElUser(null);
   };
+
+  const handleLogout = () => {
+    localStorage.removeItem('userLogged');
+    navigate('/');
+  }
+
+  const handleToggle = () => {
+    setOpen((prevOpen) => !prevOpen);
+  };
+
+  const handleClose = (event) => {
+    if (anchorRef.current && anchorRef.current.contains(event.target)) {
+      return;
+    }
+
+    setOpen(false);
+  };
+
+  function handleListKeyDown(event) {
+    if (event.key === 'Tab') {
+      event.preventDefault();
+      setOpen(false);
+    } else if (event.key === 'Escape') {
+      setOpen(false);
+    }
+  }
+
+  // return focus to the button when we transitioned from !open -> open
+  const prevOpen = React.useRef(open);
+  React.useEffect(() => {
+    if (prevOpen.current === true && open === false) {
+      anchorRef.current.focus();
+    }
+
+    prevOpen.current = open;
+  }, [open]);
 
   return (
     <AppBar position="static" className={classes.container}>
@@ -95,7 +137,61 @@ export default function NavBar() {
           >
             Cart
           </Button>
-          <LoginIcon onClick={() => navigate("/login")} />
+          { userIsLogged &&
+            <>
+              <Button
+                color="inherit"
+                ref={anchorRef}
+                id="composition-button"
+                aria-controls={open ? 'composition-menu' : undefined}
+                aria-expanded={open ? 'true' : undefined}
+                aria-haspopup="true"
+                onClick={handleToggle}
+                className={location.pathname === "/my-account" ? classes.underlined : ""}
+                // onClick={() => navigate("/my-account")}
+              >
+                Account
+                <ExpandMoreIcon fontSize="small" />
+              </Button>
+              <Popper
+                open={open}
+                anchorEl={anchorRef.current}
+                role={undefined}
+                placement="bottom-start"
+                transition
+                disablePortal
+              >
+                {({ TransitionProps, placement }) => (
+                  <Grow
+                    {...TransitionProps}
+                    style={{
+                      transformOrigin:
+                        placement === 'bottom-start' ? 'left top' : 'left bottom',
+                    }}
+                  >
+                    <Paper>
+                      <ClickAwayListener onClickAway={handleClose}>
+                        <MenuList
+                          autoFocusItem={open}
+                          id="composition-menu"
+                          aria-labelledby="composition-button"
+                          onKeyDown={handleListKeyDown}
+                        >
+                          <MenuItem onClick={handleClose}>Profile</MenuItem>
+                          <MenuItem onClick={handleClose}>Orders</MenuItem>
+                          <MenuItem onClick={handleClose}>Payments</MenuItem>
+                        </MenuList>
+                      </ClickAwayListener>
+                    </Paper>
+                  </Grow>
+                )}
+              </Popper>
+              <LogoutIcon className={classes.logButton} onClick={handleLogout} />
+            </>
+          }
+          { !userIsLogged &&
+            <LoginIcon className={classes.logButton} onClick={() => navigate("/login")} />
+          }
         </Box>
       </Toolbar>
     </AppBar>
@@ -120,7 +216,7 @@ const useStyles = makeStyles((theme) => ({
     color: "#4E4E4E",
 
     "& button": {
-      margin: " 0 15px",
+      margin: " 0 7px",
       fontWeight: "600 !important",
       fontSize: "16px !important",
     },
@@ -129,4 +225,8 @@ const useStyles = makeStyles((theme) => ({
     display: "flex",
     alignItems: "center",
   },
+  logButton: {
+    cursor: "pointer",
+    margin: "0 15px"
+  }
 }));

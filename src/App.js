@@ -1,5 +1,5 @@
 import React from "react";
-import ROUTES, { RenderRoutes } from "./routing/index";
+import { RenderRoutes } from "./routing/index";
 
 function App() {
   return (

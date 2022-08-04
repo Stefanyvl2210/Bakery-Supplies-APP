@@ -10,7 +10,8 @@ import Home from "../pages/home";
 import Login from "../pages/login";
 import Register from "../pages/register/index";
 import VerifyEmail from "../pages/register/verify-email";
-import Cart from "../pages/shopping-cart";
+import Cart from "../pages/shopping-cart/index";
+import Completed from "../pages/shopping-cart/completed";
 import Products from "../pages/products";
 import ProductDetail from "../pages/detail";
 
@@ -29,6 +30,7 @@ export function RenderRoutes() {
         <Route path="/products" element={<Products />} />
         <Route path="/detail" element={<ProductDetail />} />
         <Route path="/cart" element={<Cart />} />
+        <Route path="/order-completed" element={<Completed />} />
         <Route path="*" element={<h1>404 Not Found!</h1>} />
       </Routes>
       <Footer />

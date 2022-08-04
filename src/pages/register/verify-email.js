@@ -4,13 +4,12 @@ import React from "react";
 import { useForm } from "react-hook-form";
 
 // material ui components
-import { Card, Grid, Button, Typography, TextField } from "@mui/material";
+import { Grid, Button, Typography, TextField } from "@mui/material";
 import { makeStyles } from "@mui/styles";
 
 // components
 import CustomInput from "../../components/input";
-import classNames from "classnames";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 const VerifyEmail = () => {
   const classes = useStyles();

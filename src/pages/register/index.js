@@ -19,14 +19,16 @@ const Register = () => {
   const { state } = useLocation();
   const emailToRegister = state && state.email;
 
-  console.log('params', state)
-
   // form structure
   const {
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm();
+  } = useForm({
+    defaultValues: {
+      email: emailToRegister || ''
+    }
+  });
 
   // const [items, setItems] = useState([]);
   // useEffect(() => {

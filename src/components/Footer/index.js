@@ -38,6 +38,7 @@ export default function NavBar() {
                 container
                 direction="column"
                 alignItems="flex-start"
+                item
                 xs={6}
             >
                 <Grid item sx={{paddingLeft: '8px'}}>
@@ -82,6 +83,7 @@ export default function NavBar() {
             </Grid>
             <Grid 
                 container
+                item
                 direction="column"
                 alignContent="flex-end"
                 xs={6}

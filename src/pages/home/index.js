@@ -27,13 +27,13 @@ const utensil = {
 
 const Home = () => {
   const navigate = useNavigate();
+  const userIsLogged = localStorage.getItem('userLogged');
 
   const [values, setValues] = React.useState({
     email: '',
   });
 
-  console.log('userLogged?', localStorage.getItem('userLogged'))
-
+  console.log('userLogged?', userIsLogged)
 
   const handleChange = (prop) => (event) => {
     setValues({ ...values, [prop]: event.target.value });
