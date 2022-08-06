@@ -14,15 +14,17 @@ import shoppingCart from "../../utils/shoppingCart";
 
 const BootstrapDialog = styled(Dialog)(({ theme }) => ({
   "& .MuiDialogContent-root": {
-    padding: theme.spacing(2),
+    marginTop: "65px",
+    marginBottom: "65px",
+    marginLeft: "55px",
+    marginRight: "55px",
+    padding: "0px",
   },
   "& .MuiDialogActions-root": {
-    padding: theme.spacing(1),
   },
   "& .MuiDialog-paper": {
-    maxWidth: "900px !important",
+    maxWidth: "1050px !important",
     height: 530,
-    paddingRight: 50,
   },
 }));
 
@@ -66,34 +68,36 @@ export default function CustomDialog(props) {
         onClose={handleClose}
         aria-labelledby="customized-dialog-title"
         open={open}
-        className={classes.container}
       >
         <BootstrapDialogTitle
           id="customized-dialog-title"
           onClose={handleClose}
         >
-          Modal title
         </BootstrapDialogTitle>
         <DialogContent>
-          <Grid container>
+          <Grid container 
+            direction="row"
+            justifyContent="center"
+            alignItems="center">
             <Grid
               item
-              xs={6}
               display="flex"
               alignItems="center"
               justifyContent="center"
+              xs
+              sx={{marginRight: "40px"}}
             >
-              <img src={selectedProduct.image} alt={selectedProduct.alt} />
+              <img src={selectedProduct.image} alt={selectedProduct.alt} width = "550" height = "400" />
             </Grid>
 
-            <Grid item xs={6}>
+            <Grid item xs >
               <h4 className={classes.productName}>{selectedProduct.name}</h4>
 
               <Typography gutterBottom className={classes.description}>
                 {selectedProduct.description}
               </Typography>
 
-              <p>Price: {selectedProduct.price}</p>
+              <p className={classes.productPrice}>Price: {selectedProduct.price}</p>
 
               <div className={classes.buttonWrapper}>
                 <Button
@@ -115,17 +119,20 @@ export default function CustomDialog(props) {
 
 const useStyles = makeStyles((theme) => ({
   title: {
-    margin: "20px 0 !important",
+    margin: "0px 0 !important",
+    padding: "0px !important"
   },
   productName: {
     margin: 0,
     textAlign: "center",
     fontSize: 40,
     fontWeight: "400",
-    marginBottom: "30px !important",
+    marginBottom: "40px !important",
   },
   description: {
     margin: "0 auto",
+    fontSize: 20,
+
   },
   buttonWrapper: {
     display: "flex",
@@ -137,4 +144,11 @@ const useStyles = makeStyles((theme) => ({
     height: 40,
     backgroundColor: "#767676 !important",
   },
+  container: {
+    justifyContent: "center",
+    alignItems: "center"
+  },
+  productPrice: {
+    margin: 0
+  }
 }));
