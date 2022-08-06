@@ -1,9 +1,9 @@
 import * as React from "react";
 import { alpha, styled } from "@mui/material/styles";
 import InputBase from "@mui/material/InputBase";
-import Box from "@mui/material/Box";
 import InputLabel from "@mui/material/InputLabel";
 import FormControl from "@mui/material/FormControl";
+import { EditOutlined } from "@mui/icons-material";
 
 const BootstrapInput = styled(InputBase)(({ theme }) => ({
   "label + &": {
@@ -55,6 +55,10 @@ export default function CustomizedInputs(props) {
     placeholder,
     type = "text",
     label = "label",
+    icon,
+    showValue = false,
+    handleInput,
+    value,
   } = props;
 
   return (
@@ -63,13 +67,46 @@ export default function CustomizedInputs(props) {
       className={classname}
       style={{ width: width }}
     >
-      <InputLabel shrink>{label}</InputLabel>
-      <BootstrapInput
-        {...register(field)}
-        fullWidth={fullWidth}
-        type={type}
-        placeholder={placeholder || "write here"}
-      />
+      {showValue ? (
+        <>
+          <div style={{ textAlign: "end" }}>
+            <InputLabel shrink>
+              {label}
+
+              {icon && (
+                <span onClick={() => handleInput(field)}>
+                  <EditOutlined
+                    fontSize="12"
+                    style={{ marginLeft: 20, cursor: "pointer" }}
+                  />
+                </span>
+              )}
+            </InputLabel>
+          </div>
+          <p style={{ marginTop: 30 }}>text</p>
+        </>
+      ) : (
+        <>
+          <InputLabel shrink>
+            {label}
+
+            {icon && (
+              <span onClick={() => handleInput(field)}>
+                <EditOutlined
+                  fontSize="12"
+                  style={{ marginLeft: 20, cursor: "pointer" }}
+                />
+              </span>
+            )}
+          </InputLabel>
+          <BootstrapInput
+            {...register(field)}
+            fullWidth={fullWidth}
+            type={type}
+            placeholder={placeholder || "write here"}
+          />
+        </>
+      )}
     </FormControl>
   );
 }
