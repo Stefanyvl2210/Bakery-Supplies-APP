@@ -21,6 +21,7 @@ export default function NavBar() {
         container
         direction="column"
         justifyContent="center"
+        sx={{fontFamily: "Open Sans"}}
     >
         
         <Grid
@@ -147,8 +148,9 @@ const useStyles = makeStyles((theme) => ({
     },
     menuItem: {
         fontWeight: '400 !important',
-        fontSize: '14px !important',
         lineHeight: '20px !important',
-        justifyContent: "start !important"
+        justifyContent: "start !important",
+        textTransform: "capitalize !important",
+        fontSize: '16px !important'
     }
 }));
