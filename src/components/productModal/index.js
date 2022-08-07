@@ -19,12 +19,14 @@ const BootstrapDialog = styled(Dialog)(({ theme }) => ({
     marginLeft: "55px",
     marginRight: "55px",
     padding: "0px",
+    
   },
   "& .MuiDialogActions-root": {
   },
   "& .MuiDialog-paper": {
     maxWidth: "1050px !important",
     height: 530,
+    backgroundColor: "#F5EEE6 !important"
   },
 }));
 
@@ -72,13 +74,15 @@ export default function CustomDialog(props) {
         <BootstrapDialogTitle
           id="customized-dialog-title"
           onClose={handleClose}
+          
         >
         </BootstrapDialogTitle>
         <DialogContent>
           <Grid container 
             direction="row"
             justifyContent="center"
-            alignItems="center">
+            alignItems="center"
+            >
             <Grid
               item
               display="flex"
@@ -93,7 +97,7 @@ export default function CustomDialog(props) {
             <Grid item xs >
               <h4 className={classes.productName}>{selectedProduct.name}</h4>
 
-              <Typography gutterBottom className={classes.description}>
+              <Typography gutterBottom className={classes.description} sx={{fontWeight: 'light'}}>
                 {selectedProduct.description}
               </Typography>
 
@@ -126,13 +130,15 @@ const useStyles = makeStyles((theme) => ({
     margin: 0,
     textAlign: "center",
     fontSize: 40,
-    fontWeight: "400",
+    fontWeight: "normal",
     marginBottom: "40px !important",
+    fontFamily: "Poiret One"
   },
   description: {
     margin: "0 auto",
     fontSize: 20,
-
+    fontFamily: "Open Sans",
+    
   },
   buttonWrapper: {
     display: "flex",
@@ -149,6 +155,9 @@ const useStyles = makeStyles((theme) => ({
     alignItems: "center"
   },
   productPrice: {
-    margin: 0
+    margin: 0,
+    marginTop: "20px",
+    fontFamily: "Open Sans",
+    fontSize: 20,
   }
 }));

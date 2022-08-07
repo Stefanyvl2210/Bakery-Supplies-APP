@@ -150,9 +150,10 @@ const useStyles = makeStyles((theme) => ({
   },
   productName: {
     textAlign: "center",
-    fontSize: 24,
+    fontSize: 30,
     fontWeight: "400",
     marginTop: "30px !important",
+    fontFamily: "Poiret One",
     marginBottom: "30px !important",
   },
   buttonWrapper: {

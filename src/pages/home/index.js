@@ -165,7 +165,7 @@ const Home = () => {
 
         <Grid item xs={12}>
           <h4 className={classes.title}>About Us</h4>
-          <Typography className={classes.aboutDescription}>
+          <Typography xs={12} className={classes.aboutDescription}>
           Bakery Supplies was born from a dream, we are a family that loves that incredible flavor that takes you to another universe, the sweet. With love and dedication we refine the classic recipes of your favorite desserts getting our magic touch. We offer you a great variety of desserts specially created with our famous recipe and at the same time we have at your disposal all the utensils you need so that you can make magic yourself and turn your favorite recipes into reality.
 
           </Typography>
@@ -242,7 +242,6 @@ const useStyles = makeStyles((theme) => ({
     textAlign: "center"
   },
   aboutDescription: {
-    maxWidth: 800,
     width: "100%",
     margin: "0 auto !important",
     fontWeight: "300 !important",
