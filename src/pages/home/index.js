@@ -16,13 +16,13 @@ import { useNavigate, useLocation } from "react-router-dom";
 const dessert = {
   name: "Desserts",
   description:
-    "Aliquyam clita sed lorem diam. Sanctus feugait rebum sea dolor te elitr cum clita augue veniam takimata feugiat vero dolore amet dolore. Autem nulla dolore dolore vulputate et justo ea ut labore accumsan at et nulla nostrud. Dolor sea sed euismod amet dolores tempor elitr. Feugiat est justo. Takimata sit ut rebum nisl diam ea amet labore ut elitr.",
+    "Our specialty, desserts, here you can find all our extensive catalog of desserts along with each and every one of its details such as ingredients, flavors and nutritional information. Enter the wonderful world of sweets and all its delicacies, we are waiting for you!",
 };
 
 const utensil = {
   name: "Utensils and Ingredients",
   description:
-    "Aliquyam clita sed lorem diam. Sanctus feugait rebum sea dolor te elitr cum clita augue veniam takimata feugiat vero dolore amet dolore. Autem nulla dolore dolore vulputate et justo ea ut labore accumsan at et nulla nostrud. Dolor sea sed euismod amet dolores tempor elitr. Feugiat est justo. Takimata sit ut rebum nisl diam ea amet labore ut elitr.",
+    "Do you want to prepare your own incredible recipes? Here you can find everything you need, from a spoon to that jelly you like so much, come in and discover all our store of products prepared and specifically designed for the elaboration of your favorite recipes.",
 };
 
 const Home = () => {
@@ -165,10 +165,9 @@ const Home = () => {
 
         <Grid item xs={12}>
           <h4 className={classes.title}>About Us</h4>
-          <Typography className={classes.aboutDescription}>
-          Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's 
-          standard dummy text ever since the 1500s, Dolor sea sed euismod amet dolores tempor elitr. Feugiat est justo. 
-          Takimata sit ut rebum nisl diam ea amet labore ut elitr
+          <Typography xs={12} className={classes.aboutDescription}>
+          Bakery Supplies was born from a dream, we are a family that loves that incredible flavor that takes you to another universe, the sweet. With love and dedication we refine the classic recipes of your favorite desserts getting our magic touch. We offer you a great variety of desserts specially created with our famous recipe and at the same time we have at your disposal all the utensils you need so that you can make magic yourself and turn your favorite recipes into reality.
+
           </Typography>
         </Grid>
 
@@ -243,7 +242,6 @@ const useStyles = makeStyles((theme) => ({
     textAlign: "center"
   },
   aboutDescription: {
-    maxWidth: 800,
     width: "100%",
     margin: "0 auto !important",
     fontWeight: "300 !important",

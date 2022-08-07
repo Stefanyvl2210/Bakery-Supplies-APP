@@ -3,8 +3,8 @@ import { Button, Grid } from "@mui/material";
 import { makeStyles } from "@mui/styles";
 
 import Muffin from "../../assets/images/muffin.png";
-// import Muffin from "../../assets/images/muffin.png";
-// import Muffin from "../../assets/images/muffin.png";
+import Cheesecake from "../../assets/images/cheesecake.png";
+import FrenchToast from "../../assets/images/frenchToast.png";
 import BakingSheet from "../../assets/images/baking-sheet.png";
 import Strainer from "../../assets/images/strainer.png";
 import CakeTable from "../../assets/images/cake-table.png";
@@ -19,7 +19,7 @@ const productList = [
     price: 7,
     category: "utensils-and-ingredients",
     description:
-      "Aliquyam clita sed lorem diam. Sanctus feugait rebum sea dolor te elitr cum clita augue veniam takimata feugiat vero dolore amet dolore. Autem nulla dolore dolore vulputate et justo ea ut labore accumsan at et nulla nostrud. Dolor sea sed euismod amet dolores tempor elitr. Feugiat est justo. Takimata sit ut rebum nisl diam ea amet labore ut elitr.",
+      "Specially designed to bake all your ideas, created with a thin copper layer that allows an excellent heat distribution. Our baking sheet allows your entire recipe to bake evenly.",
   },
   {
     name: "Cake table",
@@ -28,7 +28,7 @@ const productList = [
     price: 5,
     category: "utensils-and-ingredients",
     description:
-      "Aliquyam clita sed lorem diam. Sanctus feugait rebum sea dolor te elitr cum clita augue veniam takimata feugiat vero dolore amet dolore. Autem nulla dolore dolore vulputate et justo ea ut labore accumsan at et nulla nostrud. Dolor sea sed euismod amet dolores tempor elitr. Feugiat est justo. Takimata sit ut rebum nisl diam ea amet labore ut elitr.",
+      "Excellent design, weighing to address a good amount of weight, allows you to hold cakes of any size, the materials with which it is made make its strength and durability are superior to any other you can find.",
   },
   {
     name: "Strainer",
@@ -37,7 +37,7 @@ const productList = [
     price: 3,
     category: "utensils-and-ingredients",
     description:
-      "Aliquyam clita sed lorem diam. Sanctus feugait rebum sea dolor te elitr cum clita augue veniam takimata feugiat vero dolore amet dolore. Autem nulla dolore dolore vulputate et justo ea ut labore accumsan at et nulla nostrud. Dolor sea sed euismod amet dolores tempor elitr. Feugiat est justo. Takimata sit ut rebum nisl diam ea amet labore ut elitr.",
+      "With a layer of aluminum and metal this strainer will allow you to separate those big things from your small ingredients, durability assured, stainless and strong. Its size is regular.",
   },
   {
     name: "Cupcake",
@@ -46,7 +46,25 @@ const productList = [
     price: 2,
     category: "dessert",
     description:
-      "Aliquyam clita sed lorem diam. Sanctus feugait rebum sea dolor te elitr cum clita augue veniam takimata feugiat vero dolore amet dolore. Autem nulla dolore dolore vulputate et justo ea ut labore accumsan at et nulla nostrud. Dolor sea sed euismod amet dolores tempor elitr. Feugiat est justo. Takimata sit ut rebum nisl diam ea amet labore ut elitr.",
+      "Introducing our passion cupcake, soft, fluffy and delicious, this cupcake is created with the finest ingredients that allow an incredible texture and flavor, plus, a whipped cream with a balanced flavor but that does not go unnoticed, not to mention, our special touch, the secret ingredient that we sprinkle on top to complement incredible flavor.",
+  },
+  {
+    name: "Cheesecake",
+    image: Cheesecake,
+    alt: "Cupcake",
+    price: 8,
+    category: "dessert",
+    description:
+      "This is our cheesecake, after so many attempts we managed to get a unique texture, delicious flavor, bathed in our also special homemade jelly and finally we found that complement above that visually general a disturbing temptation to eat it and in turn a chocolate flavor that contrasts perfectly everything else.",
+  },
+  {
+    name: "French Toast",
+    image: FrenchToast,
+    alt: "Cupcake",
+    price: 7,
+    category: "dessert",
+    description:
+      "Dessert brought from France, we took all the incredible that this dessert already included and gave it our personal touch, three layers of flavor, citric and sweet, here you will find a great combination that will make your palate fall in love.",
   },
 ];
 
@@ -70,7 +88,7 @@ const Product = () => {
             justifyContent="center"
           >
             <div className={classes.container}>
-              <img src={product.image} alt={product.alt} />
+              <img src={product.image} alt={product.alt} width = "330" height = "220" />
 
               <p className={classes.productName}>{product.name}</p>
 
@@ -78,6 +96,7 @@ const Product = () => {
                 <Button
                   color="primary"
                   variant="contained"
+                  sx={{marginRight: '15px !important'}}
                   className={classes.button}
                   onClick={() => {
                     setOpenDialog(true);
@@ -91,6 +110,7 @@ const Product = () => {
                   <Button
                     color="primary"
                     variant="contained"
+                    sx={{marginLeft: '15px !important'}}
                     className={classes.button}
                   >
                     Details
@@ -121,6 +141,7 @@ const Product = () => {
 const useStyles = makeStyles((theme) => ({
   container: {
     marginBottom: 60,
+    marginTop: 0,
     textAlign: "center",
 
     "& a": {
@@ -129,13 +150,20 @@ const useStyles = makeStyles((theme) => ({
   },
   productName: {
     textAlign: "center",
-    fontSize: 24,
+    fontSize: 30,
     fontWeight: "400",
+    marginTop: "30px !important",
+    fontFamily: "Poiret One",
+    marginBottom: "30px !important",
   },
   buttonWrapper: {
     display: "flex",
     justifyContent: "space-between",
   },
+  button: {
+    margin:"0px !important",
+    padding:"0px !important",
+  }
 }));
 
 export default Product;
