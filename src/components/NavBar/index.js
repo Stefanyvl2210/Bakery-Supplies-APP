@@ -10,18 +10,23 @@ import shoppingCart from "../../utils/shoppingCart";
 
 import Logo from "../../assets/images/header-logo.png";
 import LoginIcon from "@mui/icons-material/Login";
-import LogoutIcon from '@mui/icons-material/Logout';
-import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-import { ClickAwayListener, Grow, MenuItem, MenuList, Paper, Popper } from "@mui/material";
+import LogoutIcon from "@mui/icons-material/Logout";
+import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
+import {
+  ClickAwayListener,
+  Grow,
+  MenuItem,
+  MenuList,
+  Paper,
+  Popper,
+} from "@mui/material";
 
 export default function NavBar() {
   const classes = useStyles();
   const navigate = useNavigate();
   const location = useLocation();
-  const userIsLogged = localStorage.getItem('userLogged');
+  const userIsLogged = localStorage.getItem("userLogged");
   const anchorRef = React.useRef(null);
-
-
 
   const [anchorElNav, setAnchorElNav] = React.useState(null);
   const [anchorElUser, setAnchorElUser] = React.useState(null);
@@ -43,15 +48,16 @@ export default function NavBar() {
   };
 
   const handleLogout = () => {
-    localStorage.removeItem('userLogged');
-    navigate('/');
-  }
+    localStorage.removeItem("userLogged");
+    navigate("/");
+  };
 
   const handleToggle = () => {
     setOpen((prevOpen) => !prevOpen);
   };
 
   const handleClose = (event) => {
+    console.log(event);
     if (anchorRef.current && anchorRef.current.contains(event.target)) {
       return;
     }
@@ -60,10 +66,10 @@ export default function NavBar() {
   };
 
   function handleListKeyDown(event) {
-    if (event.key === 'Tab') {
+    if (event.key === "Tab") {
       event.preventDefault();
       setOpen(false);
-    } else if (event.key === 'Escape') {
+    } else if (event.key === "Escape") {
       setOpen(false);
     }
   }
@@ -86,7 +92,11 @@ export default function NavBar() {
         </div>
 
         <Box
-          sx={{ flexGrow: 1, display: { xs: "none", md: "flex" }, justifyContent: 'flex-end' }}
+          sx={{
+            flexGrow: 1,
+            display: { xs: "none", md: "flex" },
+            justifyContent: "flex-end",
+          }}
           className={classes.menuItems}
         >
           <Button
@@ -100,7 +110,7 @@ export default function NavBar() {
             color="inherit"
             className={
               location.pathname === "/products" &&
-                location.state.category == "dessert"
+              location.state.category == "dessert"
                 ? classes.underlined
                 : ""
             }
@@ -119,7 +129,7 @@ export default function NavBar() {
             color="inherit"
             className={
               location.pathname === "/products" &&
-                location.state.category == "utensils-and-ingredients"
+              location.state.category == "utensils-and-ingredients"
                 ? classes.underlined
                 : ""
             }
@@ -142,20 +152,21 @@ export default function NavBar() {
             <Badge badgeContent={shoppingCart().totalCount()} color="primary">
               Cart
             </Badge>
-
           </Button>
-          {userIsLogged &&
+          {userIsLogged && (
             <>
               <Button
                 color="inherit"
                 ref={anchorRef}
                 id="composition-button"
-                aria-controls={open ? 'composition-menu' : undefined}
-                aria-expanded={open ? 'true' : undefined}
+                aria-controls={open ? "composition-menu" : undefined}
+                aria-expanded={open ? "true" : undefined}
                 aria-haspopup="true"
                 onClick={handleToggle}
-                className={location.pathname === "/my-account" ? classes.underlined : ""}
-              // onClick={() => navigate("/my-account")}
+                className={
+                  location.pathname === "/my-account" ? classes.underlined : ""
+                }
+                // onClick={() => navigate("/my-account")}
               >
                 Account
                 <ExpandMoreIcon fontSize="small" />
@@ -173,7 +184,9 @@ export default function NavBar() {
                     {...TransitionProps}
                     style={{
                       transformOrigin:
-                        placement === 'bottom-start' ? 'left top' : 'left bottom',
+                        placement === "bottom-start"
+                          ? "left top"
+                          : "left bottom",
                     }}
                   >
                     <Paper
@@ -187,21 +200,49 @@ export default function NavBar() {
                           onKeyDown={handleListKeyDown}
                           sx={{padding: 0}}
                         >
-                          <MenuItem sx={{paddingTop: "14px", paddingBottom: "7px", paddingLeft: "20px", paddingRight: "20px", fontFamily: 'Open Sans', fontSize: 16 }} onClick={handleClose}>My profile</MenuItem>
-                          <MenuItem sx={{paddingTop: 0, paddingBottom: 0, paddingLeft: "20px", paddingRight: "20px", fontFamily: 'Open Sans', fontSize: 16}} onClick={handleClose}>Orders</MenuItem>
-                          <MenuItem sx={{paddingTop: "7px", paddingBottom: "14px", paddingLeft: "20px", paddingRight: "20px", fontFamily: 'Open Sans', fontSize: 16}} onClick={handleClose}>Payments</MenuItem>
+                          <MenuItem
+                            onClick={() => {
+                              navigate("/my-account");
+                              setOpen(false);
+                            }}
+                            sx={{paddingTop: "14px", paddingBottom: "7px", paddingLeft: "20px", paddingRight: "20px", fontFamily: 'Open Sans', fontSize: 16 }}
+                          >
+                            My profile
+                          </MenuItem>
+                          <MenuItem
+                            onClick={() => {
+                              setOpen(false);
+                            }}
+                            sx={{paddingTop: 0, paddingBottom: 0, paddingLeft: "20px", paddingRight: "20px", fontFamily: 'Open Sans', fontSize: 16}}
+                          >
+                            Orders
+                          </MenuItem>
+                          <MenuItem
+                            onClick={() => {
+                              setOpen(false);
+                            }}
+                            sx={{paddingTop: "7px", paddingBottom: "14px", paddingLeft: "20px", paddingRight: "20px", fontFamily: 'Open Sans', fontSize: 16}}
+                          >
+                            Payments
+                          </MenuItem>
                         </MenuList>
                       </ClickAwayListener>
                     </Paper>
                   </Grow>
                 )}
               </Popper>
-              <LogoutIcon className={classes.logButton} onClick={handleLogout} />
+              <LogoutIcon
+                className={classes.logButton}
+                onClick={handleLogout}
+              />
             </>
-          }
-          {!userIsLogged &&
-            <LoginIcon className={classes.logButton} onClick={() => navigate("/login")} />
-          }
+          )}
+          {!userIsLogged && (
+            <LoginIcon
+              className={classes.logButton}
+              onClick={() => navigate("/login")}
+            />
+          )}
         </Box>
       </Toolbar>
     </AppBar>
@@ -237,6 +278,6 @@ const useStyles = makeStyles((theme) => ({
   },
   logButton: {
     cursor: "pointer",
-    margin: "0 15px"
-  }
+    margin: "0 15px",
+  },
 }));
