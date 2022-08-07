@@ -166,7 +166,7 @@ export default function NavBar() {
                 role={undefined}
                 placement="bottom-start"
                 transition
-                disablePortal
+                disablePortal              
               >
                 {({ TransitionProps, placement }) => (
                   <Grow
@@ -176,17 +176,20 @@ export default function NavBar() {
                         placement === 'bottom-start' ? 'left top' : 'left bottom',
                     }}
                   >
-                    <Paper>
+                    <Paper
+                      sx={{ border: 2.5, bgcolor: '#F5EEE6', borderColor: "#C86B85", color: "#4E4E4E", marginTop: "19px"}}
+                    >
                       <ClickAwayListener onClickAway={handleClose}>
                         <MenuList
                           autoFocusItem={open}
                           id="composition-menu"
                           aria-labelledby="composition-button"
                           onKeyDown={handleListKeyDown}
+                          sx={{padding: 0}}
                         >
-                          <MenuItem onClick={handleClose}>Profile</MenuItem>
-                          <MenuItem onClick={handleClose}>Orders</MenuItem>
-                          <MenuItem onClick={handleClose}>Payments</MenuItem>
+                          <MenuItem sx={{paddingTop: "14px", paddingBottom: "7px", paddingLeft: "20px", paddingRight: "20px", fontFamily: 'Open Sans', fontSize: 16 }} onClick={handleClose}>My profile</MenuItem>
+                          <MenuItem sx={{paddingTop: 0, paddingBottom: 0, paddingLeft: "20px", paddingRight: "20px", fontFamily: 'Open Sans', fontSize: 16}} onClick={handleClose}>Orders</MenuItem>
+                          <MenuItem sx={{paddingTop: "7px", paddingBottom: "14px", paddingLeft: "20px", paddingRight: "20px", fontFamily: 'Open Sans', fontSize: 16}} onClick={handleClose}>Payments</MenuItem>
                         </MenuList>
                       </ClickAwayListener>
                     </Paper>
