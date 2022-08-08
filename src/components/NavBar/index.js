@@ -205,7 +205,7 @@ export default function NavBar() {
                               navigate("/my-account");
                               setOpen(false);
                             }}
-                            sx={{paddingTop: "14px", paddingBottom: "7px", paddingLeft: "20px", paddingRight: "20px", fontFamily: 'Open Sans', fontSize: 16 }}
+                            sx={{paddingTop: "14px", paddingBottom: "14px", paddingLeft: "20px", paddingRight: "20px", fontFamily: 'Open Sans', fontSize: 16 }}
                           >
                             My profile
                           </MenuItem>
@@ -221,7 +221,7 @@ export default function NavBar() {
                             onClick={() => {
                               setOpen(false);
                             }}
-                            sx={{paddingTop: "7px", paddingBottom: "14px", paddingLeft: "20px", paddingRight: "20px", fontFamily: 'Open Sans', fontSize: 16}}
+                            sx={{paddingTop: "14px", paddingBottom: "14px", paddingLeft: "20px", paddingRight: "20px", fontFamily: 'Open Sans', fontSize: 16}}
                           >
                             Payments
                           </MenuItem>

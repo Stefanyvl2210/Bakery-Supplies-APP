@@ -28,6 +28,7 @@ const utensil = {
 const Home = () => {
   const navigate = useNavigate();
   const userIsLogged = localStorage.getItem('userLogged');
+  
 
   const [values, setValues] = React.useState({
     email: '',
@@ -49,25 +50,27 @@ const Home = () => {
             <Typography className={classes.mainTitle}>
               Prepare your favorite recipe or buy your favorite dessert without leaving home!
             </Typography>
-            <div className={classes.registerInput}>
-              <TextField 
-                id="email-register" 
-                label="Email" 
-                variant="outlined" 
-                value={values.email}
-                onChange={handleChange('email')}
-              />
-              <Button
-                color="primary"
-                variant="contained"
-                className={classes.button}
-                onClick={() => navigate('/register', {state: {
-                  email: values.email
-                }})}
-              >
-                Start
-              </Button>
-            </div>
+            {!userIsLogged && (
+              <div className={classes.registerInput}>
+                <TextField 
+                  id="email-register" 
+                  label="Email" 
+                  variant="outlined" 
+                  value={values.email}
+                  onChange={handleChange('email')}
+                />
+                <Button
+                  color="primary"
+                  variant="contained"
+                  className={classes.button}
+                  onClick={() => navigate('/register', {state: {
+                    email: values.email
+                  }})}
+                >
+                  Start
+                </Button>
+              </div>
+            )}
           </Grid>
         </Grid>
       </Paper>
