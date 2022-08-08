@@ -45,7 +45,7 @@ const BootstrapDialogTitle = (props) => {
             position: "absolute",
             right: 8,
             top: 8,
-            color: (theme) => theme.palette.grey[500],
+            color: "black",
           }}
         >
           <CloseIcon />
@@ -101,14 +101,14 @@ export default function CustomDialog(props) {
                 {selectedProduct.description}
               </Typography>
 
-              <p className={classes.productPrice}>Price: {selectedProduct.price}</p>
+              <p className={classes.productPrice}>Price: ${selectedProduct.price}</p>
 
               <div className={classes.buttonWrapper}>
                 <Button
-                  color="primary"
                   variant="contained"
                   className={classes.button}
                   onClick={() => { shoppingCart().addItemToCart(selectedProduct.name, selectedProduct.price, 1) }}
+                  sx={{bgcolor: "#C86B85 !important"}}
                 >
                   Add to Cart
                 </Button>
@@ -136,7 +136,7 @@ const useStyles = makeStyles((theme) => ({
   },
   description: {
     margin: "0 auto",
-    fontSize: 20,
+    fontSize: "20px !important",
     fontFamily: "Open Sans",
     
   },

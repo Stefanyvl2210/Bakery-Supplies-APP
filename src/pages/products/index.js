@@ -40,9 +40,9 @@ const Products = () => {
           direction="row"
           justifyContent="space-between"
           alignItems="center"
+          sx={{maxWidth: 1440}}
         >
           <Grid 
-            item xs={12} sm={6} md={6}
             className={classnames(classes.inputContent)} 
           > 
             <TextField
@@ -52,21 +52,23 @@ const Products = () => {
               onChange={setSearch}
               fullWidth
               className={classes.input}
+              sx={{fontSize: "18px !important", lineHeight: "20px !important"}}
               InputProps={{
                 endAdornment: (
                   <InputAdornment position="end">
                     <SearchIcon />
                   </InputAdornment>
                 ),
+                //style: { fontSize: 18 }
               }}
+              //InputLabelProps={{style: {fontSize: 18}}}
             />
           </Grid>
           <Grid
-            item xs={12} sm={6} md={6}
             className={classnames(classes.inputContent, classes.filter)}
           >
             <FormControl size="small" style={{minWidth: 300}}>
-              <InputLabel id="demo-simple-select-label">Filter by</InputLabel>
+              <InputLabel id="demo-simple-select-label" sx={{fontSize: "18px !important"}}>Filter by</InputLabel>
               <Select
                 labelId="demo-simple-select-label"
                 id="demo-simple-select"
@@ -77,12 +79,12 @@ const Products = () => {
                 fullWidth
                 className={classnames(classes.input)}
               >
-                <MenuItem value="">
+                <MenuItem value="" sx={{fontSize: "18px !important", lineHeight: "20px !important"}}>
                   <em>None</em>
                 </MenuItem>
-                <MenuItem value={10}>Subcategory 1</MenuItem>
-                <MenuItem value={20}>Subcategory 2</MenuItem>
-                <MenuItem value={30}>Subcategory 3</MenuItem>
+                <MenuItem value={10} sx={{fontSize: "18px !important", lineHeight: "20px !important"}}>Subcategory 1</MenuItem>
+                <MenuItem value={20} sx={{fontSize: "18px !important", lineHeight: "20px !important"}}>Subcategory 2</MenuItem>
+                <MenuItem value={30} sx={{fontSize: "18px !important", lineHeight: "20px !important"}}>Subcategory 3</MenuItem>
               </Select>
             </FormControl>
           </Grid>
@@ -132,11 +134,16 @@ const useStyles = makeStyles((theme) => ({
   },
   inputContent: {
     marginTop: "60px !important",
+    fontSize: "18px !important"
   },
   filter: {
+    "& .MuiInputBase-root":{
+      fontSize: "18px !important"
+    },
     display:"flex",
     justifyContent: "flex-end",
     minWidth: 300,
+
   },
   total: {
     maxWidth: 600,
@@ -145,9 +152,12 @@ const useStyles = makeStyles((theme) => ({
     fontSize: 18,
   },
   input: {
+    "& .MuiInputBase-root":{
+      fontSize: "18px !important"
+    },
     justifyContent: 'flex-end',
     maxWidth: '300px',
-    width: '100%'
+    width: '100%',
   },
 }));
 
