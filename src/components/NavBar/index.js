@@ -198,14 +198,14 @@ export default function NavBar() {
                           id="composition-menu"
                           aria-labelledby="composition-button"
                           onKeyDown={handleListKeyDown}
-                          sx={{padding: 0}}
+                          sx={{padding: 0, paddingTop: "7px", paddingBottom: "7px"}}
                         >
                           <MenuItem
                             onClick={() => {
                               navigate("/my-account");
                               setOpen(false);
                             }}
-                            sx={{paddingTop: "14px", paddingBottom: "14px", paddingLeft: "20px", paddingRight: "20px", fontFamily: 'Open Sans', fontSize: 16 }}
+                            sx={{paddingTop: "7px", paddingBottom: "7px", paddingLeft: "20px", paddingRight: "20px", fontFamily: 'Open Sans', fontSize: 16 }}
                           >
                             My profile
                           </MenuItem>
@@ -213,7 +213,7 @@ export default function NavBar() {
                             onClick={() => {
                               setOpen(false);
                             }}
-                            sx={{paddingTop: 0, paddingBottom: 0, paddingLeft: "20px", paddingRight: "20px", fontFamily: 'Open Sans', fontSize: 16}}
+                            sx={{paddingTop: "7px", paddingBottom: "7px", paddingLeft: "20px", paddingRight: "20px", fontFamily: 'Open Sans', fontSize: 16}}
                           >
                             Orders
                           </MenuItem>
@@ -221,7 +221,7 @@ export default function NavBar() {
                             onClick={() => {
                               setOpen(false);
                             }}
-                            sx={{paddingTop: "14px", paddingBottom: "14px", paddingLeft: "20px", paddingRight: "20px", fontFamily: 'Open Sans', fontSize: 16}}
+                            sx={{paddingTop: "7px", paddingBottom: "7px", paddingLeft: "20px", paddingRight: "20px", fontFamily: 'Open Sans', fontSize: 16}}
                           >
                             Payments
                           </MenuItem>
