@@ -74,115 +74,124 @@ const Home = () => {
           </Grid>
         </Grid>
       </Paper>
-      
-      <Grid container className={classes.container} justifyContent="space-evenly">
-        <Grid item xs={12} className={classes.process}>
-          <h4 className={classes.title}>How it works?</h4>
+      <div className={classes.container}>
+        <Grid container justifyContent="space-evenly">
+          <Grid item xs={12} className={classes.process}>
+            <h4 className={classes.title}>How it works?</h4>
+          </Grid>
+
+          <Grid item xs={12} sm={4} md={4} className={classes.steps}>
+            <img src={step1} width={60} height={60} alt="Step 1" />
+            <EastIcon className={classes.iconSteps} />
+            <Typography className={classes.textSteps}>
+              Search our website for your favorite dessert or any ingredient you need for your recipe.
+            </Typography>
+          </Grid>
+
+          <Grid item xs={12} sm={4} md={4} className={classes.steps}>
+            <img src={step2} width={60} height={60} alt="Step 2" />
+            <EastIcon className={classes.iconSteps} />
+            <Typography className={classes.textSteps}>
+              Add to shopping cart
+            </Typography>
+          </Grid>
+
+          <Grid item xs={12} sm={4} md={4} className={classes.steps}>
+            <img src={step3} width={60} height={60} alt="Step 3" />
+            <Typography className={classes.textSteps}>
+              We deliver to your door
+            </Typography>
+          </Grid>
+          <Grid item xs={12}>
+            <Divider />
+          </Grid>
         </Grid>
 
-        <Grid item xs={12} sm={4} md={4} className={classes.steps}>
-          <img src={step1} width={60} height={60} alt="Step 1" />
-          <EastIcon className={classes.iconSteps} />
-          <Typography className={classes.textSteps}>
-            Search our website for your favorite dessert or any ingredient you need for your recipe.
-          </Typography>
+        <Grid container columnSpacing={{ xs: 0, md: 6 }} rowSpacing={{ xs: 4, sm: 4}}>
+          <Grid item xs={12} sm={12} md={6} className={classes.imageWrapper}>
+            <img className={classes.image} src={Dessert} alt="dessert" />
+          </Grid>
+          <Grid item xs={12} sm={12} md={6}>
+            <h4 className={classes.title}>{dessert.name}</h4>
+
+            <Typography gutterBottom className={classes.description}>
+              {dessert.description}
+            </Typography>
+
+            <div className={classes.buttonWrapper}>
+              <Button
+                color="primary"
+                variant="contained"
+                className={classes.button}
+                onClick={() => navigate('/products', {state: {
+                  category: 'dessert'
+                }})}
+              >
+                See More
+              </Button>
+            </div>
+          </Grid>
         </Grid>
+        <Divider />
+        <Grid container columnSpacing={{ xs: 0, md: 6 }} rowSpacing={{ xs: 4, sm: 4}}>
+          <Grid item xs={12} sm={12} md={6}>
+            <h4 className={classes.title}>{utensil.name}</h4>
 
-        <Grid item xs={12} sm={4} md={4} className={classes.steps}>
-          <img src={step2} width={60} height={60} alt="Step 2" />
-          <EastIcon className={classes.iconSteps} />
-          <Typography className={classes.textSteps}>
-            Add to shopping cart
-          </Typography>
+            <Typography gutterBottom className={classes.description}>
+              {utensil.description}
+            </Typography>
+
+            <div className={classes.buttonWrapper}>
+              <Button
+                color="primary"
+                variant="contained"
+                className={classes.button}
+                onClick={() => navigate('/products', {state: {
+                  category: 'utensils-and-ingredients'
+                }})}
+              >
+                See More
+              </Button>
+            </div>
+          </Grid>
+          <Grid item xs={12} sm={12} md={6} className={classes.imageWrapper}>
+            <img src={Utensil} className={classes.image} alt="utensil" />
+          </Grid>
         </Grid>
+        <Divider />
+        <Grid container>
+          <Grid item xs={12}>
+            <h4 className={classes.title}>About Us</h4>
+            <Typography xs={12} className={classes.aboutDescription}>
+            Bakery Supplies was born from a dream, we are a family that loves that incredible flavor that takes you to another universe, the sweet. With love and dedication we refine the classic recipes of your favorite desserts getting our magic touch. We offer you a great variety of desserts specially created with our famous recipe and at the same time we have at your disposal all the utensils you need so that you can make magic yourself and turn your favorite recipes into reality.
 
-        <Grid item xs={12} sm={4} md={4} className={classes.steps}>
-          <img src={step3} width={60} height={60} alt="Step 3" />
-          <Typography className={classes.textSteps}>
-            We deliver to your door
-          </Typography>
+            </Typography>
+          </Grid>
+
         </Grid>
-
-      </Grid>
-
-      <Grid container className={classes.container}>
-        <Grid item xs={12}>
-          <Divider />
-        </Grid>
-
-        <Grid item xs={12} sm={12} md={6} className={classes.imageWrapper}>
-          <img src={Dessert} width={570} height={352} alt="dessert" />
-        </Grid>
-        <Grid item xs={12} sm={12} md={6}>
-          <h4 className={classes.title}>{dessert.name}</h4>
-
-          <Typography gutterBottom className={classes.description}>
-            {dessert.description}
-          </Typography>
-
-          <div className={classes.buttonWrapper}>
-            <Button
-              color="primary"
-              variant="contained"
-              className={classes.button}
-              onClick={() => navigate('/products', {state: {
-                category: 'dessert'
-              }})}
-            >
-              See More
-            </Button>
-          </div>
-        </Grid>
-
-        <Grid item xs={12}>
-          <Divider />
-        </Grid>
-
-        <Grid item xs={12} sm={12} md={6}>
-          <h4 className={classes.title}>{utensil.name}</h4>
-
-          <Typography gutterBottom className={classes.description}>
-            {utensil.description}
-          </Typography>
-
-          <div className={classes.buttonWrapper}>
-            <Button
-              color="primary"
-              variant="contained"
-              className={classes.button}
-              onClick={() => navigate('/products', {state: {
-                category: 'utensils-and-ingredients'
-              }})}
-            >
-              See More
-            </Button>
-          </div>
-        </Grid>
-        <Grid item xs={12} sm={12} md={6} className={classes.imageWrapper}>
-          <img src={Utensil} width={570} height={352} alt="utensil" />
-        </Grid>
-
-        <Grid item xs={12}>
-          <Divider />
-        </Grid>
-
-        <Grid item xs={12}>
-          <h4 className={classes.title}>About Us</h4>
-          <Typography xs={12} className={classes.aboutDescription}>
-          Bakery Supplies was born from a dream, we are a family that loves that incredible flavor that takes you to another universe, the sweet. With love and dedication we refine the classic recipes of your favorite desserts getting our magic touch. We offer you a great variety of desserts specially created with our famous recipe and at the same time we have at your disposal all the utensils you need so that you can make magic yourself and turn your favorite recipes into reality.
-
-          </Typography>
-        </Grid>
-
-      </Grid>
+      </div>
     </>
   );
 };
 
 const useStyles = makeStyles((theme) => ({
   container: {
-    maxWidth: 1280,
+    maxWidth: 1140,
     margin: "60px auto !important",
+    [theme.breakpoints.down('lg')]: {
+      padding: "0 50px !important",
+    },
+    [theme.breakpoints.down('md')]: {
+      padding: "0 50px !important",
+    },
+    [theme.breakpoints.down('sm')]: {
+      padding: "0 36px !important",
+    },
+  },
+  image: {
+    maxWidth: "570px",
+    width: "100%",
+    height: "100%",
   },
   mainTitle: {
     textAlign: "center",
