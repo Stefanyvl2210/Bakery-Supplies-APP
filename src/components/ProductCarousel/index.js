@@ -5,24 +5,13 @@ import { makeStyles } from "@mui/styles";
 // import Swiper core and required modules
 import { Navigation, Pagination, Scrollbar, A11y } from "swiper";
 
-// images
-import Cake from "../../assets/images/home-desserts.png";
-
 // Import Swiper styles
 import "swiper/css";
 import "swiper/css/navigation";
 import "swiper/css/pagination";
 import "swiper/css/scrollbar";
 
-const list = [
-  { name: "Cake Table", price: 7, alt: "product" },
-  { name: "Strainer", price: 4, alt: "product" },
-  { name: "Cupcake tray", price: 4, alt: "product" },
-  { name: "Cake Table", price: 7, alt: "product" },
-  { name: "Cake Table", price: 7, alt: "product" },
-];
-
-const ProductCarousel = () => {
+const ProductCarousel = (props) => {
   const classes = useStyles();
   return (
     <Swiper
@@ -42,12 +31,13 @@ const ProductCarousel = () => {
           slidesPerView: 3,
         },
       }}
+      className={props.products.length < 3 ? classes.productsContainer : ''}
     >
-      {list.map((product, i) => (
+      {props.products.map((product, i) => (
         <SwiperSlide key={i}>
           <div className={classes.container}>
             <div>
-              <img src={Cake} alt={product.alt} width={300} height={200} />
+              <img src={product.image} alt="product" width={300} height={200} />
             </div>
             <div className={classes.productContent}>
               <span>
@@ -70,6 +60,11 @@ const useStyles = makeStyles((theme) => ({
     marginTop: 30,
     font: "400 30px/20px Poiret One",
   },
+  productsContainer: {
+    "& .swiper-wrapper": {
+      justifyContent: "center"
+    }
+  }
 }));
 
 export default ProductCarousel;

@@ -1,15 +1,17 @@
 import * as React from "react";
 import { makeStyles } from "@mui/styles";
 import { Button, Divider, Grid, TextField, Typography } from "@mui/material";
-import shoppingCart from "../../utils/shoppingCart";
+import { useDispatch } from "react-redux";
+import { addCartProduct } from "../../features/counter/counterSlice";
 
 // carousel
 import RelatedProducts from "../../components/ProductCarousel";
-
-import DetailImage from "../../assets/images/detail.png";
+import { useLocation } from "react-router-dom";
 
 export default function CustomDialog(props) {
   const classes = useStyles();
+  const dispatch = useDispatch();
+  const { state } = useLocation();
 
   const [quantity, setQuantity] = React.useState(1);
 
@@ -26,7 +28,7 @@ export default function CustomDialog(props) {
           justifyContent="center"
         >
           <img
-            src={DetailImage}
+            src={state.product.image}
             alt="detail"
             className={classes.productImage}
           />
@@ -34,19 +36,14 @@ export default function CustomDialog(props) {
 
         <Grid item xs={12} sm={12} md={6}>
           <div className={classes.productContent}>
-            <h4 className={classes.productName}>Baking Sheet</h4>
+            <h4 className={classes.productName}>{state.product.name}</h4>
 
             <Typography fontSize={16} className={classes.description}>
-              Aliquyam clita sed lorem diam. Sanctus feugait rebum sea dolor te
-              elitr cum clita augue veniam takimata feugiat vero dolore amet
-              dolore. Autem nulla dolore dolore vulputate et justo ea ut labore
-              accumsan at et nulla nostrud. Dolor sea sed euismod amet dolores
-              tempor elitr. Feugiat est justo. Takimata sit ut rebum nisl diam
-              ea amet labore ut elitr.
+              {state.product.description}
             </Typography>
 
             <div>
-              <p className={classes.price}>Price: $10</p>
+              <p className={classes.price}>Price: ${state.product.price}</p>
 
               <div className={classes.quantityWrapper}>
                 <span>Quantity:</span>
@@ -81,7 +78,15 @@ export default function CustomDialog(props) {
                 color="primary"
                 variant="contained"
                 className={classes.button}
-                onClick={() => { shoppingCart().addItemToCart("Baking sheet", 12, quantity) }}
+                onClick={() => {
+                  dispatch(
+                    addCartProduct({
+                      name: state.product.name,
+                      price: state.product.price,
+                      qty: quantity,
+                    })
+                  )
+                }}
               >
                 Add to Cart
               </Button>
@@ -95,7 +100,7 @@ export default function CustomDialog(props) {
 
         <Grid item xs={12}>
           <h3 className={classes.relatedProductsTitle}>Related Products</h3>
-          <RelatedProducts />
+          <RelatedProducts products={state.relatedProducts} />
         </Grid>
       </Grid>
     </div>
@@ -149,6 +154,7 @@ const useStyles = makeStyles((theme) => ({
   },
   description: {
     margin: "0 auto",
+    fontWeight: "300 !important",
 
     "@media (max-width: 600px)": {
       textAlign: "center",

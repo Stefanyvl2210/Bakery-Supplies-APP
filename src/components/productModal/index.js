@@ -8,9 +8,8 @@ import DialogContent from "@mui/material/DialogContent";
 import CloseIcon from "@mui/icons-material/Close";
 import Typography from "@mui/material/Typography";
 import { Button, Grid, IconButton } from "@mui/material";
-import shoppingCart from "../../utils/shoppingCart";
-
-
+import { useDispatch } from "react-redux";
+import { addCartProduct } from "../../features/counter/counterSlice";
 
 const BootstrapDialog = styled(Dialog)(({ theme }) => ({
   "& .MuiDialogContent-root": {
@@ -19,14 +18,12 @@ const BootstrapDialog = styled(Dialog)(({ theme }) => ({
     marginLeft: "55px",
     marginRight: "55px",
     padding: "0px",
-    
   },
-  "& .MuiDialogActions-root": {
-  },
+  "& .MuiDialogActions-root": {},
   "& .MuiDialog-paper": {
     maxWidth: "1050px !important",
     height: 530,
-    backgroundColor: "#F5EEE6 !important"
+    backgroundColor: "#F5EEE6 !important",
   },
 }));
 
@@ -63,6 +60,8 @@ BootstrapDialogTitle.propTypes = {
 export default function CustomDialog(props) {
   const { open, handleClose, selectedProduct } = props;
 
+  const dispatch = useDispatch();
+
   const classes = useStyles();
   return (
     <div>
@@ -74,41 +73,64 @@ export default function CustomDialog(props) {
         <BootstrapDialogTitle
           id="customized-dialog-title"
           onClose={handleClose}
-          
-        >
-        </BootstrapDialogTitle>
+        ></BootstrapDialogTitle>
         <DialogContent>
-          <Grid container 
+          <Grid
+            container
             direction="row"
             justifyContent="center"
             alignItems="center"
-            >
+          >
             <Grid
               item
               display="flex"
               alignItems="center"
               justifyContent="center"
               xs
-              sx={{marginRight: "40px"}}
+              sx={{ marginRight: "40px" }}
             >
-              <img src={selectedProduct.image} alt={selectedProduct.alt} width = "550" height = "400" />
+              <img
+                src={selectedProduct.image}
+                alt={selectedProduct.alt}
+                width="550"
+                height="400"
+              />
             </Grid>
 
-            <Grid item xs >
+            <Grid item xs>
               <h4 className={classes.productName}>{selectedProduct.name}</h4>
 
-              <Typography gutterBottom className={classes.description} sx={{fontWeight: 'light'}}>
+              <Typography
+                gutterBottom
+                className={classes.description}
+                sx={{ fontWeight: "light" }}
+              >
                 {selectedProduct.description}
               </Typography>
 
-              <p className={classes.productPrice}>Price: ${selectedProduct.price}</p>
+              <p className={classes.productPrice}>
+                Price: ${selectedProduct.price}
+              </p>
 
               <div className={classes.buttonWrapper}>
                 <Button
                   variant="contained"
                   className={classes.button}
-                  onClick={() => { shoppingCart().addItemToCart(selectedProduct.name, selectedProduct.price, 1) }}
-                  sx={{bgcolor: "#C86B85 !important"}}
+                  onClick={() => {
+                    // shoppingCart().addItemToCart(
+                    //   selectedProduct.name,
+                    //   selectedProduct.price,
+                    //   1
+                    // );
+                    dispatch(
+                      addCartProduct({
+                        name: selectedProduct.name,
+                        price: selectedProduct.price,
+                        qty: 1,
+                      })
+                    );
+                  }}
+                  sx={{ bgcolor: "#C86B85 !important" }}
                 >
                   Add to Cart
                 </Button>
@@ -124,7 +146,7 @@ export default function CustomDialog(props) {
 const useStyles = makeStyles((theme) => ({
   title: {
     margin: "0px 0 !important",
-    padding: "0px !important"
+    padding: "0px !important",
   },
   productName: {
     margin: 0,
@@ -132,13 +154,12 @@ const useStyles = makeStyles((theme) => ({
     fontSize: 40,
     fontWeight: "normal",
     marginBottom: "40px !important",
-    fontFamily: "Poiret One"
+    fontFamily: "Poiret One",
   },
   description: {
     margin: "0 auto",
     fontSize: "20px !important",
     fontFamily: "Open Sans",
-    
   },
   buttonWrapper: {
     display: "flex",
@@ -152,12 +173,12 @@ const useStyles = makeStyles((theme) => ({
   },
   container: {
     justifyContent: "center",
-    alignItems: "center"
+    alignItems: "center",
   },
   productPrice: {
     margin: 0,
     marginTop: "20px",
     fontFamily: "Open Sans",
     fontSize: 20,
-  }
+  },
 }));

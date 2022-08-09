@@ -31,7 +31,6 @@ function createData(product, unitPrice, quantity, subtotal) {
   return { product, unitPrice, quantity, subtotal };
 }
 
-const rows = [];
 
 const columns = [
   {
@@ -60,10 +59,11 @@ const ShoppingCart = () => {
   const [products, setProducts] = useState(shoppingCart().listCart());
 
   useEffect(() => {
-    setProducts(shoppingCart().listCart());
-    products.forEach(item => {
-      rows.push(createData(item.name, item.price, item.count, item.total));
+    const formatProducts = products.map(item => {
+      let subtotal = item.price*item.qty;
+      return createData(item.name, item.price, item.qty, subtotal);
     });
+    setProducts(formatProducts)
   }, []);
 
   const handleChange = (event) => {
@@ -89,12 +89,12 @@ const ShoppingCart = () => {
           justifyContent="center"
           className={classes.table}
         >
-          <Table rows={rows} columns={columns} maxWidth={600} />
+          <Table rows={products} columns={columns} maxWidth={600} />
         </Grid>
 
         <Grid item xs={12}>
           <div className={classes.total}>
-            <p>Delivery: $0</p>
+            <p>Delivery: $3</p>
             <p>Total before taxes: $0</p>
             <p>Total: $0</p>
           </div>

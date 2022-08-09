@@ -9,7 +9,7 @@ import BakingSheet from "../../assets/images/baking-sheet.png";
 import Strainer from "../../assets/images/strainer.png";
 import CakeTable from "../../assets/images/cake-table.png";
 import CustomDialog from "../productModal";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 
 const productList = [
   {
@@ -51,7 +51,7 @@ const productList = [
   {
     name: "Cheesecake",
     image: Cheesecake,
-    alt: "Cupcake",
+    alt: "Cheesecake",
     price: 8,
     category: "dessert",
     description:
@@ -60,7 +60,7 @@ const productList = [
   {
     name: "French Toast",
     image: FrenchToast,
-    alt: "Cupcake",
+    alt: "French toast",
     price: 7,
     category: "dessert",
     description:
@@ -73,6 +73,23 @@ const Product = () => {
   const location = useLocation();
   const [openDialog, setOpenDialog] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState({});
+  const navigate = useNavigate();
+
+  const handleDetail = (product) => {
+
+    let relatedProducts = [];
+    productList.map((elem) => {
+      if(elem.category == product.category && elem.name != product.name) {
+        relatedProducts.push(elem);
+      }
+    })
+    navigate("/detail", {
+      state: {
+        product: product,
+        relatedProducts: relatedProducts,
+      },
+    })
+  }
 
   return (
     <>
@@ -106,16 +123,15 @@ const Product = () => {
                   Preview
                 </Button>
 
-                <Link to="/detail">
-                  <Button
-                    color="primary"
-                    variant="contained"
-                    sx={{marginLeft: '15px !important'}}
-                    className={classes.button}
-                  >
-                    Details
-                  </Button>
-                </Link>
+                <Button
+                  color="primary"
+                  variant="contained"
+                  sx={{marginLeft: '15px !important'}}
+                  className={classes.button}
+                  onClick={() => handleDetail(product)}
+                >
+                  Details
+                </Button>
               </div>
             </div>
           </Grid>

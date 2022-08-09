@@ -11,7 +11,7 @@ import step1 from "../../assets/images/shopping-bag.svg";
 import step2 from "../../assets/images/shopping-cart.svg";
 import step3 from "../../assets/images/truck.svg";
 import EastIcon from '@mui/icons-material/East';
-import { useNavigate, useLocation } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 const dessert = {
   name: "Desserts",
@@ -33,8 +33,6 @@ const Home = () => {
   const [values, setValues] = React.useState({
     email: '',
   });
-
-  console.log('userLogged?', userIsLogged)
 
   const handleChange = (prop) => (event) => {
     setValues({ ...values, [prop]: event.target.value });

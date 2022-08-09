@@ -6,15 +6,14 @@ import { useNavigate, useLocation } from "react-router-dom";
 import { makeStyles } from "@mui/styles";
 import Button from "@mui/material/Button";
 import Badge from "@mui/material/Badge";
-import shoppingCart from "../../utils/shoppingCart";
-import MenuIcon from '@mui/icons-material/Menu';
+import MenuIcon from "@mui/icons-material/Menu";
 
 import Logo from "../../assets/images/header-logo.png";
 import LogoMobile from "../../assets/images/logo-mobile.svg";
 import LoginIcon from "@mui/icons-material/Login";
 import LogoutIcon from "@mui/icons-material/Logout";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
-import ShoppingCartOutlinedIcon from '@mui/icons-material/ShoppingCartOutlined';
+import ShoppingCartOutlinedIcon from "@mui/icons-material/ShoppingCartOutlined";
 import {
   ClickAwayListener,
   Grow,
@@ -24,6 +23,8 @@ import {
   Paper,
   Popper,
 } from "@mui/material";
+import { useSelector } from "react-redux";
+import { cartQtySelector } from "../../features/counter/counterSlice";
 
 export default function NavBar() {
   const classes = useStyles();
@@ -31,6 +32,7 @@ export default function NavBar() {
   const location = useLocation();
   const userIsLogged = localStorage.getItem("userLogged");
   const anchorRef = React.useRef(null);
+  const cartQty = useSelector(cartQtySelector);
 
   const [anchorElNav, setAnchorElNav] = React.useState(null);
   const [anchorElUser, setAnchorElUser] = React.useState(null);
@@ -61,7 +63,6 @@ export default function NavBar() {
   };
 
   const handleClose = (event) => {
-    console.log(event);
     if (anchorRef.current && anchorRef.current.contains(event.target)) {
       return;
     }
@@ -91,23 +92,30 @@ export default function NavBar() {
   return (
     <AppBar position="static" className={classes.container}>
       <Toolbar className={classes.toolbar}>
-        <Box sx={{ display: { xs: 'flex', md: 'none' }, alignItems:"center" }}>
+        <Box sx={{ display: { xs: "flex", md: "none" }, alignItems: "center" }}>
           <IconButton
             size="large"
             edge="start"
             color="inherit"
             aria-label="open drawer"
-            sx={{ margin: "0 10px 0 0 !important", display: { xs: 'flex', md: 'none' } }}
+            sx={{
+              margin: "0 10px 0 0 !important",
+              display: { xs: "flex", md: "none" },
+            }}
           >
             <MenuIcon />
           </IconButton>
-          <img src={LogoMobile} alt="logo mobile" onClick={() => navigate("/")} />
+          <img
+            src={LogoMobile}
+            alt="logo mobile"
+            onClick={() => navigate("/")}
+          />
         </Box>
-        <Box sx={{ display: { xs: 'none', md: 'flex' } }}>
+        <Box sx={{ display: { xs: "none", md: "flex" } }}>
           <img src={Logo} alt="logo" />
         </Box>
 
-        <Box sx={{ display: { xs: 'flex', md: 'none' }, alignItems:"center" }}>
+        <Box sx={{ display: { xs: "flex", md: "none" }, alignItems: "center" }}>
           <IconButton
             size="medium"
             edge="start"
@@ -116,7 +124,7 @@ export default function NavBar() {
             sx={{ margin: "0 !important" }}
             onClick={() => navigate("/cart")}
           >
-            <Badge badgeContent={shoppingCart().totalCount()} color="primary">
+            <Badge badgeContent={cartQty} color="primary">
               <ShoppingCartOutlinedIcon />
             </Badge>
           </IconButton>
@@ -126,10 +134,9 @@ export default function NavBar() {
               edge="start"
               color="inherit"
               sx={{ margin: "0 !important" }}
+              onClick={handleLogout}
             >
-              <LogoutIcon
-                onClick={handleLogout}
-              />
+              <LogoutIcon />
             </IconButton>
           )}
           {!userIsLogged && (
@@ -139,9 +146,7 @@ export default function NavBar() {
               color="inherit"
               sx={{ margin: "0 !important" }}
             >
-              <LoginIcon
-                onClick={() => navigate("/login")}
-              />
+              <LoginIcon onClick={() => navigate("/login")} />
             </IconButton>
           )}
         </Box>
@@ -165,7 +170,7 @@ export default function NavBar() {
             color="inherit"
             className={
               location.pathname === "/products" &&
-              location.state.category == "dessert"
+              location.state.category ==+ "dessert"
                 ? classes.underlined
                 : ""
             }
@@ -184,7 +189,7 @@ export default function NavBar() {
             color="inherit"
             className={
               location.pathname === "/products" &&
-              location.state.category == "utensils-and-ingredients"
+              location.state.category === "utensils-and-ingredients"
                 ? classes.underlined
                 : ""
             }
@@ -204,7 +209,7 @@ export default function NavBar() {
             className={location.pathname === "/cart" ? classes.underlined : ""}
             onClick={() => navigate("/cart")}
           >
-            <Badge badgeContent={shoppingCart().totalCount()} color="primary">
+            <Badge badgeContent={cartQty} color="primary">
               Cart
             </Badge>
           </Button>
@@ -232,7 +237,7 @@ export default function NavBar() {
                 role={undefined}
                 placement="bottom-start"
                 transition
-                disablePortal              
+                disablePortal
               >
                 {({ TransitionProps, placement }) => (
                   <Grow
@@ -245,7 +250,13 @@ export default function NavBar() {
                     }}
                   >
                     <Paper
-                      sx={{ border: 2.5, bgcolor: '#F5EEE6', borderColor: "#C86B85", color: "#4E4E4E", marginTop: "19px"}}
+                      sx={{
+                        border: 2.5,
+                        bgcolor: "#F5EEE6",
+                        borderColor: "#C86B85",
+                        color: "#4E4E4E",
+                        marginTop: "19px",
+                      }}
                     >
                       <ClickAwayListener onClickAway={handleClose}>
                         <MenuList
@@ -253,14 +264,25 @@ export default function NavBar() {
                           id="composition-menu"
                           aria-labelledby="composition-button"
                           onKeyDown={handleListKeyDown}
-                          sx={{padding: 0, paddingTop: "7px", paddingBottom: "7px"}}
+                          sx={{
+                            padding: 0,
+                            paddingTop: "7px",
+                            paddingBottom: "7px",
+                          }}
                         >
                           <MenuItem
                             onClick={() => {
                               navigate("/my-account");
                               setOpen(false);
                             }}
-                            sx={{paddingTop: "7px", paddingBottom: "7px", paddingLeft: "20px", paddingRight: "20px", fontFamily: 'Open Sans', fontSize: 16 }}
+                            sx={{
+                              paddingTop: "7px",
+                              paddingBottom: "7px",
+                              paddingLeft: "20px",
+                              paddingRight: "20px",
+                              fontFamily: "Open Sans",
+                              fontSize: 16,
+                            }}
                           >
                             My profile
                           </MenuItem>
@@ -268,7 +290,14 @@ export default function NavBar() {
                             onClick={() => {
                               setOpen(false);
                             }}
-                            sx={{paddingTop: "7px", paddingBottom: "7px", paddingLeft: "20px", paddingRight: "20px", fontFamily: 'Open Sans', fontSize: 16}}
+                            sx={{
+                              paddingTop: "7px",
+                              paddingBottom: "7px",
+                              paddingLeft: "20px",
+                              paddingRight: "20px",
+                              fontFamily: "Open Sans",
+                              fontSize: 16,
+                            }}
                           >
                             Orders
                           </MenuItem>
@@ -276,7 +305,14 @@ export default function NavBar() {
                             onClick={() => {
                               setOpen(false);
                             }}
-                            sx={{paddingTop: "7px", paddingBottom: "7px", paddingLeft: "20px", paddingRight: "20px", fontFamily: 'Open Sans', fontSize: 16}}
+                            sx={{
+                              paddingTop: "7px",
+                              paddingBottom: "7px",
+                              paddingLeft: "20px",
+                              paddingRight: "20px",
+                              fontFamily: "Open Sans",
+                              fontSize: 16,
+                            }}
                           >
                             Payments
                           </MenuItem>
