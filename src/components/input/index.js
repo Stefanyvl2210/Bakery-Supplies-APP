@@ -83,7 +83,7 @@ export default function CustomizedInputs(props) {
               )}
             </InputLabel>
           </div>
-          <p style={{ marginTop: 30 }}>text</p>
+          <p style={{ marginTop: 30, marginBottom: 15, fontFamily: "Open Sans", fontSize: "16px", lineHeight: "16px", fontWeight: "400", color: "black" }}>text</p>
         </>
       ) : (
         <>
@@ -103,7 +103,7 @@ export default function CustomizedInputs(props) {
             {...register(field)}
             fullWidth={fullWidth}
             type={type}
-            placeholder={placeholder || "write here"}
+            placeholder={placeholder || ""}
           />
         </>
       )}
