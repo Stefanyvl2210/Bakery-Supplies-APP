@@ -115,6 +115,9 @@ const useStyles = makeStyles((theme) => ({
   container: {
     maxWidth: 1280,
     margin: "60px auto !important",
+    [theme.breakpoints.down('md')]: {
+      margin: "140px auto !important",
+    },
   },
   title: {
     textAlign: "center",

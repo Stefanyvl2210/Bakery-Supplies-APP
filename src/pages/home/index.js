@@ -44,7 +44,7 @@ const Home = () => {
       <Paper className={classes.bannerContainer}>
         <Grid container className={classes.container}>
           <Grid item xs={12} className={classes.banner}>
-            <img src={Homepage} width={570} height={352} alt="Bakery Supplies" />
+            <img src={Homepage} className={classes.image} alt="Bakery Supplies" />
             <Typography className={classes.mainTitle}>
               Prepare your favorite recipe or buy your favorite dessert without leaving home!
             </Typography>
@@ -73,7 +73,12 @@ const Home = () => {
         </Grid>
       </Paper>
       <div className={classes.container}>
-        <Grid container justifyContent="space-evenly">
+        <Grid 
+          container 
+          justifyContent="space-evenly" 
+          sx={{ flexDirection: { xs: "column", md: "row"}, alignItems: { xs: "center", md: "flex-start"} }}
+          columnSpacing={{ xs: 1 }} 
+          rowSpacing={{ xs: 4, md: 0}}>
           <Grid item xs={12} className={classes.process}>
             <h4 className={classes.title}>How it works?</h4>
           </Grid>
@@ -86,7 +91,7 @@ const Home = () => {
             </Typography>
           </Grid>
 
-          <Grid item xs={12} sm={4} md={4} className={classes.steps}>
+          <Grid item xs={12} sm={4} md={4} className={classes.steps} sx={{ margin: { xs: "40px 0", md: "0"}}}>
             <img src={step2} width={60} height={60} alt="Step 2" />
             <EastIcon className={classes.iconSteps} />
             <Typography className={classes.textSteps}>
@@ -221,7 +226,10 @@ const useStyles = makeStyles((theme) => ({
     boxShadow: "none !important",
     "& .MuiGrid-container": {
       margin: "0 auto !important"
-    }
+    },
+    [theme.breakpoints.down('md')]: {
+      paddingTop: "140px !important",
+    },
   },
   registerInput: {
     display: "flex",
@@ -241,8 +249,15 @@ const useStyles = makeStyles((theme) => ({
   iconSteps: {
     color: "#C86B85",
     position: "absolute",
-    top: "40px",
-    right: "-40%",
+    [theme.breakpoints.up('md')]: {
+      top: "80px !important",
+      right: "-23%",
+      transform: "rotate(0) !important"
+    },
+    [theme.breakpoints.up('xs')]: {
+      top: "110%",
+      transform: "rotate(90deg)"
+    },
   },
   textSteps: {
     lineHeight: "22px !important",

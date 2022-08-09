@@ -1,7 +1,7 @@
 import React from "react";
 
 // material ui components
-import { Grid, Button, Typography, TextField } from "@mui/material";
+import { Grid, Button, Typography } from "@mui/material";
 import { makeStyles } from "@mui/styles";
 
 // components
@@ -44,6 +44,9 @@ const useStyles = makeStyles((theme) => ({
   container: {
     maxWidth: 1280,
     margin: "60px auto !important",
+    [theme.breakpoints.down('md')]: {
+      margin: "140px auto !important",
+    },
   },
   title: {
     textAlign: "center",

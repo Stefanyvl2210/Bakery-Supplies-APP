@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 
 // components
 import Table from "../../components/table";
@@ -6,20 +6,9 @@ import Table from "../../components/table";
 // material ui components
 import { 
   Grid, 
-  Divider,
-  FormControl,
-  InputLabel,
-  Select,
-  MenuItem,
-  FormLabel,
-  RadioGroup,
-  FormControlLabel,
-  Radio,
-  Typography,
   Button,
 } from "@mui/material";
 import { makeStyles } from "@mui/styles";
-import classNames from "classnames";
 import { useNavigate } from "react-router-dom";
 
 function createData(product, unitPrice, quantity, subtotal) {
@@ -56,15 +45,6 @@ const columns = [
 const ShoppingCart = () => {
   const navigate = useNavigate();
   const classes = useStyles();
-  const [filter, setFilter] = useState(10);
-  const [delivery, setDelivery] = useState('');
-
-  const handleChange = (event) => {
-    setFilter(event.target.value);
-  };
-  const handleChangeDelivery = (event) => {
-    setDelivery(event.target.value);
-  };
 
   return (
     <>
@@ -102,6 +82,9 @@ const useStyles = makeStyles((theme) => ({
   container: {
     maxWidth: 1280,
     margin: "60px auto !important",
+    [theme.breakpoints.down('md')]: {
+      margin: "140px auto !important",
+    },
   },
   title: {
     textAlign: "center",
@@ -113,9 +96,7 @@ const useStyles = makeStyles((theme) => ({
   },
   table: {
     marginTop: "45px !important",
-    borderRadius: "4px !important"
-  },
-  table: {
+    borderRadius: "4px !important",
     "& thead": {
       "& th": {
         backgroundColor: "#F5EEE6",

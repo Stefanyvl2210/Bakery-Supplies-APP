@@ -228,11 +228,13 @@ export default MyAccount;
 const useStyles = makeStyles((theme) => ({
   container: {
     padding: 60,
-    maxWidth: "1000px !important",
+    maxWidth: "1140px !important",
+    [theme.breakpoints.down('md')]: {
+      padding: "140px 36px !important",
+    },
 
     "@media (max-width: 768px)": {
       margin: "0 auto !important",
-      padding: "60px 0px",
     },
   },
   sidebar: {

@@ -4,7 +4,7 @@ import React from "react";
 import { useForm } from "react-hook-form";
 
 // material ui components
-import { Card, Grid, Button, Divider } from "@mui/material";
+import { Card, Grid, Button } from "@mui/material";
 import { makeStyles } from "@mui/styles";
 
 // components
@@ -29,12 +29,7 @@ const Register = () => {
       email: emailToRegister || ''
     }
   });
-
-  // const [items, setItems] = useState([]);
-  // useEffect(() => {
-  //   localStorage.setItem('items', JSON.stringify(items));
-  // }, [items]);
-
+  
   const onSubmit = (data) => {
     console.log('register',data)
     navigate("/verify-email");
@@ -166,6 +161,9 @@ const useStyles = makeStyles((theme) => ({
   container: {
     maxWidth: 1280,
     margin: "60px auto !important",
+    [theme.breakpoints.down('md')]: {
+      margin: "140px auto !important",
+    },
   },
   title: {
     textAlign: "center",

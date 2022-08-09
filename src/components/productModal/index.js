@@ -117,11 +117,6 @@ export default function CustomDialog(props) {
                   variant="contained"
                   className={classes.button}
                   onClick={() => {
-                    // shoppingCart().addItemToCart(
-                    //   selectedProduct.name,
-                    //   selectedProduct.price,
-                    //   1
-                    // );
                     dispatch(
                       addCartProduct({
                         name: selectedProduct.name,

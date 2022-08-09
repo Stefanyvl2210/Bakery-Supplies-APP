@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 
 import classnames from "classnames";
 
@@ -59,9 +59,7 @@ const Products = () => {
                     <SearchIcon />
                   </InputAdornment>
                 ),
-                //style: { fontSize: 18 }
               }}
-              //InputLabelProps={{style: {fontSize: 18}}}
             />
           </Grid>
           <Grid
@@ -117,9 +115,10 @@ const useStyles = makeStyles((theme) => ({
   },
   container: {
     maxWidth: 1280,
-    marginTop: "60px !important",
-    marginLeft: "auto !important",
-    marginRight: "auto !important",
+    margin: "60px auto !important",
+    [theme.breakpoints.down('md')]: {
+      margin: "140px auto !important",
+    },
   },
   containerProduct: {
     marginTop: "30px !important",

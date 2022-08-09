@@ -1,14 +1,10 @@
 import React from "react";
 
-// hook form
-import { useForm } from "react-hook-form";
-
 // material ui components
 import { Grid, Button, Typography, TextField } from "@mui/material";
 import { makeStyles } from "@mui/styles";
 
 // components
-import CustomInput from "../../components/input";
 import { useNavigate } from "react-router-dom";
 
 const VerifyEmail = () => {
@@ -57,6 +53,9 @@ const useStyles = makeStyles((theme) => ({
   container: {
     maxWidth: 1280,
     margin: "60px auto !important",
+    [theme.breakpoints.down('md')]: {
+      margin: "140px auto !important",
+    },
   },
   title: {
     textAlign: "center",

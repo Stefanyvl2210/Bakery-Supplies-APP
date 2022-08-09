@@ -16,8 +16,13 @@ import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import ShoppingCartOutlinedIcon from "@mui/icons-material/ShoppingCartOutlined";
 import {
   ClickAwayListener,
+  Drawer,
   Grow,
   IconButton,
+  List,
+  ListItem,
+  ListItemButton,
+  ListItemText,
   MenuItem,
   MenuList,
   Paper,
@@ -25,6 +30,21 @@ import {
 } from "@mui/material";
 import { useSelector } from "react-redux";
 import { cartQtySelector } from "../../features/counter/counterSlice";
+
+const menuMobile = [
+  {
+    name: "Home",
+    url: "/"
+  },
+  {
+    name: "Desserts",
+    url: "/products"
+  },
+  {
+    name: "Utensils and ingredients",
+    url: "/products"
+  }
+];
 
 export default function NavBar() {
   const classes = useStyles();
@@ -34,23 +54,12 @@ export default function NavBar() {
   const anchorRef = React.useRef(null);
   const cartQty = useSelector(cartQtySelector);
 
-  const [anchorElNav, setAnchorElNav] = React.useState(null);
-  const [anchorElUser, setAnchorElUser] = React.useState(null);
+  const [openMenuMobile, setOpenMenuMobile] = React.useState(false);
   const [open, setOpen] = React.useState(false);
+  const [navMobile, setNavMobile] = React.useState(menuMobile);
 
-  const handleOpenNavMenu = (event) => {
-    setAnchorElNav(event.currentTarget);
-  };
-  const handleOpenUserMenu = (event) => {
-    setAnchorElUser(event.currentTarget);
-  };
-
-  const handleCloseNavMenu = () => {
-    setAnchorElNav(null);
-  };
-
-  const handleCloseUserMenu = () => {
-    setAnchorElUser(null);
+  const handleDrawer = () => {
+    setOpenMenuMobile(!openMenuMobile);
   };
 
   const handleLogout = () => {
@@ -70,6 +79,28 @@ export default function NavBar() {
     setOpen(false);
   };
 
+  const handleMobileNav = (item) => {
+    setOpenMenuMobile(!openMenuMobile);
+
+    if(item.name === "Desserts") {
+      navigate(item.url, {
+        state: {
+          category: "dessert",
+          title: "Desserts",
+        },
+      })
+    } else if(item.name === "Utensils and ingredients") {
+      navigate(item.url, {
+        state: {
+          category: "utensils-and-ingredients",
+          title: "Utensils and ingredients",
+        },
+      })
+    } else {
+      navigate(item.url);
+    }
+  }
+
   function handleListKeyDown(event) {
     if (event.key === "Tab") {
       event.preventDefault();
@@ -78,6 +109,17 @@ export default function NavBar() {
       setOpen(false);
     }
   }
+
+  React.useEffect(() => {
+    if (userIsLogged) {
+      navMobile.push({
+        name: "Account",
+        url: "/my-account"
+      })
+    } else if (!userIsLogged && navMobile.length > 3 ) {
+      navMobile.pop();
+    }
+  }, [userIsLogged]);
 
   // return focus to the button when we transitioned from !open -> open
   const prevOpen = React.useRef(open);
@@ -90,253 +132,283 @@ export default function NavBar() {
   }, [open]);
 
   return (
-    <AppBar position="static" className={classes.container}>
-      <Toolbar className={classes.toolbar}>
-        <Box sx={{ display: { xs: "flex", md: "none" }, alignItems: "center" }}>
-          <IconButton
-            size="large"
-            edge="start"
-            color="inherit"
-            aria-label="open drawer"
-            sx={{
-              margin: "0 10px 0 0 !important",
-              display: { xs: "flex", md: "none" },
-            }}
-          >
-            <MenuIcon />
-          </IconButton>
-          <img
-            src={LogoMobile}
-            alt="logo mobile"
-            onClick={() => navigate("/")}
-          />
-        </Box>
-        <Box sx={{ display: { xs: "none", md: "flex" } }}>
-          <img src={Logo} alt="logo" />
-        </Box>
+    <>
+      <AppBar position="static" className={classes.container}>
+        <Toolbar className={classes.toolbar}>
+          <Box sx={{ display: { xs: "flex", md: "none" }, alignItems: "center" }}>
+            <IconButton
+              size="large"
+              edge="start"
+              color="inherit"
+              aria-label="open drawer"
+              sx={{
+                margin: "0 10px 0 0 !important",
+                display: { xs: "flex", md: "none" },
+              }}
+              onClick={handleDrawer}
+            >
+              <MenuIcon />
+            </IconButton>
+            <img
+              src={LogoMobile}
+              alt="logo mobile"
+              onClick={() => navigate("/")}
+            />
+          </Box>
+          <Box sx={{ display: { xs: "none", md: "flex" } }}>
+            <img src={Logo} alt="logo" />
+          </Box>
 
-        <Box sx={{ display: { xs: "flex", md: "none" }, alignItems: "center" }}>
-          <IconButton
-            size="medium"
-            edge="start"
-            color="inherit"
-            aria-label="open drawer"
-            sx={{ margin: "0 !important" }}
-            onClick={() => navigate("/cart")}
-          >
-            <Badge badgeContent={cartQty} color="primary">
-              <ShoppingCartOutlinedIcon />
-            </Badge>
-          </IconButton>
-          {userIsLogged && (
+          <Box sx={{ display: { xs: "flex", md: "none" }, alignItems: "center" }}>
             <IconButton
               size="medium"
               edge="start"
               color="inherit"
+              aria-label="open drawer"
               sx={{ margin: "0 !important" }}
-              onClick={handleLogout}
+              onClick={() => navigate("/cart")}
             >
-              <LogoutIcon />
+              <Badge badgeContent={cartQty} color="primary">
+                <ShoppingCartOutlinedIcon />
+              </Badge>
             </IconButton>
-          )}
-          {!userIsLogged && (
-            <IconButton
-              size="medium"
-              edge="start"
-              color="inherit"
-              sx={{ margin: "0 !important" }}
-            >
-              <LoginIcon onClick={() => navigate("/login")} />
-            </IconButton>
-          )}
-        </Box>
-
-        <Box
-          sx={{
-            flexGrow: 1,
-            display: { xs: "none", md: "flex" },
-            justifyContent: "flex-end",
-          }}
-          className={classes.menuItems}
-        >
-          <Button
-            color="inherit"
-            className={location.pathname === "/" ? classes.underlined : ""}
-            onClick={() => navigate("/")}
-          >
-            Home
-          </Button>
-          <Button
-            color="inherit"
-            className={
-              location.pathname === "/products" &&
-              location.state.category ==+ "dessert"
-                ? classes.underlined
-                : ""
-            }
-            onClick={() =>
-              navigate("/products", {
-                state: {
-                  category: "dessert",
-                  title: "Desserts",
-                },
-              })
-            }
-          >
-            Desserts
-          </Button>
-          <Button
-            color="inherit"
-            className={
-              location.pathname === "/products" &&
-              location.state.category === "utensils-and-ingredients"
-                ? classes.underlined
-                : ""
-            }
-            onClick={() =>
-              navigate("/products", {
-                state: {
-                  category: "utensils-and-ingredients",
-                  title: "Utensils and Ingredients",
-                },
-              })
-            }
-          >
-            Utensils & ingredients
-          </Button>
-          <Button
-            color="inherit"
-            className={location.pathname === "/cart" ? classes.underlined : ""}
-            onClick={() => navigate("/cart")}
-          >
-            <Badge badgeContent={cartQty} color="primary">
-              Cart
-            </Badge>
-          </Button>
-          {userIsLogged && (
-            <>
-              <Button
+            {userIsLogged && (
+              <IconButton
+                size="medium"
+                edge="start"
                 color="inherit"
-                ref={anchorRef}
-                id="composition-button"
-                aria-controls={open ? "composition-menu" : undefined}
-                aria-expanded={open ? "true" : undefined}
-                aria-haspopup="true"
-                onClick={handleToggle}
-                className={
-                  location.pathname === "/my-account" ? classes.underlined : ""
-                }
-                // onClick={() => navigate("/my-account")}
+                sx={{ margin: "0 !important" }}
+                onClick={handleLogout}
               >
-                Account
-                <ExpandMoreIcon fontSize="small" />
-              </Button>
-              <Popper
-                open={open}
-                anchorEl={anchorRef.current}
-                role={undefined}
-                placement="bottom-start"
-                transition
-                disablePortal
+                <LogoutIcon />
+              </IconButton>
+            )}
+            {!userIsLogged && (
+              <IconButton
+                size="medium"
+                edge="start"
+                color="inherit"
+                sx={{ margin: "0 !important" }}
+                onClick={() => navigate("/login")}
               >
-                {({ TransitionProps, placement }) => (
-                  <Grow
-                    {...TransitionProps}
-                    style={{
-                      transformOrigin:
-                        placement === "bottom-start"
-                          ? "left top"
-                          : "left bottom",
-                    }}
-                  >
-                    <Paper
-                      sx={{
-                        border: 2.5,
-                        bgcolor: "#F5EEE6",
-                        borderColor: "#C86B85",
-                        color: "#4E4E4E",
-                        marginTop: "19px",
+                <LoginIcon />
+              </IconButton>
+            )}
+          </Box>
+
+          <Box
+            sx={{
+              flexGrow: 1,
+              display: { xs: "none", md: "flex" },
+              justifyContent: "flex-end",
+            }}
+            className={classes.menuItems}
+          >
+            <Button
+              color="inherit"
+              className={location.pathname === "/" ? classes.underlined : ""}
+              onClick={() => navigate("/")}
+            >
+              Home
+            </Button>
+            <Button
+              color="inherit"
+              className={
+                location.pathname === "/products" &&
+                location.state.category === "dessert"
+                  ? classes.underlined
+                  : ""
+              }
+              onClick={() =>
+                navigate("/products", {
+                  state: {
+                    category: "dessert",
+                    title: "Desserts",
+                  },
+                })
+              }
+            >
+              Desserts
+            </Button>
+            <Button
+              color="inherit"
+              className={
+                location.pathname === "/products" &&
+                location.state.category === "utensils-and-ingredients"
+                  ? classes.underlined
+                  : ""
+              }
+              onClick={() =>
+                navigate("/products", {
+                  state: {
+                    category: "utensils-and-ingredients",
+                    title: "Utensils and Ingredients",
+                  },
+                })
+              }
+            >
+              Utensils & ingredients
+            </Button>
+            <Button
+              color="inherit"
+              className={location.pathname === "/cart" ? classes.underlined : ""}
+              onClick={() => navigate("/cart")}
+            >
+              <Badge badgeContent={cartQty} color="primary">
+                Cart
+              </Badge>
+            </Button>
+            {userIsLogged && (
+              <>
+                <Button
+                  color="inherit"
+                  ref={anchorRef}
+                  id="composition-button"
+                  aria-controls={open ? "composition-menu" : undefined}
+                  aria-expanded={open ? "true" : undefined}
+                  aria-haspopup="true"
+                  onClick={handleToggle}
+                  className={
+                    location.pathname === "/my-account" ? classes.underlined : ""
+                  }
+                  // onClick={() => navigate("/my-account")}
+                >
+                  Account
+                  <ExpandMoreIcon fontSize="small" />
+                </Button>
+                <Popper
+                  open={open}
+                  anchorEl={anchorRef.current}
+                  role={undefined}
+                  placement="bottom-start"
+                  transition
+                  disablePortal
+                >
+                  {({ TransitionProps, placement }) => (
+                    <Grow
+                      {...TransitionProps}
+                      style={{
+                        transformOrigin:
+                          placement === "bottom-start"
+                            ? "left top"
+                            : "left bottom",
                       }}
                     >
-                      <ClickAwayListener onClickAway={handleClose}>
-                        <MenuList
-                          autoFocusItem={open}
-                          id="composition-menu"
-                          aria-labelledby="composition-button"
-                          onKeyDown={handleListKeyDown}
-                          sx={{
-                            padding: 0,
-                            paddingTop: "7px",
-                            paddingBottom: "7px",
-                          }}
-                        >
-                          <MenuItem
-                            onClick={() => {
-                              navigate("/my-account");
-                              setOpen(false);
-                            }}
+                      <Paper
+                        sx={{
+                          border: 2.5,
+                          bgcolor: "#F5EEE6",
+                          borderColor: "#C86B85",
+                          color: "#4E4E4E",
+                          marginTop: "19px",
+                        }}
+                      >
+                        <ClickAwayListener onClickAway={handleClose}>
+                          <MenuList
+                            autoFocusItem={open}
+                            id="composition-menu"
+                            aria-labelledby="composition-button"
+                            onKeyDown={handleListKeyDown}
                             sx={{
+                              padding: 0,
                               paddingTop: "7px",
                               paddingBottom: "7px",
-                              paddingLeft: "20px",
-                              paddingRight: "20px",
-                              fontFamily: "Open Sans",
-                              fontSize: 16,
                             }}
                           >
-                            My profile
-                          </MenuItem>
-                          <MenuItem
-                            onClick={() => {
-                              setOpen(false);
-                            }}
-                            sx={{
-                              paddingTop: "7px",
-                              paddingBottom: "7px",
-                              paddingLeft: "20px",
-                              paddingRight: "20px",
-                              fontFamily: "Open Sans",
-                              fontSize: 16,
-                            }}
-                          >
-                            Orders
-                          </MenuItem>
-                          <MenuItem
-                            onClick={() => {
-                              setOpen(false);
-                            }}
-                            sx={{
-                              paddingTop: "7px",
-                              paddingBottom: "7px",
-                              paddingLeft: "20px",
-                              paddingRight: "20px",
-                              fontFamily: "Open Sans",
-                              fontSize: 16,
-                            }}
-                          >
-                            Payments
-                          </MenuItem>
-                        </MenuList>
-                      </ClickAwayListener>
-                    </Paper>
-                  </Grow>
-                )}
-              </Popper>
-              <LogoutIcon
+                            <MenuItem
+                              onClick={() => {
+                                navigate("/my-account");
+                                setOpen(false);
+                              }}
+                              sx={{
+                                paddingTop: "7px",
+                                paddingBottom: "7px",
+                                paddingLeft: "20px",
+                                paddingRight: "20px",
+                                fontFamily: "Open Sans",
+                                fontSize: 16,
+                              }}
+                            >
+                              My profile
+                            </MenuItem>
+                            <MenuItem
+                              onClick={() => {
+                                setOpen(false);
+                              }}
+                              sx={{
+                                paddingTop: "7px",
+                                paddingBottom: "7px",
+                                paddingLeft: "20px",
+                                paddingRight: "20px",
+                                fontFamily: "Open Sans",
+                                fontSize: 16,
+                              }}
+                            >
+                              Orders
+                            </MenuItem>
+                            <MenuItem
+                              onClick={() => {
+                                setOpen(false);
+                              }}
+                              sx={{
+                                paddingTop: "7px",
+                                paddingBottom: "7px",
+                                paddingLeft: "20px",
+                                paddingRight: "20px",
+                                fontFamily: "Open Sans",
+                                fontSize: 16,
+                              }}
+                            >
+                              Payments
+                            </MenuItem>
+                          </MenuList>
+                        </ClickAwayListener>
+                      </Paper>
+                    </Grow>
+                  )}
+                </Popper>
+                <LogoutIcon
+                  className={classes.logButton}
+                  onClick={handleLogout}
+                />
+              </>
+            )}
+            {!userIsLogged && (
+              <LoginIcon
                 className={classes.logButton}
-                onClick={handleLogout}
+                onClick={() => navigate("/login")}
               />
-            </>
-          )}
-          {!userIsLogged && (
-            <LoginIcon
-              className={classes.logButton}
-              onClick={() => navigate("/login")}
-            />
-          )}
-        </Box>
-      </Toolbar>
-    </AppBar>
+            )}
+          </Box>
+        </Toolbar>
+      </AppBar>
+      <Drawer
+        sx={{
+          width: "100%",
+          flexShrink: 0,
+          '& .MuiDrawer-paper': {
+            width: "auto",
+            top: "80px",
+            background: "#F5EEE6",
+            padding: "0 22px",
+            border: "2px solid #C86B85",
+          },
+        }}
+        variant="persistent"
+        anchor="top"
+        open={openMenuMobile}
+      >
+        <List>
+          {navMobile.map((item, index) => (
+            <ListItem key={index} disablePadding>
+              <ListItemButton onClick={() => handleMobileNav(item)}>
+                <ListItemText primary={item.name} />
+              </ListItemButton>
+            </ListItem>
+          ))}
+        </List>
+      </Drawer>
+    </>
   );
 }
 
@@ -349,6 +421,11 @@ const useStyles = makeStyles((theme) => ({
   container: {
     boxShadow: "none !important",
     backgroundColor: "#E6A4B4 !important",
+    [theme.breakpoints.down('md')]: {
+      position: "fixed !important",
+      top: '0',
+      zIndex: '99999'
+    },
   },
   toolbar: {
     minHeight: "80px !important",

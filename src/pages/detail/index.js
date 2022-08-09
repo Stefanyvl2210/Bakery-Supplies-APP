@@ -113,6 +113,9 @@ const useStyles = makeStyles((theme) => ({
     maxWidth: "1240px",
     margin: "0 auto",
     padding: "60px 0 10px 0",
+    [theme.breakpoints.down('md')]: {
+      padding: "140px 36px !important",
+    },
 
     "& input::-webkit-outer-spin-button, input::-webkit-inner-spin-button": {
       WebkitAppearance: "none",
