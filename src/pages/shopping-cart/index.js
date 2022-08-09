@@ -1,5 +1,8 @@
 import React, { useEffect, useState } from "react";
 
+// components
+import Table from "../../components/table";
+
 /*
 * Shopping Cart
 */
@@ -19,7 +22,6 @@ import {
   Radio,
   Typography,
   Button,
-  Table,
 } from "@mui/material";
 import { makeStyles } from "@mui/styles";
 import classNames from "classnames";
