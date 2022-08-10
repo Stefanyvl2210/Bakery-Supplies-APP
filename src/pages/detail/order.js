@@ -1,7 +1,12 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 
 // components
 import Table from "../../components/table";
+
+/*
+* Shopping Cart
+*/
+import shoppingCart from "../../utils/shoppingCart";
 
 // material ui components
 import { 
@@ -15,13 +20,6 @@ function createData(product, unitPrice, quantity, subtotal) {
   return { product, unitPrice, quantity, subtotal };
 }
 
-const rows = [
-  createData("Item 1", 0, 0, 0, 0),
-  createData("Item 2", 0, 0, 0, 0),
-  createData("Item 3", 0, 0, 0, 0),
-  createData("Item 4", 0, 0, 0, 0),
-  createData("Item 5", 0, 0, 0, 0),
-];
 
 const columns = [
   {
@@ -45,6 +43,15 @@ const columns = [
 const ShoppingCart = () => {
   const navigate = useNavigate();
   const classes = useStyles();
+  const [products, setProducts] = useState(shoppingCart().listCart());
+
+  useEffect(() => {
+    const formatProducts = products.map(item => {
+      let subtotal = parseInt(item.price) * parseInt(item.qty);
+      return createData(item.name, item.price, item.qty, parseInt(subtotal));
+    });
+    setProducts(formatProducts)
+  }, []);
 
   return (
     <>
@@ -60,7 +67,7 @@ const ShoppingCart = () => {
           justifyContent="center"
           className={classes.table}
         >
-          <Table rows={rows} columns={columns} maxWidth={600} />
+          <Table rows={products} columns={columns} maxWidth={600} />
         </Grid>
 
         <Grid item xs={12} container justifyContent="center">

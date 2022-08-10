@@ -32,9 +32,9 @@ export default function shoppingCart() {
 
     // Add to cart
     obj.addItemToCart = function (name, price, count) {
-        for (var item in cart) {
-            if (cart[item].name === name) {
-                cart[item].count++;
+        for (var itemCart in cart) {
+            if (cart[itemCart].name === name) {
+                cart[itemCart].count++;
                 saveCart();
                 return;
             }
@@ -107,7 +107,7 @@ export default function shoppingCart() {
                 itemCopy[p] = item[p];
 
             }
-            itemCopy.total = Number(item.price * item.count).toFixed(2);
+            itemCopy.subtotal = Number(item.price * item.qty).toFixed(2);
             cartCopy.push(itemCopy)
         }
         return cartCopy;
