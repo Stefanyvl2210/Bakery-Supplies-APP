@@ -347,6 +347,7 @@ export default function NavBar() {
                             </MenuItem>
                             <MenuItem
                               onClick={() => {
+                                navigate("/orders");
                                 setOpen(false);
                               }}
                               sx={{
@@ -362,6 +363,7 @@ export default function NavBar() {
                             </MenuItem>
                             <MenuItem
                               onClick={() => {
+                                navigate("/payments");
                                 setOpen(false);
                               }}
                               sx={{

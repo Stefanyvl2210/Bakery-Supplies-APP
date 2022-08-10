@@ -20,6 +20,8 @@ import Products from "../pages/products";
 import ProductDetail from "../pages/detail/index";
 import OrderDetail from "../pages/detail/order";
 import MyAccount from "../pages/my-account";
+import Payments from "../pages/payments";
+import Orders from "../pages/orders";
 
 // Admin
 import AdminHome from "../pages/Admin/home";
@@ -46,9 +48,9 @@ export function RenderRoutes() {
         <Route path="/order-completed" element={<Completed />} />
         <Route path="/order-detail" element={<OrderDetail />} />
         <Route path="/my-account" element={<MyAccount />} />
-
+        <Route path="/payments" element={<Payments />} />
+        <Route path="/orders" element={<Orders />} />
         <Route path="/admin" element={<AdminHome />} />
-
         <Route path="*" element={<h1>404 Not Found!</h1>} />
       </Routes>
 
