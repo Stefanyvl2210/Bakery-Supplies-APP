@@ -160,7 +160,7 @@ const MyAccount = () => {
               <Grid container xs={12}>
 
                 {showAddressInput ? (
-                  <><><Grid item xs={12}>
+                  <><><Grid item xs={8.7}>
                     <CustomInput
                       handleInput={handleInput}
                       register={register}
@@ -169,7 +169,7 @@ const MyAccount = () => {
                       fullWidth={true}
                       classname={classes.inputAddress}
                       label="Address *" />
-                  </Grid><Grid item xs={6}>
+                  </Grid><Grid item xs={4.7}>
                       <CustomInput
                         handleInput={handleInput}
                         register={register}
@@ -178,7 +178,7 @@ const MyAccount = () => {
                         fullWidth={true}
                         classname={classes.inputWrapper}
                         label="City *" />
-                    </Grid></><Grid item xs={6}>
+                    </Grid></><Grid item xs={4.7}>
                       <CustomInput
                         handleInput={handleInput}
                         register={register}
