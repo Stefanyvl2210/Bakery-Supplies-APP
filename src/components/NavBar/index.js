@@ -2,11 +2,13 @@ import * as React from "react";
 import AppBar from "@mui/material/AppBar";
 import Box from "@mui/material/Box";
 import Toolbar from "@mui/material/Toolbar";
-import { useNavigate, useLocation } from "react-router-dom";
+import { useNavigate, useLocation, Link } from "react-router-dom";
 import { makeStyles } from "@mui/styles";
 import Button from "@mui/material/Button";
 import Badge from "@mui/material/Badge";
 import MenuIcon from "@mui/icons-material/Menu";
+import ExpandLess from "@mui/icons-material/ExpandLess";
+import ExpandMore from "@mui/icons-material/ExpandMore";
 
 import Logo from "../../assets/images/header-logo.png";
 import LogoMobile from "../../assets/images/logo-mobile.svg";
@@ -16,6 +18,7 @@ import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import ShoppingCartOutlinedIcon from "@mui/icons-material/ShoppingCartOutlined";
 import {
   ClickAwayListener,
+  Collapse,
   Drawer,
   Grow,
   IconButton,
@@ -34,16 +37,16 @@ import { cartQtySelector } from "../../features/counter/counterSlice";
 const menuMobile = [
   {
     name: "Home",
-    url: "/"
+    url: "/",
   },
   {
     name: "Desserts",
-    url: "/products"
+    url: "/products",
   },
   {
     name: "Utensils and ingredients",
-    url: "/products"
-  }
+    url: "/products",
+  },
 ];
 
 export default function NavBar() {
@@ -56,6 +59,7 @@ export default function NavBar() {
 
   const [openMenuMobile, setOpenMenuMobile] = React.useState(false);
   const [open, setOpen] = React.useState(false);
+  const [openAccordion, setOpenAccordion] = React.useState(false);
   const [navMobile, setNavMobile] = React.useState(menuMobile);
 
   const handleDrawer = () => {
@@ -82,24 +86,26 @@ export default function NavBar() {
   const handleMobileNav = (item) => {
     setOpenMenuMobile(!openMenuMobile);
 
-    if(item.name === "Desserts") {
+    if (item.name === "Desserts") {
       navigate(item.url, {
         state: {
           category: "dessert",
           title: "Desserts",
         },
-      })
-    } else if(item.name === "Utensils and ingredients") {
+      });
+    } else if (item.name === "Utensils and ingredients") {
       navigate(item.url, {
         state: {
           category: "utensils-and-ingredients",
           title: "Utensils and ingredients",
         },
-      })
+      });
+    } else if (item.name === "Account") {
+      setOpenAccordion(true);
     } else {
       navigate(item.url);
     }
-  }
+  };
 
   function handleListKeyDown(event) {
     if (event.key === "Tab") {
@@ -114,9 +120,9 @@ export default function NavBar() {
     if (userIsLogged) {
       navMobile.push({
         name: "Account",
-        url: "/my-account"
-      })
-    } else if (!userIsLogged && navMobile.length > 3 ) {
+        url: "/my-account",
+      });
+    } else if (!userIsLogged && navMobile.length > 3) {
       navMobile.pop();
     }
   }, [userIsLogged]);
@@ -135,7 +141,9 @@ export default function NavBar() {
     <>
       <AppBar position="static" className={classes.container}>
         <Toolbar className={classes.toolbar}>
-          <Box sx={{ display: { xs: "flex", md: "none" }, alignItems: "center" }}>
+          <Box
+            sx={{ display: { xs: "flex", md: "none" }, alignItems: "center" }}
+          >
             <IconButton
               size="large"
               edge="start"
@@ -159,7 +167,9 @@ export default function NavBar() {
             <img src={Logo} alt="logo" />
           </Box>
 
-          <Box sx={{ display: { xs: "flex", md: "none" }, alignItems: "center" }}>
+          <Box
+            sx={{ display: { xs: "flex", md: "none" }, alignItems: "center" }}
+          >
             <IconButton
               size="medium"
               edge="start"
@@ -251,7 +261,9 @@ export default function NavBar() {
             </Button>
             <Button
               color="inherit"
-              className={location.pathname === "/cart" ? classes.underlined : ""}
+              className={
+                location.pathname === "/cart" ? classes.underlined : ""
+              }
               onClick={() => navigate("/cart")}
             >
               <Badge badgeContent={cartQty} color="primary">
@@ -269,7 +281,9 @@ export default function NavBar() {
                   aria-haspopup="true"
                   onClick={handleToggle}
                   className={
-                    location.pathname === "/my-account" ? classes.underlined : ""
+                    location.pathname === "/my-account"
+                      ? classes.underlined
+                      : ""
                   }
                   // onClick={() => navigate("/my-account")}
                 >
@@ -386,7 +400,7 @@ export default function NavBar() {
         sx={{
           width: "100%",
           flexShrink: 0,
-          '& .MuiDrawer-paper': {
+          "& .MuiDrawer-paper": {
             width: "auto",
             top: "80px",
             background: "#F5EEE6",
@@ -401,11 +415,44 @@ export default function NavBar() {
         <List>
           {navMobile.map((item, index) => (
             <ListItem key={index} disablePadding>
-              <ListItemButton onClick={() => handleMobileNav(item)}>
-                <ListItemText primary={item.name} />
+              <ListItemButton>
+                {item.name !== "Account" ? (
+                  <ListItemText
+                    primary={item.name}
+                    onClick={() => handleMobileNav(item)}
+                  />
+                ) : (
+                  <>
+                    <ListItemText
+                      primary="Account"
+                      onClick={() => setOpenAccordion((prev) => !prev)}
+                    />
+                    {openAccordion ? <ExpandLess /> : <ExpandMore />}
+                  </>
+                )}
               </ListItemButton>
             </ListItem>
           ))}
+
+          <Collapse in={openAccordion} timeout="auto" unmountOnExit>
+            <List component="div" disablePadding>
+              <Link to="/my-account" className={classes.link}>
+                <ListItemButton sx={{ pl: 4 }}>
+                  <ListItemText primary="Profile" />
+                </ListItemButton>
+              </Link>
+              <Link to="/orders" className={classes.link}>
+                <ListItemButton sx={{ pl: 4 }}>
+                  <ListItemText primary="Orders" />
+                </ListItemButton>
+              </Link>
+              <Link to="/payments" className={classes.link}>
+                <ListItemButton sx={{ pl: 4 }}>
+                  <ListItemText primary="Payments" />
+                </ListItemButton>
+              </Link>
+            </List>
+          </Collapse>
         </List>
       </Drawer>
     </>
@@ -421,10 +468,10 @@ const useStyles = makeStyles((theme) => ({
   container: {
     boxShadow: "none !important",
     backgroundColor: "#E6A4B4 !important",
-    [theme.breakpoints.down('md')]: {
+    [theme.breakpoints.down("md")]: {
       position: "fixed !important",
-      top: '0',
-      zIndex: '99999'
+      top: "0",
+      zIndex: "99999",
     },
   },
   toolbar: {
@@ -446,5 +493,9 @@ const useStyles = makeStyles((theme) => ({
   logButton: {
     cursor: "pointer",
     margin: "0 15px",
+  },
+  link: {
+    textDecoration: "none",
+    color: "#000",
   },
 }));
