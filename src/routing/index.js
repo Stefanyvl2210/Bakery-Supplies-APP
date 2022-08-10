@@ -1,9 +1,13 @@
 import React from "react";
-import { Route, Routes } from "react-router-dom";
+import { Route, Routes, useLocation } from "react-router-dom";
 
 // components
 import NavBar from "../components/NavBar";
 import Footer from "../components/Footer";
+
+// admin components
+import AdminNavBar from "../components/Admin/NavBar";
+import AdminFooter from "../components/Admin/Footer";
 
 // pages
 import Home from "../pages/home";
@@ -19,13 +23,20 @@ import MyAccount from "../pages/my-account";
 import Payments from "../pages/payments";
 import Orders from "../pages/orders";
 
+// Admin
+import AdminHome from "../pages/Admin/home";
+
 /**
  * Use this component for any new section of routes (any config object that has a "routes" property
  */
 export function RenderRoutes() {
+  const location = useLocation();
+
+  console.log(location);
+
   return (
     <>
-      <NavBar />
+      {location.pathname.includes("/admin") ? <AdminNavBar /> : <NavBar />}
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/register" element={<Register />} />
@@ -39,9 +50,11 @@ export function RenderRoutes() {
         <Route path="/my-account" element={<MyAccount />} />
         <Route path="/payments" element={<Payments />} />
         <Route path="/orders" element={<Orders />} />
+        <Route path="/admin" element={<AdminHome />} />
         <Route path="*" element={<h1>404 Not Found!</h1>} />
       </Routes>
-      <Footer />
+
+      {location.pathname.includes("/admin") ? <AdminFooter /> : <Footer />}
     </>
   );
 }
