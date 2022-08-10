@@ -9,16 +9,16 @@ const ProfileSidebar = () => {
   const classes = useStyles();
   return (
     <>
-      <Grid container style={{ height: "100%" }} >
+      <Grid container style={{ height: "100%" }}>
         <Grid item xs={12} className={classes.sidebar}>
           <p className={classes.paragraph}>
-            <Link to="my-account">Profile</Link>
+            <Link to="/my-account">Profile</Link>
           </p>
           <p className={classes.paragraph}>
-            <Link to="my-account">Orders</Link>
+            <Link to="/orders">Orders</Link>
           </p>
           <p className={classes.paragraph}>
-            <Link to="my-account">Payments</Link>
+            <Link to="/payments">Payments</Link>
           </p>
         </Grid>
       </Grid>
@@ -50,6 +50,6 @@ const useStyles = makeStyles((theme) => ({
     },
   },
   paragraph: {
-    marginLeft: "20px"
-  }
+    marginLeft: "20px",
+  },
 }));
