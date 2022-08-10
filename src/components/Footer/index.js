@@ -9,12 +9,11 @@ import Logo from "../../assets/images/footer-logo.svg";
 import LogoFB from "../../assets/images/facebook-logo.svg";
 import LogoIG from "../../assets/images/instagram-logo.svg";
 
-import {Box, Grid} from '@mui/material';
+import { Grid} from '@mui/material';
 
 export default function NavBar() {
   const classes = useStyles();
   const navigate = useNavigate();
-  const location = useLocation();
 
   return (
     <Grid
@@ -26,21 +25,17 @@ export default function NavBar() {
         
         <Grid
             container
-            direction="row"
-            justifyContent="space-between"
+            direction={{ xs: "column", sm: "row" }}
+            justifyContent={{ xs: "center", sm: "space-between" }}
             alignItems="center"
-            sx={{ backgroundColor: '#C86B85' ,
-                    paddingTop: '20px',
-                    paddingRight: '80px',
-                    paddingLeft: '80px',
-                    paddingBottom: '20px'}}
+            className={classes.footerContainer}
         >
             <Grid 
                 container
                 direction="column"
                 alignItems="flex-start"
                 item
-                xs={6}
+                xs={12} sm={6}
             >
                 <Grid item sx={{paddingLeft: '8px'}}>
                     <img src={Logo} alt="logo" />
@@ -59,11 +54,12 @@ export default function NavBar() {
                     className={classes.menuItem}
                     onClick={() =>
                         navigate("/products", {
-                            state: {
+                          state: {
                             category: "dessert",
-                            },
+                            title: "Desserts",
+                          },
                         })
-                    }
+                      }
                     >
                     Desserts
                 </Button>
@@ -73,11 +69,12 @@ export default function NavBar() {
                     className={classes.menuItem}
                     onClick={() =>
                         navigate("/products", {
-                            state: {
+                          state: {
                             category: "utensils-and-ingredients",
-                            },
+                            title: "Utensils and Ingredients",
+                          },
                         })
-                    }
+                      }
                     >
                     Utensils & ingredients
                 </Button>
@@ -86,8 +83,9 @@ export default function NavBar() {
                 container
                 item
                 direction="column"
-                alignContent="flex-end"
-                xs={6}
+                alignContent={{ xs: "flex-start", sm: "flex-end" }}
+                xs={12} sm={6}
+                sx={{ marginTop: { xs: "30px", sm: "0"}, padding: { xs: "0 8px"}}}
             >
                 <Grid
                 item 
@@ -152,5 +150,15 @@ const useStyles = makeStyles((theme) => ({
         justifyContent: "start !important",
         textTransform: "capitalize !important",
         fontSize: '16px !important'
+    },
+    footerContainer: {
+        backgroundColor: '#C86B85',
+        padding: "30px 100px !important",
+        [theme.breakpoints.down('md')]: {
+            padding: "30px 42px !important",
+        },
+        [theme.breakpoints.down('sm')]: {
+            padding: "30px 28px !important",
+        },
     }
 }));

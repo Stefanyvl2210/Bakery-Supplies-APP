@@ -38,8 +38,8 @@ const Products = () => {
         <Grid
           container
           direction="row"
-          justifyContent="space-between"
-          alignItems="center"
+          justifyContent={{ xs: "center", sm: "space-between" }}
+          alignItems="flex-end"
           sx={{maxWidth: 1440}}
         >
           <Grid 
@@ -114,15 +114,27 @@ const useStyles = makeStyles((theme) => ({
     fontWeight: "300"
   },
   container: {
-    maxWidth: 1280,
-    margin: "60px auto !important",
+    maxWidth: 1140,
+    margin: "60px auto 30px !important",
     [theme.breakpoints.down('md')]: {
-      margin: "140px auto !important",
+      margin: "140px auto 30px !important",
+      padding: "0 50px !important",
+    },
+    [theme.breakpoints.down('sm')]: {
+      padding: "0 36px !important",
     },
   },
   containerProduct: {
+    maxWidth: 1140,
+    margin: "0 auto !important",
     marginTop: "30px !important",
-    marginBottom: "60px !important"
+    marginBottom: "60px !important",
+    [theme.breakpoints.down('md')]: {
+      padding: "0 50px !important",
+    },
+    [theme.breakpoints.down('sm')]: {
+      padding: "0 36px !important",
+    },
   },
   button:{
     margin: "0px !important",
@@ -133,16 +145,30 @@ const useStyles = makeStyles((theme) => ({
   },
   inputContent: {
     marginTop: "60px !important",
-    fontSize: "18px !important"
+    fontSize: "18px !important",
+    [theme.breakpoints.up('md')]: {
+      padding: "0 25px !important",
+    },
+    [theme.breakpoints.down('md')]: {
+      marginTop: "15px !important",
+      "&:first-child": {
+        marginTop: "30px !important",
+      },
+    }
   },
   filter: {
     "& .MuiInputBase-root":{
-      fontSize: "18px !important"
+      fontSize: "18px !important",
+      minHeight: "50px"
+    },
+    "& label": {
+      top: "5px !important",
+      color: "#AAAAAA !important"
     },
     display:"flex",
     justifyContent: "flex-end",
-    minWidth: 300,
-
+    minWidth: 330,
+    minHeight: "50px !important"
   },
   total: {
     maxWidth: 600,
@@ -154,9 +180,18 @@ const useStyles = makeStyles((theme) => ({
     "& .MuiInputBase-root":{
       fontSize: "18px !important"
     },
+    "& label": {
+      color: "#AAAAAA !important"
+    },
     justifyContent: 'flex-end',
-    maxWidth: '300px',
     width: '100%',
+    minWidth: "330px !important",
+    "& fieldset": {
+      border: "1px solid #AAAAAA !important",
+    },
+    "& .MuiOutlinedInput-root": {
+      maxWidth: "330px !important"
+    }
   },
 }));
 

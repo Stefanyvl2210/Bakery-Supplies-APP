@@ -44,8 +44,8 @@ const Register = () => {
         <Grid item xs={12} display="flex" justifyContent="center">
           <Card className={classes.card}>
             <form onSubmit={handleSubmit(onSubmit)}>
-              <Grid container>
-                <Grid item xs={6}>
+              <Grid container className={classes.formContainer}>
+                <Grid item xs={12} md={6}>
                   <CustomInput
                     register={register}
                     field="firstName"
@@ -59,7 +59,7 @@ const Register = () => {
                   />
                 </Grid>
 
-                <Grid item xs={6}>
+                <Grid item xs={12} md={6} sx={{ marginTop: { xs: "15px !important", md: "0 !important"}}}>
                   <CustomInput
                     register={register}
                     field="lastName"
@@ -102,7 +102,7 @@ const Register = () => {
                   />
                 </Grid>
 
-                <Grid item xs={6}>
+                <Grid item xs={12} md={6}>
                   <CustomInput
                     register={register}
                     field="password"
@@ -118,7 +118,7 @@ const Register = () => {
                   />
                 </Grid>
 
-                <Grid item xs={6}>
+                <Grid item xs={12} md={6}>
                   <CustomInput
                     register={register}
                     field="confirmPassword"
@@ -159,10 +159,14 @@ const Register = () => {
 
 const useStyles = makeStyles((theme) => ({
   container: {
-    maxWidth: 1280,
+    maxWidth: 1140,
     margin: "60px auto !important",
     [theme.breakpoints.down('md')]: {
       margin: "140px auto !important",
+      padding: "0 50px !important",
+    },
+    [theme.breakpoints.down('sm')]: {
+      padding: "0 36px !important",
     },
   },
   title: {
@@ -171,7 +175,7 @@ const useStyles = makeStyles((theme) => ({
     fontSize: '40px !important',
     lineHeight: '20px !important',
     marginTop: "0 !important",
-    fontWeight: "300"
+    fontWeight: "300",
   },
   card: {
     backgroundColor: "#F5EEE6 !important",
@@ -183,11 +187,17 @@ const useStyles = makeStyles((theme) => ({
     boxShadow: "unset !important",
   },
   inputWrapper: {
-    marginTop: "27px !important",
+    marginTop: "20px !important",
+    [theme.breakpoints.down('md')]: {
+      marginTop: "15px !important",
+    },
   },
   shortInput: {
     "& input": {
       marginRight: "15px !important",
+      [theme.breakpoints.down('md')]: {
+        marginRight: "0px !important",
+      }
     },
   },
   fullWidth: {
@@ -214,6 +224,11 @@ const useStyles = makeStyles((theme) => ({
     fontWeight: "500",
     cursor: "pointer",
   },
+  formContainer: {
+    [theme.breakpoints.down('md')]: {
+      flexDirection: "column !important",
+    },
+  }
 }));
 
 export default Register;

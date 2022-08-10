@@ -89,6 +89,21 @@ export const theme = createTheme({
           boxShadow: 'none'
         }
       }
+    },
+    MuiMenuItem: {
+      styleOverrides: {
+        root: {
+          fontSize: "16px"
+        }
+      }
+    },
+    MuiSelect: {
+      styleOverrides: {
+        root: {
+          fontSize: "16px",
+          // maxHeight: "50px"
+        }
+      }
     }
   }
 });

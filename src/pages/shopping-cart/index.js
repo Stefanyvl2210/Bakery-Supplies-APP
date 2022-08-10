@@ -107,7 +107,7 @@ const ShoppingCart = () => {
           justifyContent="center"
           className={classes.table}
         >
-          <Table rows={products} columns={columns} maxWidth={600} />
+          <Table rows={products} columns={columns} maxWidth={600} minWidth={485} />
         </Grid>
 
         <Grid item xs={12}>
@@ -124,7 +124,7 @@ const ShoppingCart = () => {
           <p className={classes.total}>Choose a payment method</p>
 
           <FormControl fullWidth className={classes.paymentSelect}>
-            <InputLabel id="payment-select-label">Payment</InputLabel>
+            <InputLabel id="payment-select-label" className={classes.selectLabel} >Payment</InputLabel>
             <Select
               labelId="payment-select"
               id="payment-select"
@@ -148,7 +148,7 @@ const ShoppingCart = () => {
           <p className={classes.total}>Choose a shipping address</p>
 
           <FormControl fullWidth className={classes.paymentSelect}>
-            <InputLabel id="address-select-label">Address</InputLabel>
+            <InputLabel id="address-select-label" className={classes.selectLabel}>Address</InputLabel>
             <Select
               labelId="address-select"
               id="address-select"
@@ -198,10 +198,14 @@ const ShoppingCart = () => {
 
 const useStyles = makeStyles((theme) => ({
   container: {
-    maxWidth: 1280,
+    maxWidth: 1140,
     margin: "60px auto !important",
     [theme.breakpoints.down('md')]: {
       margin: "140px auto !important",
+      padding: "0 50px !important",
+    },
+    [theme.breakpoints.down('sm')]: {
+      padding: "0 36px !important",
     },
   },
   title: {
@@ -213,7 +217,7 @@ const useStyles = makeStyles((theme) => ({
     fontWeight: "300"
   },
   table: {
-    marginTop: "45px !important",
+    marginTop: "10px !important",
     borderRadius: "4px !important",
     "& thead": {
       "& th": {
@@ -239,6 +243,11 @@ const useStyles = makeStyles((theme) => ({
     marginTop: 30,
     marginBottom: 15,
     fontSize: 18,
+    fontFamily: 'Open Sans',
+    "& p": {
+      marginTop: "10px !important",
+      marginBottom: "0 !important",
+    }
   },
   divider: {
     maxWidth: 600,
@@ -253,6 +262,9 @@ const useStyles = makeStyles((theme) => ({
     maxWidth: 600,
     margin: "10px auto 0 auto !important",
   },
+  selectLabel: {
+    fontSize: "16px !important"
+  },
   formControlLabel: {
     fontSize: "16px !important",
   },
@@ -263,7 +275,7 @@ const useStyles = makeStyles((theme) => ({
   },
   button: {
     margin: "60px auto 0px !important"
-  }
+  },
 }));
 
 export default ShoppingCart;

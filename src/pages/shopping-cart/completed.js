@@ -42,10 +42,14 @@ const OrderCompleted = () => {
 
 const useStyles = makeStyles((theme) => ({
   container: {
-    maxWidth: 1280,
+    maxWidth: 1140,
     margin: "60px auto !important",
     [theme.breakpoints.down('md')]: {
       margin: "140px auto !important",
+      padding: "0 50px !important",
+    },
+    [theme.breakpoints.down('sm')]: {
+      padding: "0 36px !important",
     },
   },
   title: {
@@ -54,7 +58,10 @@ const useStyles = makeStyles((theme) => ({
     fontSize: '40px !important',
     lineHeight: '20px !important',
     marginTop: "0 !important",
-    fontWeight: "300"
+    fontWeight: "300",
+    [theme.breakpoints.down('sm')]: {
+      lineHeight: '42px !important',
+    },
   },
   text: {
     fontSize: "20px !important",

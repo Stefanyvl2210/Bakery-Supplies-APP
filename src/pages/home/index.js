@@ -105,11 +105,8 @@ const Home = () => {
               We deliver to your door
             </Typography>
           </Grid>
-          <Grid item xs={12}>
-            <Divider />
-          </Grid>
         </Grid>
-
+        <Divider />
         <Grid container columnSpacing={{ xs: 0, md: 6 }} rowSpacing={{ xs: 4, sm: 4}}>
           <Grid item xs={12} sm={12} md={6} className={classes.imageWrapper}>
             <img className={classes.image} src={Dessert} alt="dessert" />
@@ -126,9 +123,14 @@ const Home = () => {
                 color="primary"
                 variant="contained"
                 className={classes.button}
-                onClick={() => navigate('/products', {state: {
-                  category: 'dessert'
-                }})}
+                onClick={() =>
+                  navigate("/products", {
+                    state: {
+                      category: "dessert",
+                      title: "Desserts",
+                    },
+                  })
+                }
               >
                 See More
               </Button>
@@ -136,7 +138,7 @@ const Home = () => {
           </Grid>
         </Grid>
         <Divider />
-        <Grid container columnSpacing={{ xs: 0, md: 6 }} rowSpacing={{ xs: 4, sm: 4}}>
+        <Grid container columnSpacing={{ xs: 0, md: 6 }} rowSpacing={{ xs: 4, sm: 4}} className={classes.utensilSection}>
           <Grid item xs={12} sm={12} md={6}>
             <h4 className={classes.title}>{utensil.name}</h4>
 
@@ -149,9 +151,14 @@ const Home = () => {
                 color="primary"
                 variant="contained"
                 className={classes.button}
-                onClick={() => navigate('/products', {state: {
-                  category: 'utensils-and-ingredients'
-                }})}
+                onClick={() =>
+                  navigate("/products", {
+                    state: {
+                      category: "utensils-and-ingredients",
+                      title: "Utensils and Ingredients",
+                    },
+                  })
+                }
               >
                 See More
               </Button>
@@ -294,6 +301,14 @@ const useStyles = makeStyles((theme) => ({
     display: "flex",
     justifyContent: "center",
   },
+  utensilSection: {
+    [theme.breakpoints.down('md')]: {
+      flexDirection: "column-reverse !important",
+      "& h4": {
+        marginTop: "68px !important",
+      }
+    },
+  }
 }));
 
 export default Home;

@@ -17,7 +17,7 @@ const VerifyEmail = () => {
         <Grid item xs={12}>
           <h2 className={classes.title}>Mail verification</h2>
         </Grid>
-        <Grid item xs={6} className={classes.content}>
+        <Grid item xs={12} md={6} className={classes.content}>
             <Typography className={classes.text}>
                 Please enter the 6-digit verification code sent by test@gmail.com. The code will be active for 30 minutes.
             </Typography>
@@ -51,10 +51,14 @@ const VerifyEmail = () => {
 
 const useStyles = makeStyles((theme) => ({
   container: {
-    maxWidth: 1280,
+    maxWidth: 1140,
     margin: "60px auto !important",
     [theme.breakpoints.down('md')]: {
       margin: "140px auto !important",
+      padding: "0 50px !important",
+    },
+    [theme.breakpoints.down('sm')]: {
+      padding: "0 36px !important",
     },
   },
   title: {

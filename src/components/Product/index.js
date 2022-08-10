@@ -15,7 +15,7 @@ import Beater from "../../assets/images/whisk.png";
 import Whisk from "../../assets/images/beater.png";
 import Container from "../../assets/images/container.png";
 import CustomDialog from "../productModal";
-import { Link, useLocation, useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 
 const productList = [
   {
@@ -139,7 +139,7 @@ const Product = () => {
 
     let relatedProducts = [];
     productList.map((elem) => {
-      if(elem.category == product.category && elem.name != product.name) {
+      if(elem.category === product.category && elem.name !== product.name) {
         relatedProducts.push(elem);
       }
     })
@@ -154,12 +154,13 @@ const Product = () => {
   return (
     <>
       {productList.map((product, i) =>
-        product.category == location.state.category ? (
+        product.category === location.state.category ? (
           <Grid
             item
             xs={12}
             sm={12}
-            md={4}
+            md={6}
+            lg={4}
             key={i}
             display="flex"
             justifyContent="center"

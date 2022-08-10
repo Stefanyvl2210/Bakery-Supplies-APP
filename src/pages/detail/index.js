@@ -17,7 +17,10 @@ export default function CustomDialog(props) {
 
   return (
     <div className={classes.container}>
-      <Grid container>
+      <Grid 
+        container 
+        columnSpacing={{ xs: 0, md: 3 }} 
+      >
         <Grid
           item
           xs={12}
@@ -34,7 +37,7 @@ export default function CustomDialog(props) {
           />
         </Grid>
 
-        <Grid item xs={12} sm={12} md={6}>
+        <Grid item xs={12} sm={12} md={6} >
           <div className={classes.productContent}>
             <h4 className={classes.productName}>{state.product.name}</h4>
 
@@ -109,12 +112,18 @@ export default function CustomDialog(props) {
 
 const useStyles = makeStyles((theme) => ({
   container: {
-    width: "100%",
-    maxWidth: "1240px",
-    margin: "0 auto",
-    padding: "60px 0 10px 0",
+    maxWidth: 1140,
+    margin: "60px auto 24px !important",
+    [theme.breakpoints.up('md')]: {
+      padding: "0 50px !important",
+    },
     [theme.breakpoints.down('md')]: {
-      padding: "140px 36px !important",
+      margin: "140px auto 24px !important",
+      padding: "0 50px !important",
+    },
+    [theme.breakpoints.down('sm')]: {
+      margin: "140px auto 24px !important",
+      padding: "0 36px !important",
     },
 
     "& input::-webkit-outer-spin-button, input::-webkit-inner-spin-button": {
@@ -133,11 +142,13 @@ const useStyles = makeStyles((theme) => ({
     width: "100%",
     maxWidth: "474px",
     margin: "0 auto",
+    [theme.breakpoints.down('sm')]: {
+      maxWidth: "100%",
+    },
   },
   productImage: {
     width: "100%",
-    "@media (max-width: 600px)": {
-      width: "90%",
+    [theme.breakpoints.down('md')]: {
       marginBottom: 30,
     },
   },
@@ -151,18 +162,13 @@ const useStyles = makeStyles((theme) => ({
   },
   price: {
     "@media (max-width: 600px)": {
-      textAlign: "center",
+      // textAlign: "center",
       fontSize: 18,
     },
   },
   description: {
     margin: "0 auto",
     fontWeight: "300 !important",
-
-    "@media (max-width: 600px)": {
-      textAlign: "center",
-      padding: "0 20px",
-    },
   },
   buttonWrapper: {
     display: "flex",
@@ -174,7 +180,6 @@ const useStyles = makeStyles((theme) => ({
     alignItems: "center",
 
     "@media (max-width: 600px)": {
-      justifyContent: "center",
       marginTop: 20,
     },
   },
@@ -193,8 +198,8 @@ const useStyles = makeStyles((theme) => ({
     },
   },
   quantityInput: {
-    minWidth: "0 !important",
-    width: "70px !important",
+    minWidth: "40px !important",
+    width: "100% !important",
     "& .MuiOutlinedInput-root": {
       "& fieldset": {
         borderColor: "#fff !important",

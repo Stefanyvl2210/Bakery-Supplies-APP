@@ -69,15 +69,16 @@ export default function CustomDialog(props) {
         onClose={handleClose}
         aria-labelledby="customized-dialog-title"
         open={open}
+        className={classes.modal}
       >
         <BootstrapDialogTitle
           id="customized-dialog-title"
           onClose={handleClose}
         ></BootstrapDialogTitle>
-        <DialogContent>
+        <DialogContent className={classes.modalContainer}>
           <Grid
             container
-            direction="row"
+            direction={{ xs: "column", md: "row" }}
             justifyContent="center"
             alignItems="center"
           >
@@ -87,13 +88,12 @@ export default function CustomDialog(props) {
               alignItems="center"
               justifyContent="center"
               xs
-              sx={{ marginRight: "40px" }}
+              sx={{ marginRight: { xs: "0px", md: "40px" }}}
             >
               <img
                 src={selectedProduct.image}
                 alt={selectedProduct.alt}
-                width="550"
-                height="400"
+                className={classes.productImage}
               />
             </Grid>
 
@@ -151,6 +151,14 @@ const useStyles = makeStyles((theme) => ({
     marginBottom: "40px !important",
     fontFamily: "Poiret One",
   },
+  productImage: {
+    maxWidth: "550px",
+    width: "100%",
+    objectFit: "contain",
+    [theme.breakpoints.down('md')]: {
+      marginBottom: "30px !important",
+    }
+  },
   description: {
     margin: "0 auto",
     fontSize: "20px !important",
@@ -176,4 +184,17 @@ const useStyles = makeStyles((theme) => ({
     fontFamily: "Open Sans",
     fontSize: 20,
   },
+  modalContainer: {
+    display: "flex",
+  },
+  modal: {
+    [theme.breakpoints.down('md')]: {
+      "& .MuiDialog-paper":{
+        maxWidth: "600px !important",
+        height: "fit-content !important",
+        maxHeight: "calc(100% - 110px) !important",
+        marginTop: "115px !important"
+      }
+    },
+  }
 }));

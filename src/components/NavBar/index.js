@@ -164,7 +164,7 @@ export default function NavBar() {
             />
           </Box>
           <Box sx={{ display: { xs: "none", md: "flex" } }}>
-            <img src={Logo} alt="logo" />
+            <img src={Logo} alt="logo" onClick={() => navigate("/")} />
           </Box>
 
           <Box
@@ -436,17 +436,17 @@ export default function NavBar() {
 
           <Collapse in={openAccordion} timeout="auto" unmountOnExit>
             <List component="div" disablePadding>
-              <Link to="/my-account" className={classes.link}>
+              <Link to="/my-account" className={classes.link} onClick={() => setOpenMenuMobile(!openMenuMobile)} >
                 <ListItemButton sx={{ pl: 4 }}>
                   <ListItemText primary="Profile" />
                 </ListItemButton>
               </Link>
-              <Link to="/orders" className={classes.link}>
+              <Link to="/orders" className={classes.link} onClick={() => setOpenMenuMobile(!openMenuMobile)}>
                 <ListItemButton sx={{ pl: 4 }}>
                   <ListItemText primary="Orders" />
                 </ListItemButton>
               </Link>
-              <Link to="/payments" className={classes.link}>
+              <Link to="/payments" className={classes.link} onClick={() => setOpenMenuMobile(!openMenuMobile)}>
                 <ListItemButton sx={{ pl: 4 }}>
                   <ListItemText primary="Payments" />
                 </ListItemButton>
