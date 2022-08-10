@@ -240,7 +240,14 @@ const useStyles = makeStyles((theme) => ({
   },
   registerInput: {
     display: "flex",
-    alignItems: "center"
+    alignItems: "center",
+    [theme.breakpoints.down('sm')]: {
+      flexDirection: "column",
+      marginTop: "5px",
+      "& button": {
+        marginTop: "20px",
+      }
+    }
   },
   process: {
     marginTop: "60px",
