@@ -17,6 +17,7 @@ import ProductDetail from "../pages/detail/index";
 import OrderDetail from "../pages/detail/order";
 import MyAccount from "../pages/my-account";
 import Payments from "../pages/payments";
+import Orders from "../pages/orders";
 
 /**
  * Use this component for any new section of routes (any config object that has a "routes" property
@@ -37,6 +38,7 @@ export function RenderRoutes() {
         <Route path="/order-detail" element={<OrderDetail />} />
         <Route path="/my-account" element={<MyAccount />} />
         <Route path="/payments" element={<Payments />} />
+        <Route path="/orders" element={<Orders />} />
         <Route path="*" element={<h1>404 Not Found!</h1>} />
       </Routes>
       <Footer />

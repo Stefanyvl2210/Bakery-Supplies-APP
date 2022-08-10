@@ -1,11 +1,24 @@
 import React from "react";
 import { RenderRoutes } from "./routing/index";
+import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 
-function App() {
+import {
+  DateRangePicker,
+  DateRangeDelimiter,
+  LocalizationProvider
+} from "@mui/x-date-pickers";
+
+function App({ children }) {
   return (
     <div className="App">
       <RenderRoutes />
+
+      <LocalizationProvider dateAdapter={AdapterDateFns}>
+        {children}
+    </LocalizationProvider>
     </div>
+
+    
   );
 }
 
