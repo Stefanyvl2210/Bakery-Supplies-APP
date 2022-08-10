@@ -54,24 +54,44 @@ const columns = [
 const ShoppingCart = () => {
   const navigate = useNavigate();
   const classes = useStyles();
-  const [filter, setFilter] = useState(10);
-  const [delivery, setDelivery] = useState('');
+  const [payment, setPayment] = useState('');
+  const [address, setAddress] = useState('');
+  const [delivery, setDelivery] = useState(3);
+  const [totalBeforeTaxes, setTotalBeforeTaxes] = useState(0);
+  const [totalOrder, setTotalOrder] = useState(0);
   const [products, setProducts] = useState(shoppingCart().listCart());
+
+  const handleChangePayment = (event) => {
+    // console.log('payment', event.target.value)
+    setPayment(event.target.value);
+  };
+  const handleChangeAddress = (event) => {
+    // console.log('address', event.target.value)
+    setAddress(event.target.value);
+  };
+  const handleChangeDelivery = (event) => {
+    setDelivery(parseFloat(event.target.value));
+  };
 
   useEffect(() => {
     const formatProducts = products.map(item => {
-      let subtotal = item.price*item.qty;
-      return createData(item.name, item.price, item.qty, subtotal);
+      let subtotal = parseInt(item.price) * parseInt(item.qty);
+      return createData(item.name, item.price, item.qty, parseInt(subtotal));
     });
     setProducts(formatProducts)
   }, []);
 
-  const handleChange = (event) => {
-    setFilter(event.target.value);
-  };
-  const handleChangeDelivery = (event) => {
-    setDelivery(event.target.value);
-  };
+  useEffect(() => {
+    let totalbeftax = 0;
+    let totOrder = 0;
+    products.map(item => {
+      // console.log('item', item);
+      totalbeftax += parseFloat(item.subtotal);
+    });
+    totOrder = (totalbeftax * 0.05) + totalbeftax + delivery;
+    setTotalBeforeTaxes(totalbeftax);
+    setTotalOrder(totOrder);
+  }, [delivery]);
 
   return (
     <>
@@ -92,9 +112,9 @@ const ShoppingCart = () => {
 
         <Grid item xs={12}>
           <div className={classes.total}>
-            <p>Delivery: $3</p>
-            <p>Total before taxes: $0</p>
-            <p>Total: $0</p>
+            <p>Delivery: ${delivery}</p>
+            <p>Total before taxes: ${totalBeforeTaxes}</p>
+            <p>Total: ${totalOrder}</p>
           </div>
 
           <Divider className={classes.divider} />
@@ -108,18 +128,18 @@ const ShoppingCart = () => {
             <Select
               labelId="payment-select"
               id="payment-select"
-              value={filter}
+              value={payment}
               label="filter"
-              onChange={handleChange}
+              onChange={handleChangePayment}
               fullWidth
               className={classNames(classes.input)}
             >
               <MenuItem value="">
                 <em>None</em>
               </MenuItem>
-              <MenuItem value={10}>Option 1</MenuItem>
-              <MenuItem value={20}>Option 2</MenuItem>
-              <MenuItem value={30}>Option 3</MenuItem>
+              <MenuItem value="cash">Cash</MenuItem>
+              {/* <MenuItem value={20}>Option 2</MenuItem> */}
+              {/* <MenuItem value={30}>Option 3</MenuItem> */}
             </Select>
           </FormControl>
         </Grid>
@@ -132,9 +152,9 @@ const ShoppingCart = () => {
             <Select
               labelId="address-select"
               id="address-select"
-              value={filter}
+              value={address}
               label="filter"
-              onChange={handleChange}
+              onChange={handleChangeAddress}
               fullWidth
               className={classNames(classes.input)}
             >
@@ -156,8 +176,8 @@ const ShoppingCart = () => {
               value={delivery}
               onChange={handleChangeDelivery}
             >
-              <FormControlLabel value="standard" control={<Radio size="small" />} label={<Typography className={classes.formControlLabel}>Standard <span className={classes.grayText}>(1-2 working days)</span></Typography>} />
-              <FormControlLabel value="express" control={<Radio size="small" />} label={<Typography className={classes.formControlLabel}>Express <span className={classes.grayText}>(12 hours, extra charge) </span></Typography>} />
+              <FormControlLabel value={3} control={<Radio size="small" />} label={<Typography className={classes.formControlLabel}>Standard <span className={classes.grayText}>(1-2 working days)</span></Typography>} />
+              <FormControlLabel value={5} control={<Radio size="small" />} label={<Typography className={classes.formControlLabel}>Express <span className={classes.grayText}>(12 hours, extra charge) </span></Typography>} />
             </RadioGroup>
           </FormControl>
         </Grid>
