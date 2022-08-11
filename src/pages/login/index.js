@@ -1,5 +1,8 @@
 import React from "react";
 
+// api
+import { loginUser } from "../../helpers/api/auth";
+
 // hook form
 import { useForm } from "react-hook-form";
 
@@ -13,9 +16,20 @@ import { useNavigate } from "react-router-dom";
 
 import LogoSimple from "../../assets/images/logo-simple.svg";
 
+import { login } from "../../features/auth/AuthSlice";
+import { useDispatch } from "react-redux";
+import SnackBar from "../../components/Snackbar";
+
 const Login = () => {
   const classes = useStyles();
   const navigate = useNavigate();
+  const dispatch = useDispatch();
+
+  const [openSnack, setOpenSnack] = React.useState({
+    open: false,
+    message: "",
+    severity: "",
+  });
 
   // form structure
   const {
@@ -23,18 +37,37 @@ const Login = () => {
     handleSubmit,
     formState: { errors },
   } = useForm();
-  const onSubmit = (data) => {
-    console.log('login',data)
-    localStorage.setItem('userLogged', true);
-    navigate("/");
+  const onSubmit = async (data) => {
+    await loginUser(data)
+      .then((res) => {
+        dispatch(
+          login({ token: res.data.data.token, user: res.data.data.user })
+        );
+
+        // localStorage.setItem("userLogged", true);
+        dispatch(login(data));
+        navigate("/");
+      })
+      .catch((err) => {
+        setOpenSnack({
+          open: true,
+          message: err.response.data.Error,
+          severity: "error",
+        });
+      });
+  };
+
+  const handleCloseSnack = (event, reason) => {
+    if (reason === "clickaway") {
+      return;
+    }
+
+    setOpenSnack(false);
   };
 
   return (
     <>
-      <Grid 
-        container 
-        className={classes.container} 
-      >
+      <Grid container className={classes.container}>
         <Grid item xs={12}>
           <h2 className={classes.title}>Login</h2>
         </Grid>
@@ -43,7 +76,12 @@ const Login = () => {
             <form onSubmit={handleSubmit(onSubmit)}>
               <Grid container>
                 <Grid item xs={12} className={classes.logoContainer}>
-                  <img src={LogoSimple} width={104} height={104} alt="Bakery Supplies" />
+                  <img
+                    src={LogoSimple}
+                    width={104}
+                    height={104}
+                    alt="Bakery Supplies"
+                  />
                 </Grid>
                 <Grid item xs={12}>
                   <CustomInput
@@ -96,17 +134,21 @@ const Login = () => {
         </Grid>
 
         <Grid item xs={16} className={classes.buttonWrapper}>
-          <Button 
-            color="primary" 
-            type="submit" 
-            variant="contained" 
-            className={classes.button} 
+          <Button
+            color="primary"
+            type="submit"
+            variant="contained"
+            className={classes.button}
             onClick={() => navigate("/register")}
           >
             <span className={classes.buttonText}>Create Account</span>
           </Button>
         </Grid>
       </Grid>
+
+      {openSnack.open && (
+        <SnackBar openSnack={openSnack} handleCloseSnack={handleCloseSnack} />
+      )}
     </>
   );
 };
@@ -115,24 +157,24 @@ const useStyles = makeStyles((theme) => ({
   container: {
     maxWidth: 1140,
     margin: "60px auto !important",
-    [theme.breakpoints.down('md')]: {
+    [theme.breakpoints.down("md")]: {
       margin: "140px auto !important",
       padding: "0 50px !important",
     },
-    [theme.breakpoints.down('sm')]: {
+    [theme.breakpoints.down("sm")]: {
       padding: "0 36px !important",
     },
   },
   title: {
     textAlign: "center",
-    fontFamily: 'Poiret One',
-    fontSize: '40px !important',
-    lineHeight: '20px !important',
+    fontFamily: "Poiret One",
+    fontSize: "40px !important",
+    lineHeight: "20px !important",
     marginTop: "0 !important",
     fontWeight: "300",
   },
   logoContainer: {
-    textAlign: "center"
+    textAlign: "center",
   },
   card: {
     backgroundColor: "#F5EEE6 !important",
@@ -145,7 +187,7 @@ const useStyles = makeStyles((theme) => ({
   },
   inputWrapper: {
     marginTop: "20px !important",
-    [theme.breakpoints.down('md')]: {
+    [theme.breakpoints.down("md")]: {
       marginTop: "15px !important",
     },
   },
