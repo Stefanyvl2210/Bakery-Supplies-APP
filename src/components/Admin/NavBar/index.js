@@ -8,7 +8,6 @@ import MenuIcon from "@mui/icons-material/Menu";
 import ExpandLess from "@mui/icons-material/ExpandLess";
 import ExpandMore from "@mui/icons-material/ExpandMore";
 
-import Logo from "../../../assets/images/admin-logo.png";
 import LoginIcon from "@mui/icons-material/Login";
 import LogoutIcon from "@mui/icons-material/Logout";
 import {
@@ -19,9 +18,6 @@ import {
   ListItemText,
   Popper,
   Grid,
-  Typography,
-  Divider,
-  ListItem,
   Drawer,
 } from "@mui/material";
 
@@ -66,7 +62,7 @@ export default function NavBar(props) {
     setMobileOpen(!mobileOpen);
   };
 
-  const MenuListComponent = () => {
+  const DrawerComponent = () => {
     return (
       <List
         sx={{ width: "100%", maxWidth: 360, color: "#fff !important" }}
@@ -120,41 +116,12 @@ export default function NavBar(props) {
     );
   };
 
-  const drawer = <MenuListComponent />;
-
   const container =
     window !== undefined ? () => window().document.body : undefined;
 
   return (
     <Grid container>
-      <Grid item xs={2} className={classes.sidebarWrapper}>
-        <div className={classes.sidebar}>
-          <Box
-            sx={{
-              display: {
-                xs: "none",
-                md: "flex",
-                padding: "28px 20px 28px 28px",
-              },
-            }}
-          >
-            <img src={Logo} alt="logo" />
-          </Box>
-
-          <Box
-            sx={{
-              display: {
-                xs: "none",
-                sm: "block",
-              },
-            }}
-          >
-            <MenuListComponent />
-          </Box>
-        </div>
-      </Grid>
-
-      <Grid item xs={10}>
+      <Grid item xs={12}>
         <AppBar position="static" className={classes.container}>
           <Toolbar className={classes.toolbar}>
             <Box
@@ -246,12 +213,12 @@ export default function NavBar(props) {
               "& .MuiDrawer-paper": {
                 boxSizing: "border-box",
                 width: drawerWidth,
-                backgroundColor: '#2C3338',
-                paddingTop: 5
+                backgroundColor: "#2C3338",
+                paddingTop: 5,
               },
             }}
           >
-            {drawer}
+            <DrawerComponent />
           </Drawer>
         </Box>
       </Grid>
@@ -271,7 +238,6 @@ const useStyles = makeStyles((theme) => ({
     [theme.breakpoints.down("md")]: {
       position: "fixed !important",
       top: "0",
- 
     },
   },
   sidebarWrapper: {
@@ -281,7 +247,6 @@ const useStyles = makeStyles((theme) => ({
   },
   sidebar: {
     backgroundColor: "#2C3338",
-    height: "100vh",
   },
   listWrapper: {
     "& span": {
