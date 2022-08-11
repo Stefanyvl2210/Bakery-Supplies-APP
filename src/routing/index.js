@@ -24,7 +24,10 @@ import Payments from "../pages/payments";
 import Orders from "../pages/orders";
 
 // Admin
-import AdminHome from "../pages/Admin/home";
+import AdminProducts from "../pages/Admin/products";
+import { Grid } from "@mui/material";
+import Sidebar from "../components/Admin/Sidebar";
+import ProductForm from "../pages/Admin/new-product-form";
 
 /**
  * Use this component for any new section of routes (any config object that has a "routes" property
@@ -34,25 +37,44 @@ export function RenderRoutes() {
 
   return (
     <>
-      {location.pathname.includes("/admin") ? <AdminNavBar /> : <NavBar />}
-      <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/register" element={<Register />} />
-        <Route path="/verify-email" element={<VerifyEmail />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/products" element={<Products />} />
-        <Route path="/detail" element={<ProductDetail />} />
-        <Route path="/cart" element={<Cart />} />
-        <Route path="/order-completed" element={<Completed />} />
-        <Route path="/order-detail" element={<OrderDetail />} />
-        <Route path="/my-account" element={<MyAccount />} />
-        <Route path="/payments" element={<Payments />} />
-        <Route path="/orders" element={<Orders />} />
-        <Route path="/admin" element={<AdminHome />} />
-        <Route path="*" element={<h1>404 Not Found!</h1>} />
-      </Routes>
+      {location.pathname.includes("/admin") ? (
+        <>
+          <Grid container>
+            <Sidebar />
+            <Grid item xs={10}>
+              <AdminNavBar />
+              <Routes>
+                <Route path="/admin/products" element={<AdminProducts />} />
+                <Route path="/admin/new-product" element={<ProductForm />} />
+                <Route path="*" element={<h1>404 Not Found!</h1>} />
+              </Routes>
+            </Grid>
+          </Grid>
 
-      {location.pathname.includes("/admin") ? <AdminFooter /> : <Footer />}
+          <AdminFooter />
+        </>
+      ) : (
+        <>
+          <NavBar />
+          <Routes>
+            <Route path="/" element={<Home />} />
+            <Route path="/register" element={<Register />} />
+            <Route path="/verify-email" element={<VerifyEmail />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/products" element={<Products />} />
+            <Route path="/detail" element={<ProductDetail />} />
+            <Route path="/cart" element={<Cart />} />
+            <Route path="/order-completed" element={<Completed />} />
+            <Route path="/order-detail" element={<OrderDetail />} />
+            <Route path="/my-account" element={<MyAccount />} />
+            <Route path="/payments" element={<Payments />} />
+            <Route path="/orders" element={<Orders />} />
+            <Route path="/admin/products" element={<AdminProducts />} />
+            <Route path="*" element={<h1>404 Not Found!</h1>} />
+          </Routes>
+          <Footer />
+        </>
+      )}
     </>
   );
 }
