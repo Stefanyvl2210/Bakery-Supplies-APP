@@ -32,8 +32,6 @@ import AdminHome from "../pages/Admin/home";
 export function RenderRoutes() {
   const location = useLocation();
 
-  console.log(location);
-
   return (
     <>
       {location.pathname.includes("/admin") ? <AdminNavBar /> : <NavBar />}

@@ -1,6 +1,6 @@
 import * as React from "react";
 import { makeStyles } from "@mui/styles";
-import { Button, Divider, Grid, TextField, Typography } from "@mui/material";
+import { Alert, Button, Divider, Grid, Snackbar, Stack, TextField, Typography } from "@mui/material";
 import { useDispatch } from "react-redux";
 import { addCartProduct } from "../../features/counter/counterSlice";
 
@@ -14,6 +14,19 @@ export default function CustomDialog(props) {
   const { state } = useLocation();
 
   const [quantity, setQuantity] = React.useState(1);
+  const [openSnack, setOpenSnack] = React.useState(false);
+
+  const handleClick = () => {
+    setOpenSnack(true);
+  };
+
+  const handleCloseSnack = (event, reason) => {
+    if (reason === 'clickaway') {
+      return;
+    }
+
+    setOpenSnack(false);
+  };
 
   return (
     <div className={classes.container}>
@@ -89,6 +102,7 @@ export default function CustomDialog(props) {
                       qty: quantity,
                     })
                   )
+                  handleClick()
                 }}
               >
                 Add to Cart
@@ -105,6 +119,30 @@ export default function CustomDialog(props) {
           <h3 className={classes.relatedProductsTitle}>Related Products</h3>
           <RelatedProducts products={state.relatedProducts} />
         </Grid>
+        <Stack spacing={2} sx={{ width: '100%' }}>
+          <Snackbar 
+            open={openSnack} 
+            autoHideDuration={2000} 
+            onClose={handleCloseSnack} 
+            anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+          >
+            <Alert 
+              onClose={handleCloseSnack} 
+              severity="success" 
+              sx={{ 
+                width: '100%', 
+                alignItems: "center", 
+                color: "#fff !important", 
+                background: "#3eac43",
+                "& svg": {
+                  color: "#fff"
+                }
+              }}
+            >
+              Product added to cart!
+            </Alert>
+          </Snackbar>
+        </Stack>
       </Grid>
     </div>
   );
@@ -161,6 +199,7 @@ const useStyles = makeStyles((theme) => ({
     fontFamily: "Poiret One",
   },
   price: {
+    marginBottom: "4px",
     "@media (max-width: 600px)": {
       // textAlign: "center",
       fontSize: 18,

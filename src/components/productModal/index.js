@@ -7,7 +7,7 @@ import DialogTitle from "@mui/material/DialogTitle";
 import DialogContent from "@mui/material/DialogContent";
 import CloseIcon from "@mui/icons-material/Close";
 import Typography from "@mui/material/Typography";
-import { Button, Grid, IconButton } from "@mui/material";
+import { Alert, Button, Grid, IconButton, Snackbar, Stack } from "@mui/material";
 import { useDispatch } from "react-redux";
 import { addCartProduct } from "../../features/counter/counterSlice";
 
@@ -58,11 +58,24 @@ BootstrapDialogTitle.propTypes = {
 };
 
 export default function CustomDialog(props) {
-  const { open, handleClose, selectedProduct } = props;
-
-  const dispatch = useDispatch();
-
   const classes = useStyles();
+  const dispatch = useDispatch();
+  const { open, handleClose, selectedProduct } = props;
+  
+  const [openSnack, setOpenSnack] = React.useState(false);
+
+  const handleClick = () => {
+    setOpenSnack(true);
+  };
+
+  const handleCloseSnack = (event, reason) => {
+    if (reason === 'clickaway') {
+      return;
+    }
+
+    setOpenSnack(false);
+  };
+
   return (
     <div>
       <BootstrapDialog
@@ -78,7 +91,7 @@ export default function CustomDialog(props) {
         <DialogContent className={classes.modalContainer}>
           <Grid
             container
-            direction={{ xs: "column", md: "row" }}
+            direction={{ xs: "column", md: "row"}}
             justifyContent="center"
             alignItems="center"
           >
@@ -124,6 +137,7 @@ export default function CustomDialog(props) {
                         qty: 1,
                       })
                     );
+                    handleClick()
                   }}
                   sx={{ bgcolor: "#C86B85 !important" }}
                 >
@@ -133,6 +147,30 @@ export default function CustomDialog(props) {
             </Grid>
           </Grid>
         </DialogContent>
+        <Stack spacing={2} sx={{ width: '100%' }}>
+          <Snackbar 
+            open={openSnack} 
+            autoHideDuration={2000} 
+            onClose={handleCloseSnack} 
+            anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+          >
+            <Alert 
+              onClose={handleCloseSnack} 
+              severity="success" 
+              sx={{ 
+                width: '100%', 
+                alignItems: "center", 
+                color: "#fff !important", 
+                background: "#3eac43",
+                "& svg": {
+                  color: "#fff"
+                }
+              }}
+            >
+              Product added to cart!
+            </Alert>
+          </Snackbar>
+        </Stack>
       </BootstrapDialog>
     </div>
   );
@@ -191,6 +229,7 @@ const useStyles = makeStyles((theme) => ({
     [theme.breakpoints.down('md')]: {
       "& .MuiDialog-paper":{
         maxWidth: "600px !important",
+        flexWrap: "nowrap !important",
         height: "fit-content !important",
         maxHeight: "calc(100% - 110px) !important",
         marginTop: "115px !important"
