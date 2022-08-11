@@ -5,7 +5,7 @@ import { Grid, Button, Typography } from "@mui/material";
 import { makeStyles } from "@mui/styles";
 
 // components
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 
 // images
 import CheckCirle from "../../assets/images/check-circle.svg";
@@ -13,6 +13,14 @@ import CheckCirle from "../../assets/images/check-circle.svg";
 const OrderCompleted = () => {
   const classes = useStyles();
   const navigate = useNavigate();
+  const { state } = useLocation();
+
+  const handleOrder = () => {
+    //guardar orden y obtener data
+    state.orderInfo.id = 1;
+    state.orderInfo.createdDate = new Date();
+    navigate("/order-detail", {state: state})
+  }
 
   return (
     <>
@@ -30,7 +38,7 @@ const OrderCompleted = () => {
                 type="submit"
                 variant="contained"
                 className={classes.button}
-                onClick={() => navigate("/order-detail")}
+                onClick={() => handleOrder()}
             >
                 <span className={classes.buttonText}>Next</span>
             </Button>

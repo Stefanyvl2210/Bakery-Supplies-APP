@@ -232,7 +232,10 @@ const useStyles = makeStyles((theme) => ({
         flexWrap: "nowrap !important",
         height: "fit-content !important",
         maxHeight: "calc(100% - 110px) !important",
-        marginTop: "115px !important"
+        marginTop: "115px !important",
+        "& .MuiDialogContent-root": {
+          margin: "60px 9% !important",
+        }
       }
     },
   }

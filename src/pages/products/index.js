@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 
 import classnames from "classnames";
 
@@ -27,6 +27,13 @@ const Products = () => {
   const handleChange = (event) => {
     setFilter(event.target.value);
   };
+
+  const handleChangeSearch = (event) => {
+    setSearch(event.target.value);
+  };
+
+  useEffect(() => {
+  }, [search]);
   
   return (
     <>
@@ -49,7 +56,7 @@ const Products = () => {
               field="search"
               width="300px !important"
               label="Search"
-              onChange={setSearch}
+              onChange={handleChangeSearch}
               fullWidth
               className={classes.input}
               sx={{fontSize: "18px !important", lineHeight: "20px !important"}}
