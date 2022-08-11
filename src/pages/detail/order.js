@@ -17,11 +17,12 @@ import {
 } from "@mui/material";
 import { makeStyles } from "@mui/styles";
 import { useLocation, useNavigate } from "react-router-dom";
+import { deleteAllProducts } from "../../features/counter/counterSlice";
+import { useDispatch } from "react-redux";
 
 function createData(product, unitPrice, quantity, subtotal) {
   return { product, unitPrice, quantity, subtotal };
 }
-
 
 const columns = [
   {
@@ -53,13 +54,16 @@ const formatDate = (date) => {
 const OrderDetail = () => {
   const classes = useStyles();
   const navigate = useNavigate();
+  const dispatch = useDispatch();
   const { state } = useLocation();
   const [products, setProducts] = useState(shoppingCart().listCart());
   const [orderInfo, setOrderInfo] = useState({});
 
   const handleResetCart = () => {
-    sessionStorage.removeItem("shoppingCart")
-    navigate('/')
+    dispatch(
+      deleteAllProducts()
+    );
+    // navigate('/')
   }
 
   useEffect(() => {

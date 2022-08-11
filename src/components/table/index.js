@@ -30,7 +30,6 @@ export default function BasicTable(props) {
               
               {columns.map((column, i) => (
                 <TableCell component="th" scope="row" key={i}>
-                  {row[column.key]}
                   {column.key === "unitPrice" || column.key === "subtotal" ? `$${row[column.key]}`: row[column.key]}
                   {i+1 == columns.length &&
                     viewOrders &&

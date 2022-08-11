@@ -91,12 +91,13 @@ const ShoppingCart = () => {
       deliveryTime: expectedDelivery,
     }
 
-    if(address !== "" && payment !== "" && products.length > 0) {
+    if(address !== "" && payment !== "" && products.length > 0 && delivery !== 0) {
       navigate('/order-completed', {state: {orderInfo}});
     }
   }
 
   useEffect(() => {
+
     const formatProducts = products.map(item => {
       let subtotal = parseInt(item.price) * parseInt(item.qty);
       return createData(item.name, item.price, item.qty, parseInt(subtotal));
@@ -104,7 +105,7 @@ const ShoppingCart = () => {
     setProducts(formatProducts)
   }, []);
 
-  useEffect(() => {
+  useEffect(() => { 
     let totalbeftax = 0;
     let totOrder = 0;
     products.map(item => {

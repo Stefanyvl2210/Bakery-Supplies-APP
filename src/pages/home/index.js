@@ -29,7 +29,6 @@ const Home = () => {
   const navigate = useNavigate();
   const userIsLogged = localStorage.getItem('userLogged');
   
-
   const [values, setValues] = React.useState({
     email: '',
   });
