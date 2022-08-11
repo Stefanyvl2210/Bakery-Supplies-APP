@@ -88,6 +88,10 @@ const Payments = () => {
 export default Payments;
 
 const useStyles = makeStyles((theme) => ({
+  grid:{
+    height: "70vh",
+
+  },
   container: {
     padding: 60,
     maxWidth: "1140px !important",
