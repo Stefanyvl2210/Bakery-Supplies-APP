@@ -21,7 +21,7 @@ const store = configureStore({
 });
 
 store.subscribe(() => {
-  const token = store.getState()?.login?.accessToken;
+  const token = store.getState()?.auth?.token;
 
   if (token) {
     axios.defaults.headers["Authorization"] = `Bearer ${token}`;

@@ -45,7 +45,7 @@ const Login = () => {
         );
 
         // localStorage.setItem("userLogged", true);
-        dispatch(login(data));
+
         navigate("/");
       })
       .catch((err) => {
