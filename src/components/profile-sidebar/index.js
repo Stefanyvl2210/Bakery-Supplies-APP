@@ -9,7 +9,7 @@ const ProfileSidebar = () => {
   const classes = useStyles();
   return (
     <>
-      <Grid container style={{ height: "100%" }}>
+      <Grid container style={{ height: "100%"}}>
         <Grid item xs={12} className={classes.sidebar}>
           <p className={classes.paragraph}>
             <Link to="/my-account">Profile</Link>
