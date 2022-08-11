@@ -1,6 +1,6 @@
 import ProfileSidebar from "../../components/profile-sidebar";
 
-import React, { useState } from "react";
+import * as React from 'react';
 
 // components
 import Table from "../../components/table";
@@ -10,6 +10,13 @@ import {
   Grid,
 } from "@mui/material";
 import { makeStyles } from "@mui/styles";
+
+
+import TextField from '@mui/material/TextField';
+import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
+import { DatePicker } from '@mui/x-date-pickers/DatePicker';
+
 
 function createData(order, status, dateoforder, total) {
   return { order, status, dateoforder, total };
@@ -32,6 +39,9 @@ const columns = [
     name: "Total",
     key: "total",
   },
+  {
+
+  }
 ];
 
 const rows = [
@@ -43,29 +53,67 @@ const rows = [
 
 const Orders = () => {
   const classes = useStyles();
+  const [value, setValue] = React.useState(null);
 
   return (
-    <Grid container className={classes.grid}>
-      <Grid item xs={2} className={classes.sidebar}>
+    <Grid 
+      container
+      direction="row"
+      justifyContent="flex-start"
+      alignItems="flex-start"
+      className={classes.father}
+      >
+      <Grid 
+        item 
+        className={classes.sidebar} 
+        xs="auto"
+        >
         <ProfileSidebar />
       </Grid>
 
-      <Grid item xs={10} className={classes.container}>
-        <Grid container>
-          <Grid item xs={4.7} className={classes.avatarWrapper}>
-            <h1 className={classes.title}>Orders</h1>
+      <Grid 
+        item
+        container 
+        className={classes.container}
+        xs
+        direction="column"
+      >
+        <Grid item xs>
+          <h1 className={classes.title}>Orders</h1>
+        </Grid>
+        <Grid
+          container
+          item
+          direction="row"
+          justifyContent="flex-start"
+          alignItems="center"
+          xs
+        >
+          <Grid item xs="auto" >
+            <p className={classes.datePickerLabel}>Filter By Date:</p>
           </Grid>
-
-          
-          <Grid
-            item
-            xs={12}
-            display="flex"
-            justifyContent="center"
-            className={classes.table}
-          >
-            <Table rows={rows} columns={columns} maxWidth={1038} />
+          <Grid item xs className={classes.inputDatePicker}>
+            <LocalizationProvider dateAdapter={AdapterDateFns} >
+            <DatePicker
+              
+              label="Date"
+              value={value}
+              onChange={(newValue) => {
+                setValue(newValue);
+              }}
+              renderInput={(params) => <TextField {...params} />}
+            />
+          </LocalizationProvider>
           </Grid>
+        </Grid>
+        
+        <Grid
+          item
+          display="flex"
+          className={classes.table}
+          xs={12}
+        >
+          <Table rows={rows} columns={columns} maxWidth={"100%"} viewOrders={true}/>
         </Grid>
       </Grid>
     </Grid>
@@ -86,48 +134,39 @@ const useStyles = makeStyles((theme) => ({
       margin: "0 auto !important",
     },
   },
+  father: {
+    height: "70vh",
+    
+  },
   sidebar: {
     "@media (max-width: 1000px)": {
       display: "none",
     },
+    height: "100%"
+  },
+  datePickerLabel:{
+    marginRight: "15px",
+    font: "300 18px Open Sans",
+    lineHeight: "20px"
+
   },
   title: {
     font: "400 40px/28px Poiret One",
     marginTop: "0px",
-    marginBottom: "35px",
+    marginBottom: "50px",
     lineHeight: "20px",
     color: "black"
   },
-
-  form: {
-    "& .MuiGrid-root": {
-      "@media (max-width: 768px)": {
-        display: "flex",
-        justifyContent: "center",
-      },
-    },
+  inputDatePicker: {
     "& .MuiFormLabel-root": {
-      color: "#767676",
-      fontSize: "14px",
-      lineHeight: "16px",
-      fontStyle: "normal" 
+      font: "400 16px Open Sans !important",
+      lineHeight: "20px",
+      color: "#AAAAAA"
     },
   },
   inputWrapper: {
     maxWidth: 300,
     marginBottom: "15px !important"
-  },
-  button: {
-    marginTop: "30px !important",
-    marginLeft: "0 !important",
-    marginRight: "0 !important",
-    marginBottom: "0px !important",
-    padding: "0px 16px !important",
-    gap:"8px !important",
-    width: "150px !important",
-    height: "50px !important",
-    background: "#C86B85 !important",
-    borderRadius: "4px !important",
   },
   paragraph:{
     marginTop: "0px !important",
@@ -136,19 +175,15 @@ const useStyles = makeStyles((theme) => ({
     lineHeight: "20px",
     color: "black"
   },
-  buttonText:{
-    margin: 0,
-    font: "400 24px Open Sans",
-    lineHeight: "26px",
-    color: "white"
-  },
   table: {
-    marginTop: "45px !important",
+    marginTop: "15px !important",
     borderRadius: "4px !important",
+    width: "100%",
     "& thead": {
       "& th": {
         backgroundColor: "#F5EEE6",
         borderBottom: "1px solid #AAAAAA !important",
+        
       },
     },
     "& tbody": {
@@ -157,6 +192,7 @@ const useStyles = makeStyles((theme) => ({
         borderBottom: "none !important",
       },
     },
+    
   },
   
 }));

@@ -56,22 +56,45 @@ const ShoppingCart = () => {
   const classes = useStyles();
   const [payment, setPayment] = useState('');
   const [address, setAddress] = useState('');
-  const [delivery, setDelivery] = useState(3);
+  const [delivery, setDelivery] = useState(0);
   const [totalBeforeTaxes, setTotalBeforeTaxes] = useState(0);
   const [totalOrder, setTotalOrder] = useState(0);
   const [products, setProducts] = useState(shoppingCart().listCart());
 
   const handleChangePayment = (event) => {
-    // console.log('payment', event.target.value)
     setPayment(event.target.value);
   };
   const handleChangeAddress = (event) => {
-    // console.log('address', event.target.value)
     setAddress(event.target.value);
   };
   const handleChangeDelivery = (event) => {
     setDelivery(parseFloat(event.target.value));
   };
+  
+  const handleOrderInfo = () => {
+    let expectedDelivery = '';
+    let today = new Date();
+    if(delivery === 3) {
+      expectedDelivery = new Date(today.setDate(today.getDate() + 2))
+    } else {
+      expectedDelivery = new Date(today.setHours(today.getHours() + 12));
+    }
+
+    let orderInfo = {
+      shippingAddress: address,
+      paymentMethod: payment,
+      deliveryValue: delivery,
+      deliveryType: delivery === 3 ? 'standard' : "express",
+      totalBeforeTaxes: totalBeforeTaxes,
+      totalOrder: totalOrder,
+      status: "In progress",
+      deliveryTime: expectedDelivery,
+    }
+
+    if(address !== "" && payment !== "" && products.length > 0) {
+      navigate('/order-completed', {state: {orderInfo}});
+    }
+  }
 
   useEffect(() => {
     const formatProducts = products.map(item => {
@@ -85,7 +108,6 @@ const ShoppingCart = () => {
     let totalbeftax = 0;
     let totOrder = 0;
     products.map(item => {
-      // console.log('item', item);
       totalbeftax += parseFloat(item.subtotal);
     });
     totOrder = (totalbeftax * 0.05) + totalbeftax + delivery;
@@ -137,7 +159,7 @@ const ShoppingCart = () => {
               <MenuItem value="">
                 <em>None</em>
               </MenuItem>
-              <MenuItem value="cash">Cash</MenuItem>
+              <MenuItem value="Cash">Cash</MenuItem>
               {/* <MenuItem value={20}>Option 2</MenuItem> */}
               {/* <MenuItem value={30}>Option 3</MenuItem> */}
             </Select>
@@ -161,9 +183,9 @@ const ShoppingCart = () => {
               <MenuItem value="">
                 <em>None</em>
               </MenuItem>
-              <MenuItem value={10}>Option 1</MenuItem>
-              <MenuItem value={20}>Option 2</MenuItem>
-              <MenuItem value={30}>Option 3</MenuItem>
+              <MenuItem value="Address 1">Address 1</MenuItem>
+              <MenuItem value="Address 2">Address 2</MenuItem>
+              <MenuItem value="Address 3">Address 3</MenuItem>
             </Select>
           </FormControl>
         </Grid>
@@ -186,7 +208,7 @@ const ShoppingCart = () => {
             color="primary"
             variant="contained"
             className={classes.button}
-            onClick={() => navigate('/order-completed')}
+            onClick={() => handleOrderInfo()}
           >
             Order
           </Button>
