@@ -44,8 +44,6 @@ const Login = () => {
           login({ token: res.data.data.token, user: res.data.data.user })
         );
 
-        // localStorage.setItem("userLogged", true);
-
         navigate("/");
       })
       .catch((err) => {

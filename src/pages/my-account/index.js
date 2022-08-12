@@ -22,14 +22,27 @@ const MyAccount = () => {
 
   const [showAddressInput, setShowAddressInput] = useState(false);
 
-  // form structure
+  // form structure user profile
   const {
     register,
     handleSubmit,
     formState: { errors },
   } = useForm();
 
-  const onSubmit = (data) => {};
+  const onSubmit = (data) => {
+    console.log('data perfil',data)
+  };
+  const onSubmitAddress = (data) => {
+    console.log('data address',data)
+    // navigate("/verify-email");
+  };
+
+  // form structure user profile
+  // const {
+  //   register,
+  //   handleSubmitAddress,
+  //   formState: { errors },
+  // } = useForm();
 
   const handleInput = (key) => {
     if (!showInput[key]) {
@@ -59,162 +72,172 @@ const MyAccount = () => {
           </Grid>
 
           <Grid item xs={12}>
-            <Grid container className={classes.form}>
-              <Grid item xs={12} sm={12} md={4.7}>
-                <CustomInput
-                  handleInput={handleInput}
-                  register={register}
-                  field="firstName"
-                  width="100%"
-                  fullWidth={true}
-                  classname={classes.inputWrapper}
-                  label="First Name"
-                  icon
-                  showValue={showInput.firstName}
-                />
-              </Grid>
+            <form onSubmit={handleSubmit(onSubmit)}>
+              <Grid container className={classes.form}>
+                <Grid item xs={12} sm={12} md={4.7}>
+                  <CustomInput
+                    handleInput={handleInput}
+                    register={register}
+                    field="firstName"
+                    width="100%"
+                    fullWidth={true}
+                    classname={classes.inputWrapper}
+                    label="First Name"
+                    icon
+                    showValue={showInput.firstName}
+                  />
+                </Grid>
 
-              <Grid item xs={12} sm={12} md={4.7}>
-                <CustomInput
-                  handleInput={handleInput}
-                  register={register}
-                  field="lastName"
-                  width="100%"
-                  fullWidth={true}
-                  classname={classes.inputWrapper}
-                  label="Last Name"
-                  icon
-                  showValue={showInput.lastName}
-                />
-              </Grid>
+                <Grid item xs={12} sm={12} md={4.7}>
+                  <CustomInput
+                    handleInput={handleInput}
+                    register={register}
+                    field="lastName"
+                    width="100%"
+                    fullWidth={true}
+                    classname={classes.inputWrapper}
+                    label="Last Name"
+                    icon
+                    showValue={showInput.lastName}
+                  />
+                </Grid>
 
-              <Grid item xs={12} sm={12} md={4.7}>
-                <CustomInput
-                  handleInput={handleInput}
-                  register={register}
-                  field="email"
-                  width="100%"
-                  fullWidth={true}
-                  classname={classes.inputWrapper}
-                  label="Email"
-                  icon
-                  showValue={showInput.email}
-                />
-              </Grid>
+                <Grid item xs={12} sm={12} md={4.7}>
+                  <CustomInput
+                    handleInput={handleInput}
+                    register={register}
+                    field="email"
+                    width="100%"
+                    fullWidth={true}
+                    classname={classes.inputWrapper}
+                    label="Email"
+                    icon
+                    showValue={showInput.email}
+                  />
+                </Grid>
 
-              <Grid item xs={12} sm={12} md={4.7}>
-                <CustomInput
-                  handleInput={handleInput}
-                  register={register}
-                  field="phoneNumber"
-                  width="100%"
-                  fullWidth={true}
-                  classname={classes.inputWrapper}
-                  label="Phone Number"
-                  icon
-                  showValue={showInput.phoneNumber}
-                />
-              </Grid>
+                <Grid item xs={12} sm={12} md={4.7}>
+                  <CustomInput
+                    handleInput={handleInput}
+                    register={register}
+                    field="phoneNumber"
+                    width="100%"
+                    fullWidth={true}
+                    classname={classes.inputWrapper}
+                    label="Phone Number"
+                    icon
+                    showValue={showInput.phoneNumber}
+                  />
+                </Grid>
 
-              <Grid item xs={12} sm={12} md={4.7}>
-                <CustomInput
-                  handleInput={handleInput}
-                  register={register}
-                  field="oldPassword"
-                  width="100%"
-                  fullWidth={true}
-                  classname={classes.inputWrapper}
-                  label="Old Password"
-                  type="password"
-                />
-              </Grid>
+                <Grid item xs={12} sm={12} md={4.7}>
+                  <CustomInput
+                    handleInput={handleInput}
+                    register={register}
+                    field="oldPassword"
+                    width="100%"
+                    fullWidth={true}
+                    classname={classes.inputWrapper}
+                    label="Old Password"
+                    type="password"
+                  />
+                </Grid>
 
-              <Grid item xs={12} sm={12} md={4.7}>
-                <CustomInput
-                  handleInput={handleInput}
-                  register={register}
-                  field="newPassword"
-                  width="100%"
-                  fullWidth={true}
-                  classname={classes.inputWrapper}
-                  label="New Password"
-                  type="password"
-                />
-              </Grid>
+                <Grid item xs={12} sm={12} md={4.7}>
+                  <CustomInput
+                    handleInput={handleInput}
+                    register={register}
+                    field="newPassword"
+                    width="100%"
+                    fullWidth={true}
+                    classname={classes.inputWrapper}
+                    label="New Password"
+                    type="password"
+                  />
+                </Grid>
 
-              <Grid item xs={12}>
-                <Button
-                  type="submit"
-                  variant="contained"
-                  className={classes.button}
-                  //   onClick={handleSubmit(onSubmit)}
-                >
-                  <span className={classes.buttonText}>Save</span>
-                </Button>
-              </Grid>
-
-              <Grid item xs={12} className={classes.addressesContent}>
-                <h2 className={classes.title}>Addresses</h2>
-              </Grid>
-
-              <Grid container xs={12}>
-
-                {showAddressInput ? (
-                  <><><Grid item xs={8.7}>
-                    <CustomInput
-                      handleInput={handleInput}
-                      register={register}
-                      field="address"
-                      width="100%"
-                      fullWidth={true}
-                      classname={classes.inputAddress}
-                      label="Address *" />
-                  </Grid><Grid item xs={4.7}>
-                      <CustomInput
-                        handleInput={handleInput}
-                        register={register}
-                        field="city"
-                        width="100%"
-                        fullWidth={true}
-                        classname={classes.inputWrapper}
-                        label="City *" />
-                    </Grid></><Grid item xs={4.7}>
-                      <CustomInput
-                        handleInput={handleInput}
-                        register={register}
-                        field="state/province*"
-                        width="100%"
-                        fullWidth={true}
-                        classname={classes.inputWrapper}
-                        label="State/Province *" />
-                    </Grid></>
-                ) : (
-                    <p className={classes.paragraph}>You don’t have any address yet!</p>
-                )}
-              </Grid>
-
-              <Grid item xs={12}>
-                <div>
+                <Grid item xs={12}>
                   <Button
                     type="submit"
                     variant="contained"
                     className={classes.button}
-                    //   onClick={handleSubmit(onSubmit)}
-                    onClick={() => {
-                      if (showAddressInput) {
-                        alert("saved");
-                        setShowAddressInput(false);
-                      } else {
-                        setShowAddressInput(true);
-                      }
-                    }}
+                      onClick={handleSubmit(onSubmit)}
                   >
-                    <span className={classes.buttonText}>
-                      {showAddressInput ? "Save" : "Add"}
-                    </span>
+                    <span className={classes.buttonText}>Save</span>
                   </Button>
-                </div>
+                </Grid>
               </Grid>
+            </form>
+
+            <Grid container className={classes.form}>
+              <Grid item xs={12} className={classes.addressesContent}>
+                <h2 className={classes.title}>Addresses</h2>
+              </Grid>
+
+              <form onSubmit={handleSubmit(onSubmitAddress)}>
+                <Grid container>
+                  {showAddressInput ? (
+                    <>
+                      <Grid item xs={8.7}>
+                        <CustomInput
+                          handleInput={handleInput}
+                          register={register}
+                          field="address"
+                          width="100%"
+                          fullWidth={true}
+                          classname={classes.inputAddress}
+                          label="Address *" />
+                      </Grid>
+                      <Grid item xs={4.7}>
+                        <CustomInput
+                          handleInput={handleInput}
+                          register={register}
+                          field="city"
+                          width="100%"
+                          fullWidth={true}
+                          classname={classes.inputWrapper}
+                          label="City *" />
+                      </Grid>
+                      <Grid item xs={4.7}>
+                        <CustomInput
+                          handleInput={handleInput}
+                          register={register}
+                          field="state"
+                          width="100%"
+                          fullWidth={true}
+                          classname={classes.inputWrapper}
+                          label="State/Province *" />
+                      </Grid>
+                    </>
+                  ) : (
+                      <p className={classes.paragraph}>You don’t have any address yet!</p>
+                  )}
+                </Grid>
+
+                <Grid item xs={12}>
+                  <div>
+                    <Button
+                      type="submit"
+                      variant="contained"
+                      className={classes.button}
+                      //   onClick={handleSubmit(onSubmit)}
+                      onClick={() => {
+                        if (showAddressInput) {
+                          // alert("saved");
+                          handleSubmit(onSubmitAddress)
+                          setShowAddressInput(false);
+                        } else {
+                          setShowAddressInput(true);
+                        }
+                      }}
+                    >
+                      <span className={classes.buttonText}>
+                        {showAddressInput ? "Save" : "Add"}
+                      </span>
+                    </Button>
+                  </div>
+                </Grid>
+              </form>
             </Grid>
           </Grid>
         </Grid>

@@ -12,6 +12,8 @@ import step2 from "../../assets/images/shopping-cart.svg";
 import step3 from "../../assets/images/truck.svg";
 import EastIcon from '@mui/icons-material/East';
 import { useNavigate } from "react-router-dom";
+import { useSelector } from "react-redux";
+import { token } from "../../features/auth/AuthSlice";
 
 const dessert = {
   name: "Desserts",
@@ -27,8 +29,8 @@ const utensil = {
 
 const Home = () => {
   const navigate = useNavigate();
-  const userIsLogged = localStorage.getItem('userLogged');
-  
+  const userLogged = useSelector(token);
+
   const [values, setValues] = React.useState({
     email: '',
   });
@@ -47,7 +49,7 @@ const Home = () => {
             <Typography className={classes.mainTitle}>
               Prepare your favorite recipe or buy your favorite dessert without leaving home!
             </Typography>
-            {!userIsLogged && (
+            {!userLogged && (
               <div className={classes.registerInput}>
                 <TextField 
                   id="email-register" 

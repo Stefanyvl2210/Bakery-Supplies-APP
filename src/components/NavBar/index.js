@@ -1,15 +1,14 @@
 import * as React from "react";
-import AppBar from "@mui/material/AppBar";
 import Box from "@mui/material/Box";
-import Toolbar from "@mui/material/Toolbar";
 import { useNavigate, useLocation, Link } from "react-router-dom";
 import { makeStyles } from "@mui/styles";
+import AppBar from "@mui/material/AppBar";
+import Toolbar from "@mui/material/Toolbar";
 import Button from "@mui/material/Button";
 import Badge from "@mui/material/Badge";
 import MenuIcon from "@mui/icons-material/Menu";
 import ExpandLess from "@mui/icons-material/ExpandLess";
 import ExpandMore from "@mui/icons-material/ExpandMore";
-
 import Logo from "../../assets/images/header-logo.png";
 import LogoMobile from "../../assets/images/logo-mobile.svg";
 import LoginIcon from "@mui/icons-material/Login";
@@ -31,8 +30,10 @@ import {
   Paper,
   Popper,
 } from "@mui/material";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import { cartQtySelector } from "../../features/counter/counterSlice";
+import { token, logout } from "../../features/auth/AuthSlice";
+import { logoutUser } from "../../helpers/api/auth";
 
 const menuMobile = [
   {
@@ -52,10 +53,11 @@ const menuMobile = [
 export default function NavBar() {
   const classes = useStyles();
   const navigate = useNavigate();
+  const dispatch = useDispatch();
   const location = useLocation();
-  const userIsLogged = localStorage.getItem("userLogged");
   const anchorRef = React.useRef(null);
   const cartQty = useSelector(cartQtySelector);
+  const userIsLogged = useSelector(token);
 
   const [openMenuMobile, setOpenMenuMobile] = React.useState(false);
   const [open, setOpen] = React.useState(false);
@@ -66,9 +68,18 @@ export default function NavBar() {
     setOpenMenuMobile(!openMenuMobile);
   };
 
-  const handleLogout = () => {
-    localStorage.removeItem("userLogged");
-    navigate("/");
+  const handleLogout = async () => {
+   try {
+    const resp = await logoutUser()
+
+    if(resp.status === 200){
+      dispatch(logout());
+      navigate("/");
+    }
+    
+   } catch (error) {
+    console.log(error)
+   }
   };
 
   const handleToggle = () => {

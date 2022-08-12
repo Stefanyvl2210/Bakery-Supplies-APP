@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-
+import { productsList } from "./products";
 import classnames from "classnames";
 
 // material ui components
@@ -23,6 +23,7 @@ const Products = () => {
   const classes = useStyles();
   const [search, setSearch] = useState("");
   const [filter, setFilter] = useState("");
+  const [products, setProducts] = useState(productsList);
 
   const handleChange = (event) => {
     setFilter(event.target.value);
@@ -33,6 +34,18 @@ const Products = () => {
   };
 
   useEffect(() => {
+    if(search !== "") {
+      let filteredProducts = products.filter((product) => {
+        const name = product.name ? product.name.toLowerCase() : "";
+  
+        return (
+          name.toLowerCase().includes(search.toLowerCase())
+        );
+      });
+      setProducts(filteredProducts)
+    } else {
+      setProducts(productsList)
+    }
   }, [search]);
   
   return (
@@ -96,8 +109,9 @@ const Products = () => {
         </Grid>
       </Grid>
       <Grid container className={classes.containerProduct}>
-        <Product />
+        <Product productList={products} />
         <Grid item xs={12} sx={{textAlign: 'center'}}>
+          {search === "" ?
           <Button
             color="primary"
             variant="contained"
@@ -105,7 +119,7 @@ const Products = () => {
             onClick={() => console.log('load more')}
           >
             Load More
-          </Button>
+          </Button> : ""}
         </Grid>
       </Grid>
     </>

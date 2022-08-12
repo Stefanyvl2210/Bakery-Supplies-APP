@@ -10,8 +10,8 @@ export const generateCancelToken = () => {
 const instance = axios.create({
   baseURL:
     process.env.NODE_ENV === 'production'
-      ? '/api/v1'
-      : 'http://localhost:3002/api/v1',
+      ? 'https://bakery-supplies.herokuapp.com/api'
+      : 'http://dev.bakery-supplies.lc/api',
 });
 
 export default instance;
