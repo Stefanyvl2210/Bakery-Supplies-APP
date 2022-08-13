@@ -118,6 +118,14 @@ export default function NavBar() {
     }
   };
 
+  const handleGoToCart = () => {
+    if(userIsLogged) {
+      navigate("/cart");
+    } else {
+      navigate("/login");
+    }
+  }
+
   function handleListKeyDown(event) {
     if (event.key === "Tab") {
       event.preventDefault();
@@ -187,7 +195,7 @@ export default function NavBar() {
               color="inherit"
               aria-label="open drawer"
               sx={{ margin: "0 !important" }}
-              onClick={() => navigate("/cart")}
+              onClick={() => handleGoToCart()}
             >
               <Badge badgeContent={cartQty} color="primary">
                 <ShoppingCartOutlinedIcon />
@@ -275,7 +283,7 @@ export default function NavBar() {
               className={
                 location.pathname === "/cart" ? classes.underlined : ""
               }
-              onClick={() => navigate("/cart")}
+              onClick={() => handleGoToCart()}
             >
               <Badge badgeContent={cartQty} color="primary">
                 Cart

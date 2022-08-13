@@ -3,7 +3,8 @@ import { Avatar, Button, Grid } from "@mui/material";
 
 // hook form
 import { useForm } from "react-hook-form";
-
+import { addAddress, allAddresses } from "../../features/auth/AuthSlice";
+import { useDispatch, useSelector } from "react-redux";
 import ProfileSidebar from "../../components/profile-sidebar";
 import CustomInput from "../../components/input";
 import { makeStyles } from "@mui/styles";
@@ -19,6 +20,10 @@ const MyAccount = () => {
     phoneNumber: true,
     address: true,
   });
+  const dispatch = useDispatch();
+  const addresses = useSelector(allAddresses);
+
+  console.log('addresses', addresses)
 
   const [showAddressInput, setShowAddressInput] = useState(false);
 
@@ -32,9 +37,11 @@ const MyAccount = () => {
   const onSubmit = (data) => {
     console.log('data perfil',data)
   };
-  const onSubmitAddress = (data) => {
-    console.log('data address',data)
-    // navigate("/verify-email");
+
+  const onSubmitAddress = (data, showAddressInput) => {
+    if(showAddressInput == 'Save') {
+      // dispatch(addAddress(data))
+    }
   };
 
   // form structure user profile
@@ -224,7 +231,7 @@ const MyAccount = () => {
                       onClick={() => {
                         if (showAddressInput) {
                           // alert("saved");
-                          handleSubmit(onSubmitAddress)
+                          handleSubmit(onSubmitAddress(showAddressInput))
                           setShowAddressInput(false);
                         } else {
                           setShowAddressInput(true);
