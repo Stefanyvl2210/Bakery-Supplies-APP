@@ -59,7 +59,7 @@ export function RenderRoutes() {
           <Routes>
             <Route path="/" element={<Home />} />
             <Route path="/register" element={<Register />} />
-            <Route path="/verify-email" element={<VerifyEmail />} />
+            <Route path="/verify-email/:id" element={<VerifyEmail />} />
             <Route path="/login" element={<Login />} />
             <Route path="/products" element={<Products />} />
             <Route path="/detail" element={<ProductDetail />} />

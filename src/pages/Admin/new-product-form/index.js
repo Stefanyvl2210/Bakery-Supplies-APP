@@ -1,6 +1,10 @@
 import React from "react";
 
-import { makeStyles } from "@mui/styles";
+// hook form
+import { useForm } from "react-hook-form";
+import * as yup from "yup";
+import { yupResolver } from "@hookform/resolvers/yup";
+
 import {
   Box,
   Button,
@@ -11,13 +15,20 @@ import {
   MenuItem,
   Select,
 } from "@mui/material";
+import { makeStyles } from "@mui/styles";
 
 import EmptyImage from "../../../assets/images/empty-image.png";
 import CustomInput from "../../../components/input";
 
-// hook form
-import { useForm } from "react-hook-form";
 import classNames from "classnames";
+
+const validationSchema = yup.object({
+  product_image: yup.string().required("Required"),
+  name: yup.string().required("Required"),
+  description: yup.string().required("Required"),
+  price: yup.number().required("Required"),
+  category: yup.string().required("Required"),
+});
 
 const ProductForm = () => {
   const classes = useStyles();
@@ -26,7 +37,11 @@ const ProductForm = () => {
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm({});
+    watch,
+  } = useForm({
+    resolver: validationSchema,
+  });
+  console.log(watch());
 
   return (
     <>
@@ -38,31 +53,37 @@ const ProductForm = () => {
         <div>
           <img src={EmptyImage} alt="empty" />
 
-          <div>
-            <Button variant="contained" className={classes.button}>
-              Upload image
-            </Button>
-          </div>
+          <Box
+            sx={{
+              marginTop: 4,
+              marginBottom: 4,
+            }}
+          >
+            <label className={classes.uploadButton}>
+              <input type="file" {...register("product_image")} />
+              Custom Upload
+            </label>
+          </Box>
         </div>
 
         <Grid container maxWidth={550}>
           <Grid item xs={12} className={classes.input}>
             <CustomInput
               register={register}
-              field="firstName"
+              field="name"
               fullWidth={true}
               width="100%"
-              label="First Name"
+              label="Name"
               placeholder=" "
             />
           </Grid>
           <Grid item xs={12} className={classes.input}>
             <CustomInput
               register={register}
-              field="firstName"
+              field="description"
               fullWidth={true}
               width="100%"
-              label="First Name"
+              label="description"
               placeholder=" "
             />
           </Grid>
@@ -70,10 +91,10 @@ const ProductForm = () => {
           <Grid item xs={6} className={classNames(classes.input)}>
             <CustomInput
               register={register}
-              field="firstName"
+              field="price"
               fullWidth={true}
               width="225px"
-              label="First Name"
+              label="Price"
               placeholder=" "
             />
           </Grid>
@@ -92,7 +113,14 @@ const ProductForm = () => {
               >
                 Category
               </InputLabel>
-              <Select placeholder="Select" variant="outlined" fullWidth>
+              <Select
+                placeholder="Select"
+                variant="outlined"
+                fullWidth
+                name="category"
+                {...register("category")}
+                defaultValue=""
+              >
                 <MenuItem
                   value=""
                   sx={{
@@ -139,8 +167,6 @@ const ProductForm = () => {
             </Button>
           </Grid>
         </Grid>
-
-     
       </div>
     </>
   );
@@ -176,6 +202,17 @@ const useStyles = makeStyles(() => ({
     backgroundColor: "#0978DE !important",
     margin: "20px 0 30px 0 !important",
   },
+  uploadButton: {
+    "& input[type='file']": {
+      display: "none",
+    },
+
+    padding: "14px 21px",
+    backgroundColor: "#0978DE !important",
+    fontFamily: "Open Sans",
+    color: "#fff",
+  },
+  inputFile: {},
 }));
 
 export default ProductForm;

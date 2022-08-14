@@ -30,7 +30,7 @@ const useStyles = makeStyles(() => ({
   container: {
     width: "100%",
     maxWidth: "1068px",
-    margin: "30px auto 0 auto",
+    margin: "30px auto 400px auto",
   },
   titleWrapper: {
     display: "flex",

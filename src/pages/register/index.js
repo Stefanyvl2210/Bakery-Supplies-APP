@@ -79,7 +79,7 @@ const Register = () => {
       setLoading(false);
 
       setTimeout(() => {
-        navigate("/verify-email");
+        navigate(`/verify-email/${response.data.token}`);
       }, 2000);
     } catch (error) {
       console.log(error);

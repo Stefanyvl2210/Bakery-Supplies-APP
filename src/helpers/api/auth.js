@@ -9,3 +9,6 @@ export const logoutUser = async (data) =>
 
 export const registerUser = async (data) =>
   await axios.post(`${ApiUrl}/register`, data);
+
+export const verifyEmail = async (data) =>
+  await axios.post(`${ApiUrl}/verify-email`, data);
