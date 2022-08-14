@@ -10,7 +10,7 @@ import {
   Button,
   Typography,
 } from "@mui/material";
-import { makeStyles } from "@mui/styles";
+import { makeStyles, propsToClassKey } from "@mui/styles";
 import { useLocation, useNavigate } from "react-router-dom";
 
 const columns = [
@@ -77,6 +77,16 @@ const OrderDetail = () => {
         </Grid>
 
         <Grid item xs={12} container justifyContent="center">
+          { state.ordersView &&
+            <Button
+              color="primary"
+              variant="contained"
+              className={classes.button}
+              onClick={() => navigate('/orders')}
+            >
+              Back
+            </Button>
+          }
           <Button
             color="primary"
             variant="contained"

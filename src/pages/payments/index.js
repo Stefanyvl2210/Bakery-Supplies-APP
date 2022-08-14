@@ -39,13 +39,13 @@ const Payments = () => {
 
   return (
     <Grid container className={classes.grid}>
-      <Grid item xs={2} className={classes.sidebar}>
+      <Grid item xs={12} md={2.5} className={classes.sidebar}>
         <ProfileSidebar />
       </Grid>
 
-      <Grid item xs={10} className={classes.container}>
+      <Grid item xs={12} md={9.5} className={classes.container}>
         <Grid container>
-          <Grid item xs={4.7} className={classes.avatarWrapper}>
+          <Grid item xs={12}>
             <h1 className={classes.title}>Payments methods</h1>
           </Grid>
 

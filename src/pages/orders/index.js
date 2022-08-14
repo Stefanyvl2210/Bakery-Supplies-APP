@@ -94,7 +94,7 @@ const Orders = () => {
       <Grid 
         item 
         className={classes.sidebar} 
-        xs="auto"
+        xs={12} md={2.5}
         >
         <ProfileSidebar />
       </Grid>
@@ -103,7 +103,7 @@ const Orders = () => {
         item
         container 
         className={classes.container}
-        xs
+        xs={12} md={9.5}
         direction="column"
       >
         <Grid item xs>
@@ -139,7 +139,7 @@ const Orders = () => {
           className={classes.table}
           xs={12}
         >
-          <Table rows={orders} columns={columns} maxWidth={"100%"} viewOrders={true}/>
+          <Table rows={orders} columns={columns} maxWidth={"100%"} viewOrders={true} orderData={ordersSaved} />
         </Grid>
       </Grid>
     </Grid>
@@ -165,7 +165,9 @@ const useStyles = makeStyles((theme) => ({
   },
   father: {
     height: "70vh",
-    
+    [theme.breakpoints.down('md')]: {
+      height: "100%",
+    },
   },
   sidebar: {
     "@media (max-width: 1000px)": {
@@ -208,6 +210,9 @@ const useStyles = makeStyles((theme) => ({
     marginTop: "15px !important",
     borderRadius: "4px !important",
     width: "100%",
+    "& table": {
+      minWidth: "600px !important",
+    },
     "& thead": {
       "& th": {
         backgroundColor: "#F5EEE6",

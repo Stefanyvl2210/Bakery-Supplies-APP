@@ -8,9 +8,21 @@ import TableRow from "@mui/material/TableRow";
 import Paper from "@mui/material/Paper";
 import SearchIcon from '@mui/icons-material/Search';
 import { Button } from "@mui/material";
+import { useNavigate } from "react-router-dom";
 
 export default function BasicTable(props) {
-  const { rows, columns = [], maxWidth = 650, viewOrders = false } = props;
+  const { rows, columns = [], maxWidth = 650, viewOrders = false, orderData=null } = props;
+  const navigate = useNavigate();
+
+  const handleOrder = (index) => {
+    navigate("/order-detail", {
+       state: { 
+        orderInfo: orderData[index].orderInfo, 
+        products: orderData[index].orderProducts, 
+        ordersView: true 
+      }})
+  }
+
   return (
     <TableContainer component={Paper} sx={{ maxWidth: maxWidth }}>
       <Table sx={{ maxWidth: maxWidth }} aria-label="simple table">
@@ -47,6 +59,7 @@ export default function BasicTable(props) {
                           borderRadius: "7px !important",
                           border: "1px solid #767676 !important"
                         }}
+                        onClick={() => handleOrder(index)}
                       >
                         <SearchIcon sx={{color: "black",}}/>
                       </Button>
