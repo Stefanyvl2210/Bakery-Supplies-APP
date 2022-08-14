@@ -59,6 +59,7 @@ export default function CustomizedInputs(props) {
     showValue = false,
     handleInput,
     value,
+    error,
   } = props;
 
   return (
@@ -83,7 +84,19 @@ export default function CustomizedInputs(props) {
               )}
             </InputLabel>
           </div>
-          <p style={{ marginTop: 30, marginBottom: 15, fontFamily: "Open Sans", fontSize: "16px", lineHeight: "16px", fontWeight: "400", color: "black" }}>text</p>
+          <p
+            style={{
+              marginTop: 30,
+              marginBottom: 15,
+              fontFamily: "Open Sans",
+              fontSize: "16px",
+              lineHeight: "16px",
+              fontWeight: "400",
+              color: "black",
+            }}
+          >
+            text
+          </p>
         </>
       ) : (
         <>
@@ -104,7 +117,10 @@ export default function CustomizedInputs(props) {
             fullWidth={fullWidth}
             type={type}
             placeholder={placeholder || ""}
+            error={Boolean(error)}
           />
+
+          {error && <small style={{ color: "red" }}>{error}</small>}
         </>
       )}
     </FormControl>

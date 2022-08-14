@@ -1,16 +1,35 @@
-import React from "react";
+import React, { useState } from "react";
 
 // hook form
 import { useForm } from "react-hook-form";
+
+// api
+import { registerUser } from "../../helpers/api/auth";
 
 // material ui components
 import { Card, Grid, Button } from "@mui/material";
 import { makeStyles } from "@mui/styles";
 
+import * as yup from "yup";
+import { yupResolver } from "@hookform/resolvers/yup";
+
 // components
 import CustomInput from "../../components/input";
 import classNames from "classnames";
 import { useLocation, useNavigate } from "react-router-dom";
+import SnackBar from "../../components/Snackbar";
+
+const validationSchema = yup.object({
+  first_name: yup.string().required("Required"),
+  last_name: yup.string().required("Required"),
+  email: yup.string().email().required("Required"),
+  phone_number: yup.string().required("Required"),
+  password: yup.string().required("Required"),
+  password_confirmation: yup
+    .string()
+    .oneOf([yup.ref("password"), null], "Passwords must match")
+    .required("Required"),
+});
 
 const Register = () => {
   const classes = useStyles();
@@ -19,20 +38,66 @@ const Register = () => {
   const { state } = useLocation();
   const emailToRegister = state && state.email;
 
+  const [loading, setLoading] = React.useState(false);
+  const [openSnack, setOpenSnack] = React.useState({
+    open: false,
+    message: "",
+    severity: "",
+  });
+
   // form structure
   const {
     register,
     handleSubmit,
     formState: { errors },
   } = useForm({
+    resolver: yupResolver(validationSchema),
     defaultValues: {
-      email: emailToRegister || ''
-    }
+      email: emailToRegister || "",
+      first_name: "",
+      last_name: "",
+      phone_number: "",
+      password: "",
+      password_confirmation: "",
+    },
   });
-  
-  const onSubmit = (data) => {
-    console.log('register',data)
-    navigate("/verify-email");
+
+  const onSubmit = async (data) => {
+    console.log("register", data);
+    setLoading(true);
+
+    try {
+      const response = await registerUser(data);
+
+      console.log(response);
+
+      setOpenSnack({
+        open: true,
+        message: "Successfully registered",
+        severity: "success",
+      });
+      setLoading(false);
+
+      setTimeout(() => {
+        navigate("/verify-email");
+      }, 2000);
+    } catch (error) {
+      console.log(error);
+      // setOpenSnack({
+      //   open: true,
+      //   message: error,
+      //   severity: "error",
+      // });
+      setLoading(false);
+    }
+  };
+
+  const handleCloseSnack = (event, reason) => {
+    if (reason === "clickaway") {
+      return;
+    }
+
+    setOpenSnack(false);
   };
 
   return (
@@ -48,25 +113,32 @@ const Register = () => {
                 <Grid item xs={12} md={6}>
                   <CustomInput
                     register={register}
-                    field="firstName"
+                    field="first_name"
                     fullWidth={true}
                     width="100%"
-                    classname={classNames(
-                      classes.shortInput
-                    )}
+                    classname={classNames(classes.shortInput)}
                     label="First Name"
                     placeholder=" "
+                    error={errors?.first_name?.message}
                   />
                 </Grid>
 
-                <Grid item xs={12} md={6} sx={{ marginTop: { xs: "15px !important", md: "0 !important"}}}>
+                <Grid
+                  item
+                  xs={12}
+                  md={6}
+                  sx={{
+                    marginTop: { xs: "15px !important", md: "0 !important" },
+                  }}
+                >
                   <CustomInput
                     register={register}
-                    field="lastName"
+                    field="last_name"
                     fullWidth={true}
                     width="100%"
                     label="Last Name"
                     placeholder=" "
+                    error={errors?.last_name?.message}
                   />
                 </Grid>
 
@@ -83,6 +155,7 @@ const Register = () => {
                     label="Email"
                     placeholder=" "
                     type="email"
+                    error={errors?.email?.message}
                     // value={emailToRegister ? emailToRegister : ''}
                   />
                 </Grid>
@@ -90,7 +163,7 @@ const Register = () => {
                 <Grid item xs={12}>
                   <CustomInput
                     register={register}
-                    field="phone"
+                    field="phone_number"
                     fullWidth={true}
                     width="100%"
                     classname={classNames(
@@ -99,6 +172,7 @@ const Register = () => {
                     )}
                     label="Phone number"
                     placeholder=" "
+                    error={errors?.phone_number?.message}
                   />
                 </Grid>
 
@@ -115,19 +189,21 @@ const Register = () => {
                     label="Password"
                     type="password"
                     placeholder=" "
+                    error={errors?.password?.message}
                   />
                 </Grid>
 
                 <Grid item xs={12} md={6}>
                   <CustomInput
                     register={register}
-                    field="confirmPassword"
+                    field="password_confirmation"
                     fullWidth={true}
                     width="100%"
                     classname={classNames(classes.inputWrapper)}
                     label="Confirm Password"
                     type="password"
                     placeholder=" "
+                    error={errors?.password_confirmation?.message}
                   />
                 </Grid>
               </Grid>
@@ -136,7 +212,10 @@ const Register = () => {
         </Grid>
 
         <Grid item xs={16} display="flex" justifyContent="center">
-          <p className={classes.hasAccountText} onClick={() => navigate("/login")}>
+          <p
+            className={classes.hasAccountText}
+            onClick={() => navigate("/login")}
+          >
             Already have an account? Login
           </p>
         </Grid>
@@ -148,11 +227,18 @@ const Register = () => {
             variant="contained"
             className={classes.button}
             onClick={handleSubmit(onSubmit)}
+            disabled={loading}
           >
-            <span className={classes.buttonText}>Register</span>
+            <span className={classes.buttonText}>
+              {loading ? "Loading" : "Register"}
+            </span>
           </Button>
         </Grid>
       </Grid>
+
+      {openSnack.open && (
+        <SnackBar openSnack={openSnack} handleCloseSnack={handleCloseSnack} />
+      )}
     </>
   );
 };
@@ -161,19 +247,19 @@ const useStyles = makeStyles((theme) => ({
   container: {
     maxWidth: 1140,
     margin: "60px auto !important",
-    [theme.breakpoints.down('md')]: {
+    [theme.breakpoints.down("md")]: {
       margin: "140px auto !important",
       padding: "0 50px !important",
     },
-    [theme.breakpoints.down('sm')]: {
+    [theme.breakpoints.down("sm")]: {
       padding: "0 36px !important",
     },
   },
   title: {
     textAlign: "center",
-    fontFamily: 'Poiret One',
-    fontSize: '40px !important',
-    lineHeight: '20px !important',
+    fontFamily: "Poiret One",
+    fontSize: "40px !important",
+    lineHeight: "20px !important",
     marginTop: "0 !important",
     fontWeight: "300",
   },
@@ -188,16 +274,16 @@ const useStyles = makeStyles((theme) => ({
   },
   inputWrapper: {
     marginTop: "20px !important",
-    [theme.breakpoints.down('md')]: {
+    [theme.breakpoints.down("md")]: {
       marginTop: "15px !important",
     },
   },
   shortInput: {
     "& input": {
       marginRight: "15px !important",
-      [theme.breakpoints.down('md')]: {
+      [theme.breakpoints.down("md")]: {
         marginRight: "0px !important",
-      }
+      },
     },
   },
   fullWidth: {
@@ -225,10 +311,10 @@ const useStyles = makeStyles((theme) => ({
     cursor: "pointer",
   },
   formContainer: {
-    [theme.breakpoints.down('md')]: {
+    [theme.breakpoints.down("md")]: {
       flexDirection: "column !important",
     },
-  }
+  },
 }));
 
 export default Register;
