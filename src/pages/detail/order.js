@@ -1,13 +1,8 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 
 // components
 import Table from "../../components/table";
 import ResumeTable from "../../components/ResumeTable";
-
-/*
-* Shopping Cart
-*/
-import shoppingCart from "../../utils/shoppingCart";
 
 // material ui components
 import { 
@@ -17,12 +12,6 @@ import {
 } from "@mui/material";
 import { makeStyles } from "@mui/styles";
 import { useLocation, useNavigate } from "react-router-dom";
-import { deleteAllProducts } from "../../features/counter/counterSlice";
-import { useDispatch } from "react-redux";
-
-function createData(product, unitPrice, quantity, subtotal) {
-  return { product, unitPrice, quantity, subtotal };
-}
 
 const columns = [
   {
@@ -43,41 +32,10 @@ const columns = [
   },
 ];
 
-const formatDate = (date) => {
-  let dd = String(date.getDate()).padStart(2, '0');
-  let mm = String(date.getMonth() + 1).padStart(2, '0');
-  let yyyy = date.getFullYear();
-
-  return mm + '-' + dd + '-' + yyyy;
-}
-
 const OrderDetail = () => {
   const classes = useStyles();
   const navigate = useNavigate();
-  const dispatch = useDispatch();
   const { state } = useLocation();
-  const [products, setProducts] = useState(shoppingCart().listCart());
-  const [orderInfo, setOrderInfo] = useState({});
-
-  const handleResetCart = () => {
-    dispatch(
-      deleteAllProducts()
-    );
-    // navigate('/')
-  }
-
-  useEffect(() => {
-    state.orderInfo.stringDate = formatDate(state.orderInfo.deliveryTime);
-    state.orderInfo.stringCreatedDate = formatDate(state.orderInfo.createdDate);
-    
-    const formatProducts = products.map(item => {
-      let subtotal = parseInt(item.price) * parseInt(item.qty);
-      return createData(item.name, item.price, item.qty, parseInt(subtotal));
-    });
-    setProducts(formatProducts)
-    setOrderInfo(state.orderInfo);
-
-  }, []);
 
   return (
     <>
@@ -89,10 +47,10 @@ const OrderDetail = () => {
         <Grid item xs={12} display="flex" justifyContent="center" sx={{marginTop: "5px !important"}}>
           <Grid container justifyContent="space-between" maxWidth={600}>
             <Grid item xs={12} md={6}>
-              <Typography sx={{fontSize: "20px !important", fontWeight: "300 !important"}}>Order #{orderInfo.id}</Typography>
+              <Typography sx={{fontSize: "20px !important", fontWeight: "300 !important"}}>Order #{state.orderInfo.id}</Typography>
             </Grid>
             <Grid item xs={12} md={6} display="flex" justifyContent="flex-end" >
-              <Typography sx={{fontSize: "20px !important", fontWeight: "300 !important"}}>Order Date: {orderInfo.stringCreatedDate}</Typography>
+              <Typography sx={{fontSize: "20px !important", fontWeight: "300 !important"}}>Order Date: {state.orderInfo.stringCreatedDate}</Typography>
             </Grid>
           </Grid>
         </Grid>
@@ -105,7 +63,7 @@ const OrderDetail = () => {
           className={classes.table}
           sx={{marginTop: "15px !important"}}
         >
-          <ResumeTable orderDetails={orderInfo} maxWidth={600} />
+          <ResumeTable orderDetails={state.orderInfo} maxWidth={600} />
         </Grid>
 
         <Grid
@@ -115,7 +73,7 @@ const OrderDetail = () => {
           justifyContent="center"
           className={classes.table}
         >
-          <Table rows={products} columns={columns} maxWidth={600} />
+          <Table rows={state.products} columns={columns} maxWidth={600} />
         </Grid>
 
         <Grid item xs={12} container justifyContent="center">
@@ -123,7 +81,7 @@ const OrderDetail = () => {
             color="primary"
             variant="contained"
             className={classes.button}
-            onClick={() => handleResetCart()}
+            onClick={() => navigate('/')}
           >
             Home
           </Button>

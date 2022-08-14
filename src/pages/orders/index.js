@@ -1,6 +1,6 @@
 import ProfileSidebar from "../../components/profile-sidebar";
 
-import * as React from 'react';
+import React, { useEffect, useState } from 'react';
 
 // components
 import Table from "../../components/table";
@@ -16,6 +16,8 @@ import TextField from '@mui/material/TextField';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
+import { useSelector } from "react-redux";
+import { allOrders } from "../../features/order/OrderSlice";
 
 
 function createData(order, status, dateoforder, total) {
@@ -24,7 +26,7 @@ function createData(order, status, dateoforder, total) {
 
 const columns = [
   {
-    name: "# Order",
+    name: "Order #",
     key: "order",
   },
   {
@@ -32,28 +34,54 @@ const columns = [
     key: "status",
   },
   {
-    name: "Date of Order",
+    name: "Order date",
     key: "dateoforder",
   },
   {
     name: "Total",
     key: "total",
   },
-  {
-
-  }
 ];
 
-const rows = [
-  createData(1, "Completed", "08-05-2022", "$"+100),
-  createData(2, "Completed", "08-05-2022", "$"+100),
-  createData(3, "Completed", "08-05-2022", "$"+100),
-  createData(4, "Completed", "08-05-2022", "$"+100),
-];
+const formatDate = (date) => {
+  let dd = String(date.getDate()).padStart(2, '0');
+  let mm = String(date.getMonth() + 1).padStart(2, '0');
+  let yyyy = date.getFullYear();
+
+  return mm + '-' + dd + '-' + yyyy;
+}
 
 const Orders = () => {
   const classes = useStyles();
-  const [value, setValue] = React.useState(null);
+  const ordersSaved = useSelector(allOrders);
+  const [date, setDate] = useState(null);
+  const [orders, setOrders] = useState(ordersSaved);
+
+  useEffect(() => {
+    const formatOrders = orders.map(item => {
+      return createData(item.orderInfo.id, item.orderInfo.status, item.orderInfo.stringCreatedDate, `$${item.orderInfo.totalOrder}`);
+    });
+    setOrders(formatOrders)
+  }, []);
+
+  const handleDateFilter = (newValue) => {
+    let filteredOrders = ordersSaved;
+
+    if(newValue !== null) {
+      let dateFormatted = formatDate(newValue);
+      let ordersByDate = ordersSaved.filter((item) => {
+        const orderDate = item.orderInfo.stringCreatedDate ? item.orderInfo.stringCreatedDate : "";
+        return ( orderDate === dateFormatted );
+      });
+      
+      filteredOrders = ordersByDate;
+    } 
+    const formatOrders = filteredOrders.map(item => {
+      return createData(item.orderInfo.id, item.orderInfo.status, item.orderInfo.stringCreatedDate, `$${item.orderInfo.totalOrder}`);
+    });
+    setOrders(formatOrders);
+    setDate(newValue);
+  }
 
   return (
     <Grid 
@@ -95,13 +123,11 @@ const Orders = () => {
           <Grid item xs className={classes.inputDatePicker}>
             <LocalizationProvider dateAdapter={AdapterDateFns} >
             <DatePicker
-              
               label="Date"
-              value={value}
-              onChange={(newValue) => {
-                setValue(newValue);
-              }}
+              value={date}
+              onChange={handleDateFilter}
               renderInput={(params) => <TextField {...params} />}
+              className={classes.dateFilter}
             />
           </LocalizationProvider>
           </Grid>
@@ -113,7 +139,7 @@ const Orders = () => {
           className={classes.table}
           xs={12}
         >
-          <Table rows={rows} columns={columns} maxWidth={"100%"} viewOrders={true}/>
+          <Table rows={orders} columns={columns} maxWidth={"100%"} viewOrders={true}/>
         </Grid>
       </Grid>
     </Grid>
@@ -133,6 +159,9 @@ const useStyles = makeStyles((theme) => ({
     "@media (max-width: 768px)": {
       margin: "0 auto !important",
     },
+  },
+  dateFilter: {
+
   },
   father: {
     height: "70vh",

@@ -95,7 +95,7 @@ export const { increment, decrement, incrementByAmount, addCartProduct, deleteAl
 // the state. Selectors can also be defined inline where they're used instead of
 // in the slice file. For example: `useSelector((state: RootState) => state.counter.value)`
 export const selectCount = (state) => state.counter.value;
-
+export const allProducts = (state) => state.counter.products;
 export const cartQtySelector = (state) => state.counter.cartQty;
 
 // We can also write thunks by hand, which may contain both sync and async logic.

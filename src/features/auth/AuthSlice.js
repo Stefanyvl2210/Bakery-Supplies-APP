@@ -3,7 +3,7 @@ import { createSlice } from "@reduxjs/toolkit";
 const initialState = {
   token: null,
   user: null,
-  address: []
+  addresses: []
 };
 
 export const authSlice = createSlice({
@@ -18,14 +18,9 @@ export const authSlice = createSlice({
       state.token = null;
       state.user = null;
     },
-    addAddress: (state, {payload}) => {
-      const {city, address, state: stateUser} = payload
-
-      if(state.address && state.address.length>0) {
-        state.address = [...state.address, {city, address, state: stateUser }]
-      } else {
-        state.address = [{city, address, state: stateUser }]
-      }
+    addAddress: (state, { payload }) => {
+      state.addresses = [...state.addresses, payload];
+      sessionStorage.setItem("addresses", JSON.stringify(state.addresses));
     }
   },
 });
@@ -34,6 +29,6 @@ export const { login, logout, addAddress } = authSlice.actions;
 
 export const userLogged = (state) => state.auth.user;
 export const token = (state) => state.auth.token;
-export const allAddresses = (state) => state.auth.address;
+export const allAddresses = (state) => state.auth.addresses;
 
 export default authSlice.reducer;

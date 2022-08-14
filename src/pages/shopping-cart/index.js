@@ -3,11 +3,6 @@ import React, { useEffect, useState } from "react";
 // components
 import Table from "../../components/table";
 
-/*
-* Shopping Cart
-*/
-import shoppingCart from "../../utils/shoppingCart";
-
 // material ui components
 import {
   Grid,
@@ -26,11 +21,12 @@ import {
 import { makeStyles } from "@mui/styles";
 import classNames from "classnames";
 import { useNavigate } from "react-router-dom";
+import { allProducts } from "../../features/counter/counterSlice";
+import { useSelector } from "react-redux";
 
 function createData(product, unitPrice, quantity, subtotal) {
   return { product, unitPrice, quantity, subtotal };
 }
-
 
 const columns = [
   {
@@ -59,7 +55,7 @@ const ShoppingCart = () => {
   const [delivery, setDelivery] = useState(0);
   const [totalBeforeTaxes, setTotalBeforeTaxes] = useState(0);
   const [totalOrder, setTotalOrder] = useState(0);
-  const [products, setProducts] = useState(shoppingCart().listCart());
+  const [products, setProducts] = useState(useSelector(allProducts));
 
   const handleChangePayment = (event) => {
     setPayment(event.target.value);

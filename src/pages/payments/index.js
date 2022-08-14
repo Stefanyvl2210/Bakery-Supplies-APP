@@ -51,7 +51,7 @@ const Payments = () => {
 
           <Grid item xs={12}>
             <Grid container className={classes.form}>
-              <Grid container xs={12}>
+              <Grid item xs={12}>
                 <p className={classes.paragraph}>You don’t have any address yet!</p>
               </Grid>
 

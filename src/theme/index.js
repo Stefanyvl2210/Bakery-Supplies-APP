@@ -104,6 +104,19 @@ export const theme = createTheme({
           // maxHeight: "50px"
         }
       }
-    }
+    },
+    MuiCalendarPicker: {
+      styleOverrides: {
+        root: {
+          "& .PrivatePickersFadeTransitionGroup-root": {
+            fontSize: "18px",
+          },
+          "& .MuiPickersArrowSwitcher-spacer": {
+            width: "0"
+          }
+        }
+      }
+    },
+    
   }
 });
