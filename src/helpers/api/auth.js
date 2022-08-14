@@ -1,4 +1,5 @@
 import axios from "../../config/axios";
+import Axios from "axios";
 import { ApiUrl } from "../url";
 
 export const loginUser = async (data) =>
@@ -10,8 +11,12 @@ export const logoutUser = async (data) =>
 export const registerUser = async (data) =>
   await axios.post(`${ApiUrl}/register`, data);
 
-export const verifyEmail = async (data) =>
-  await axios.post(`${ApiUrl}/verify-email`, data);
+export const verifyEmail = async (data, token) =>
+  await axios.post(`${ApiUrl}/verify-email`, data, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
 
 export const addAddressUser = async (data) => {
   console.log('data', data.data)

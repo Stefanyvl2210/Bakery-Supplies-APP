@@ -44,7 +44,14 @@ const Login = () => {
           login({ token: res.data.data.token, user: res.data.data.user })
         );
 
-        navigate("/");
+        if (
+          res.data.data.user.roles &&
+          res.data.data.user.roles.find((role) => role.name === "admin")
+        ) {
+          navigate("/admin/products");
+        } else {
+          navigate("/");
+        }
       })
       .catch((err) => {
         setOpenSnack({

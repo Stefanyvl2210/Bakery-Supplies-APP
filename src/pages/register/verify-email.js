@@ -51,32 +51,26 @@ const VerifyEmail = () => {
   const onSubmit = async (data) => {
     setLoading(true);
 
-    await axios
-      .post("http://127.0.0.1:8000/api/verify-email", data, {
-        headers: {
-          Authorization: `Bearer ${params?.id}`,
-        },
-      })
-      .then((res) => {
-        setOpenSnack({
-          open: true,
-          message: "Successfully verified",
-          severity: "success",
-        });
-        setLoading(false);
-
-        setTimeout(() => {
-          navigate("/login");
-        }, 1000);
-      })
-      .catch((error) => {
-        setOpenSnack({
-          open: true,
-          message: "There has been an error",
-          severity: "error",
-        });
-        setLoading(false);
+    try {
+      const response = await verifyEmail(data, params?.id);
+      setOpenSnack({
+        open: true,
+        message: "Successfully verified",
+        severity: "success",
       });
+      setLoading(false);
+
+      setTimeout(() => {
+        navigate("/login");
+      }, 1000);
+    } catch (error) {
+      setOpenSnack({
+        open: true,
+        message: "There has been an error",
+        severity: "error",
+      });
+      setLoading(false);
+    }
   };
 
   const handleCloseSnack = (event, reason) => {
