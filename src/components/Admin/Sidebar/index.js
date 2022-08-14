@@ -10,6 +10,7 @@ import React from "react";
 import { makeStyles } from "@mui/styles";
 import Logo from "../../../assets/images/admin-logo.png";
 import { ExpandLess, ExpandMore } from "@mui/icons-material";
+import { Link } from "react-router-dom";
 
 const Sidebar = () => {
   const classes = useStyles();
@@ -41,10 +42,14 @@ const Sidebar = () => {
         <Collapse in={openMenu.products} timeout="auto" unmountOnExit>
           <List component="div" disablePadding>
             <ListItemButton sx={{ pl: 4, color: "white" }}>
-              <ListItemText primary="All products" />
+              <Link to="/admin/products">
+                <ListItemText primary="All products" />
+              </Link>
             </ListItemButton>
             <ListItemButton sx={{ pl: 4, color: "white" }}>
-              <ListItemText primary="Add New" />
+              <Link to="/admin/new-product">
+                <ListItemText primary="Add New" />
+              </Link>
             </ListItemButton>
           </List>
         </Collapse>
@@ -56,10 +61,14 @@ const Sidebar = () => {
         <Collapse in={openMenu.categories} timeout="auto" unmountOnExit>
           <List component="div" disablePadding>
             <ListItemButton sx={{ pl: 4, color: "white" }}>
-              <ListItemText primary="All categories" />
+              <Link to="/admin/categories">
+                <ListItemText primary="All categories" />
+              </Link>
             </ListItemButton>
             <ListItemButton sx={{ pl: 4, color: "white" }}>
-              <ListItemText primary="Add new" />
+              <Link to="/admin/new-category">
+                <ListItemText primary="Add new" />
+              </Link>
             </ListItemButton>
           </List>
         </Collapse>
@@ -137,6 +146,11 @@ const useStyles = makeStyles((theme) => ({
   sidebar: {
     backgroundColor: "#2C3338",
     height: "100%",
+
+    "& a": {
+      color: "#fff",
+      textDecoration: "none",
+    },
   },
   listWrapper: {
     "& span": {
