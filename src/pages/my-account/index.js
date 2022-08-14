@@ -11,6 +11,7 @@ import CustomInput from "../../components/input";
 import { makeStyles } from "@mui/styles";
 import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
 import ProfileAvatar from "../../assets/images/profile-avatar.png";
+import { addAddressUser } from "../../helpers/api/auth";
 
 const MyAccount = () => {
   const classes = useStyles();
@@ -32,6 +33,7 @@ const MyAccount = () => {
     if(!userIsLogged) {
       navigate('/');
     }
+    console.log('user', user)
   }, []);
 
   // form structure user profile
@@ -43,10 +45,10 @@ const MyAccount = () => {
   } = useForm({
     mode: "onChange",
     defaultValues: {
-      firstName: user.first_name,
-      lastName: user.last_name,
-      email: user.email,
-      phoneNumber: user.phone_number,
+      firstName: user ? user.first_name : '',
+      lastName: user ? user.last_name : '',
+      email: user ? user.email : '',
+      phoneNumber: user ? user.phone_number : '',
       address: "",
       city: "",
       state: ""
@@ -59,12 +61,61 @@ const MyAccount = () => {
     // resetField("");
   };
 
-  const onSubmitAddress = (data) => {
+  // const onSubmit = async (data) => {
+  //   setLoading(true);
+  //   try {
+  //     const response = await registerUser(data);
+  //     console.log(response);
+  //     setOpenSnack({
+  //       open: true,
+  //       message: "Successfully registered",
+  //       severity: "success",
+  //     });
+  //     setLoading(false);
+
+  //     setTimeout(() => {
+  //       navigate(`/verify-email/${response.data.token}`);
+  //     }, 2000);
+  //   } catch (error) {
+  //     console.log(error);
+  //     // setOpenSnack({
+  //     //   open: true,
+  //     //   message: error,
+  //     //   severity: "error",
+  //     // });
+  //     setLoading(false);
+  //   }
+  // };
+
+  const onSubmitAddress = async (data) => {
     if(!showAddressInput && data.address !== "" && data.city !== "" && data.state !== "" ) {
-      dispatch(addAddress({address: data.address, city: data.city, state: data.state}))
-      resetField("address");
-      resetField("city");
-      resetField("state");
+      // setLoading(true);
+      let addressString = JSON.stringify({address: data.address, city: data.city, state: data.state});
+      console.log('address', addressString)
+      console.log('token', userIsLogged)
+      try {
+        const response = await addAddressUser({data: {address: addressString}, token: userIsLogged});
+        console.log(response);
+        // setOpenSnack({
+        //   open: true,
+        //   message: "New Address Added",
+        //   severity: "success",
+        // });
+        // setLoading(false)
+      } catch (error) {
+        console.log(error);
+        // setOpenSnack({
+        //   open: true,
+        //   message: error,
+        //   severity: "error",
+        // });
+        // setLoading(false);
+      }
+        
+      // dispatch(addAddress({address: data.address, city: data.city, state: data.state}))
+      // resetField("address");
+      // resetField("city");
+      // resetField("state");
     }
   };
 
@@ -113,7 +164,7 @@ const MyAccount = () => {
                     label="First Name"
                     icon
                     showValue={showInput.firstName}
-                    value={user.first_name}
+                    value={user ? user.first_name : ''}
                   />
                 </Grid>
 
@@ -128,7 +179,7 @@ const MyAccount = () => {
                     label="Last Name"
                     icon
                     showValue={showInput.lastName}
-                    value={user.last_name}
+                    value={user ? user.last_name : ''}
                   />
                 </Grid>
 
@@ -143,7 +194,7 @@ const MyAccount = () => {
                     label="Email"
                     icon
                     showValue={showInput.email}
-                    value={user.email}
+                    value={user ? user.email : ''}
                   />
                 </Grid>
 
@@ -158,7 +209,7 @@ const MyAccount = () => {
                     label="Phone Number"
                     icon
                     showValue={showInput.phoneNumber}
-                    value={user.phone_number}
+                    value={user ? user.phone_number : ''}
                   />
                 </Grid>
 
