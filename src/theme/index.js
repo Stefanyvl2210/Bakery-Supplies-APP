@@ -33,7 +33,7 @@ export const theme = createTheme({
             height: 50,
             margin: '5px 10px',
             color: '#fff',
-            boxShadow: 'none',
+            boxShadow: 'none !important',
             fontWeight: '400'
           },
         },
@@ -104,6 +104,19 @@ export const theme = createTheme({
           // maxHeight: "50px"
         }
       }
-    }
+    },
+    MuiCalendarPicker: {
+      styleOverrides: {
+        root: {
+          "& .PrivatePickersFadeTransitionGroup-root": {
+            fontSize: "18px",
+          },
+          "& .MuiPickersArrowSwitcher-spacer": {
+            width: "0"
+          }
+        }
+      }
+    },
+    
   }
 });

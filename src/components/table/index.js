@@ -8,46 +8,64 @@ import TableRow from "@mui/material/TableRow";
 import Paper from "@mui/material/Paper";
 import SearchIcon from '@mui/icons-material/Search';
 import { Button } from "@mui/material";
+import { useNavigate } from "react-router-dom";
 
 export default function BasicTable(props) {
-  const { rows, columns = [], maxWidth = 650, viewOrders = false } = props;
+  const { rows, columns = [], maxWidth = 650, viewOrders = false, orderData=null } = props;
+  const navigate = useNavigate();
+
+  const handleOrder = (index) => {
+    navigate("/order-detail", {
+       state: { 
+        orderInfo: orderData[index].orderInfo, 
+        products: orderData[index].orderProducts, 
+        ordersView: true 
+      }})
+  }
+
   return (
     <TableContainer component={Paper} sx={{ maxWidth: maxWidth }}>
       <Table sx={{ maxWidth: maxWidth }} aria-label="simple table">
         <TableHead>
           <TableRow>
             {columns.map((column, i) => (
-              <TableCell key={i}>{column.name}</TableCell>
+              <TableCell key={`column-${i}`}>{column.name}</TableCell>
             ))}
+            {viewOrders && 
+            <TableCell key="additional"></TableCell>}
           </TableRow>
         </TableHead>
         <TableBody>
           {rows.map((row, index) => (
             <TableRow
-              key={index}
+              key={`row-${index}`}
               sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
             >
               
               {columns.map((column, i) => (
-                <TableCell component="th" scope="row" key={i}>
-                  {column.key === "unitPrice" || column.key === "subtotal" ? `$${row[column.key]}`: row[column.key]}
-                  {i+1 == columns.length &&
-                    viewOrders &&
-                    <Button
-                      variant="contained"
-                      sx={{ 
-                        margin: "0 !important", 
-                        minWidth: "50px !important",
-                        height: "40px !important",
-                        background: "#FFFFFF !important",
-                        borderRadius: "7px !important",
-                        border: "1px solid #767676 !important"
-                      }}
-                    >
-                      <SearchIcon sx={{color: "black",}}/>
-                    </Button>
+                <React.Fragment key={i}>
+                  <TableCell component="th" scope="row" key={column.key}>
+                    {column.key === "unitPrice" || column.key === "subtotal" ? `$${row[column.key]}`: row[column.key]}
+                  </TableCell>
+                  {i+1 == columns.length && viewOrders &&
+                    <TableCell component="th" scope="row" key={i+1}>
+                      <Button
+                        variant="contained"
+                        sx={{ 
+                          margin: "0 !important", 
+                          minWidth: "50px !important",
+                          height: "40px !important",
+                          background: "#FFFFFF !important",
+                          borderRadius: "7px !important",
+                          border: "1px solid #767676 !important"
+                        }}
+                        onClick={() => handleOrder(index)}
+                      >
+                        <SearchIcon sx={{color: "black",}}/>
+                      </Button>
+                    </TableCell>
                   }
-                </TableCell>
+                </React.Fragment>
               ))}
             </TableRow>
           ))}

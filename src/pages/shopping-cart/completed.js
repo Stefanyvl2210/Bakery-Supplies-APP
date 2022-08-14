@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 
 // material ui components
 import { Grid, Button, Typography } from "@mui/material";
@@ -9,18 +9,52 @@ import { useLocation, useNavigate } from "react-router-dom";
 
 // images
 import CheckCirle from "../../assets/images/check-circle.svg";
+import { addOrder, allOrders } from "../../features/order/OrderSlice";
+import { useDispatch, useSelector } from "react-redux";
+import { allProducts, deleteAllProducts } from "../../features/counter/counterSlice";
+
+const formatDate = (date) => {
+  let dd = String(date.getDate()).padStart(2, '0');
+  let mm = String(date.getMonth() + 1).padStart(2, '0');
+  let yyyy = date.getFullYear();
+
+  return mm + '-' + dd + '-' + yyyy;
+}
+
+function createData(product, unitPrice, quantity, subtotal) {
+  return { product, unitPrice, quantity, subtotal };
+}
 
 const OrderCompleted = () => {
   const classes = useStyles();
   const navigate = useNavigate();
+  const dispatch = useDispatch();
   const { state } = useLocation();
+  const orders = useSelector(allOrders);
+
+  const [products, setProducts] = useState(useSelector(allProducts));
+  const [orderInfo, setOrderInfo] = useState({});
 
   const handleOrder = () => {
-    //guardar orden y obtener data
-    state.orderInfo.id = 1;
-    state.orderInfo.createdDate = new Date();
-    navigate("/order-detail", {state: state})
+    //guardar orden y enviar data
+    dispatch( addOrder({orderInfo: orderInfo, orderProducts: products}) );
+    dispatch( deleteAllProducts() );
+    navigate("/order-detail", { state: { orderInfo: orderInfo, products: products } })
   }
+
+  useEffect(() => {
+    state.orderInfo.id = (orders.length + 1);
+    state.orderInfo.createdDate = new Date();
+    state.orderInfo.stringDate = formatDate(state.orderInfo.deliveryTime);
+    state.orderInfo.stringCreatedDate = formatDate(state.orderInfo.createdDate);
+    
+    const formatProducts = products.map(item => {
+      let subtotal = parseInt(item.price) * parseInt(item.qty);
+      return createData(item.name, item.price, item.qty, parseInt(subtotal));
+    });
+    setProducts(formatProducts)
+    setOrderInfo(state.orderInfo);
+  }, []);
 
   return (
     <>

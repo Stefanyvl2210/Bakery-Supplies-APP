@@ -1,13 +1,15 @@
-import React, { useState } from "react";
-import { Avatar, Button, Grid } from "@mui/material";
+import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import { Avatar, Button, Grid, IconButton } from "@mui/material";
 
 // hook form
 import { useForm } from "react-hook-form";
-
+import { addAddress, allAddresses, deleteAddress, token, userLogged } from "../../features/auth/AuthSlice";
 import ProfileSidebar from "../../components/profile-sidebar";
 import CustomInput from "../../components/input";
 import { makeStyles } from "@mui/styles";
-
+import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
 import ProfileAvatar from "../../assets/images/profile-avatar.png";
 
 const MyAccount = () => {
@@ -19,30 +21,52 @@ const MyAccount = () => {
     phoneNumber: true,
     address: true,
   });
-
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const addresses = useSelector(allAddresses);
+  const userIsLogged = useSelector(token);
+  const user = useSelector(userLogged);
   const [showAddressInput, setShowAddressInput] = useState(false);
+
+  useEffect(() => {
+    if(!userIsLogged) {
+      navigate('/');
+    }
+  }, []);
 
   // form structure user profile
   const {
     register,
     handleSubmit,
+    resetField,
     formState: { errors },
-  } = useForm();
+  } = useForm({
+    mode: "onChange",
+    defaultValues: {
+      firstName: user.first_name,
+      lastName: user.last_name,
+      email: user.email,
+      phoneNumber: user.phone_number,
+      address: "",
+      city: "",
+      state: ""
+    }
+  });
 
   const onSubmit = (data) => {
     console.log('data perfil',data)
-  };
-  const onSubmitAddress = (data) => {
-    console.log('data address',data)
-    // navigate("/verify-email");
+    // resetField("password");
+    // resetField("");
   };
 
-  // form structure user profile
-  // const {
-  //   register,
-  //   handleSubmitAddress,
-  //   formState: { errors },
-  // } = useForm();
+  const onSubmitAddress = (data) => {
+    if(!showAddressInput && data.address !== "" && data.city !== "" && data.state !== "" ) {
+      dispatch(addAddress({address: data.address, city: data.city, state: data.state}))
+      resetField("address");
+      resetField("city");
+      resetField("state");
+    }
+  };
 
   const handleInput = (key) => {
     if (!showInput[key]) {
@@ -52,15 +76,19 @@ const MyAccount = () => {
     }
   };
 
+  const handleDeleteAddress = (index) => {
+    dispatch(deleteAddress({index: index}));
+  }
+
   return (
     <Grid container className={classes.grid}>
-      <Grid item xs={2} className={classes.sidebar}>
+      <Grid item xs={12} md={2.5} className={classes.sidebar}>
         <ProfileSidebar />
       </Grid>
 
-      <Grid item xs={10} className={classes.container}>
+      <Grid item xs={12} md={9.5} className={classes.container}>
         <Grid container>
-          <Grid item xs={4.7} className={classes.avatarWrapper}>
+          <Grid item xs={12} className={classes.avatarWrapper}>
             <h1 className={classes.title}>Profile</h1>
 
             <Avatar
@@ -73,7 +101,7 @@ const MyAccount = () => {
 
           <Grid item xs={12}>
             <form onSubmit={handleSubmit(onSubmit)}>
-              <Grid container className={classes.form}>
+              <Grid container className={classes.form} columnSpacing={2}>
                 <Grid item xs={12} sm={12} md={4.7}>
                   <CustomInput
                     handleInput={handleInput}
@@ -85,6 +113,7 @@ const MyAccount = () => {
                     label="First Name"
                     icon
                     showValue={showInput.firstName}
+                    value={user.first_name}
                   />
                 </Grid>
 
@@ -99,6 +128,7 @@ const MyAccount = () => {
                     label="Last Name"
                     icon
                     showValue={showInput.lastName}
+                    value={user.last_name}
                   />
                 </Grid>
 
@@ -113,6 +143,7 @@ const MyAccount = () => {
                     label="Email"
                     icon
                     showValue={showInput.email}
+                    value={user.email}
                   />
                 </Grid>
 
@@ -127,6 +158,7 @@ const MyAccount = () => {
                     label="Phone Number"
                     icon
                     showValue={showInput.phoneNumber}
+                    value={user.phone_number}
                   />
                 </Grid>
 
@@ -158,10 +190,11 @@ const MyAccount = () => {
 
                 <Grid item xs={12}>
                   <Button
+                    color="primary"
                     type="submit"
                     variant="contained"
-                    className={classes.button}
-                      onClick={handleSubmit(onSubmit)}
+                    onClick={handleSubmit(onSubmit)}
+                    sx={{marginLeft: "0 !important"}}
                   >
                     <span className={classes.buttonText}>Save</span>
                   </Button>
@@ -175,10 +208,10 @@ const MyAccount = () => {
               </Grid>
 
               <form onSubmit={handleSubmit(onSubmitAddress)}>
-                <Grid container>
+                <Grid item xs={12} container columnSpacing={2}>
                   {showAddressInput ? (
                     <>
-                      <Grid item xs={8.7}>
+                      <Grid item xs={12} sm={5.7} md={9.4}>
                         <CustomInput
                           handleInput={handleInput}
                           register={register}
@@ -188,7 +221,7 @@ const MyAccount = () => {
                           classname={classes.inputAddress}
                           label="Address *" />
                       </Grid>
-                      <Grid item xs={4.7}>
+                      <Grid item xs={12} md={4.7}>
                         <CustomInput
                           handleInput={handleInput}
                           register={register}
@@ -198,7 +231,7 @@ const MyAccount = () => {
                           classname={classes.inputWrapper}
                           label="City *" />
                       </Grid>
-                      <Grid item xs={4.7}>
+                      <Grid item xs={12} md={4.7}>
                         <CustomInput
                           handleInput={handleInput}
                           register={register}
@@ -210,31 +243,66 @@ const MyAccount = () => {
                       </Grid>
                     </>
                   ) : (
-                      <p className={classes.paragraph}>You don’t have any address yet!</p>
+                    addresses.length > 0 ?
+                      addresses.map((address, i) => (
+                        <Grid item xs={12} key={i} className={classes.addresses}>
+                          <p className={classes.paragraph}>
+                            {address.address}, {address.city}, {address.state} 
+                            <IconButton
+                              size="small"
+                              edge="start"
+                              color="error"
+                              aria-label="open drawer"
+                              sx={{
+                                margin: "0 10px 0 0 !important",
+                                "& svg": {
+                                  width: "24px !important",
+                                  height: "24px !important"
+                                }
+                              }}
+                              onClick={() => handleDeleteAddress(i)}
+                            >
+                              <DeleteOutlineIcon />
+                            </IconButton>
+                          </p>
+                        </Grid>
+                      ))
+                      :
+                      <Grid item xs={12}>
+                        <p className={classes.paragraph}>You don’t have any address yet!</p>
+                      </Grid>
                   )}
                 </Grid>
 
-                <Grid item xs={12}>
+                <Grid item xs={12} sx={{marginTop: "20px"}}>
                   <div>
                     <Button
+                      color="primary"
                       type="submit"
                       variant="contained"
-                      className={classes.button}
-                      //   onClick={handleSubmit(onSubmit)}
                       onClick={() => {
                         if (showAddressInput) {
-                          // alert("saved");
                           handleSubmit(onSubmitAddress)
                           setShowAddressInput(false);
                         } else {
                           setShowAddressInput(true);
                         }
                       }}
+                      sx={{marginLeft: "0 !important"}}
                     >
-                      <span className={classes.buttonText}>
-                        {showAddressInput ? "Save" : "Add"}
-                      </span>
+                      {showAddressInput ? "Save" : "Add"}
                     </Button>
+                    {showAddressInput &&
+                      <Button
+                        color="primary"
+                        type="submit"
+                        variant="contained"
+                        onClick={() => {
+                            setShowAddressInput(false);
+                        }}
+                      >
+                        Cancel
+                      </Button>}
                   </div>
                 </Grid>
               </form>
@@ -265,6 +333,9 @@ const useStyles = makeStyles((theme) => ({
       display: "none",
     },
   },
+  addresses: {
+    flexDirection: "column !important",
+  },
   title: {
     font: "400 40px/28px Poiret One",
     marginTop: "0px",
@@ -286,11 +357,13 @@ const useStyles = makeStyles((theme) => ({
   },
   form: {
     marginTop: "30px",
-
+    "@media (max-width: 768px)": {
+      justifyContent: "center !important",
+    },
     "& .MuiGrid-root": {
       "@media (max-width: 768px)": {
         display: "flex",
-        justifyContent: "center",
+        justifyContent: "center !important",
       },
     },
     "& .MuiFormLabel-root": {
@@ -310,25 +383,14 @@ const useStyles = makeStyles((theme) => ({
     marginBottom: "15px !important"
 
   },
-  button: {
-    marginTop: "20px !important",
-    marginLeft: "0 !important",
-    marginRight: "0 !important",
-    marginBottom: "0px !important",
-    padding: "0px 16px !important",
-    gap:"8px !important",
-    width: "150px !important",
-    height: "50px !important",
-    background: "#C86B85 !important",
-    borderRadius: "4px !important",
-  },
   addressesContent: {
     marginTop: "50px !important",
   },
   paragraph:{
     marginTop: "3px !important",
     marginBottom: "5px !important",
-
+    display: "flex",
+    alignItems: "center"
   },
   buttonText:{
     margin: 0,
