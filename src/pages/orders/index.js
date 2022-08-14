@@ -18,6 +18,8 @@ import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { useSelector } from "react-redux";
 import { allOrders } from "../../features/order/OrderSlice";
+import { token } from "../../features/auth/AuthSlice";
+import { useNavigate } from "react-router-dom";
 
 
 function createData(order, status, dateoforder, total) {
@@ -54,10 +56,15 @@ const formatDate = (date) => {
 const Orders = () => {
   const classes = useStyles();
   const ordersSaved = useSelector(allOrders);
+  const userIsLogged = useSelector(token);
+  const navigate = useNavigate();
   const [date, setDate] = useState(null);
   const [orders, setOrders] = useState(ordersSaved);
 
   useEffect(() => {
+    if(!userIsLogged) {
+      navigate('/');
+    }
     const formatOrders = orders.map(item => {
       return createData(item.orderInfo.id, item.orderInfo.status, item.orderInfo.stringCreatedDate, `$${item.orderInfo.totalOrder}`);
     });

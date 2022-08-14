@@ -21,11 +21,15 @@ export const authSlice = createSlice({
     addAddress: (state, { payload }) => {
       state.addresses = [...state.addresses, payload];
       sessionStorage.setItem("addresses", JSON.stringify(state.addresses));
+    },
+    deleteAddress: (state, {payload}) => {
+      state.addresses = state.addresses.filter((item, index) => index !== payload.index);
+      sessionStorage.setItem("addresses", JSON.stringify(state.addresses));
     }
   },
 });
 
-export const { login, logout, addAddress } = authSlice.actions;
+export const { login, logout, addAddress, deleteAddress } = authSlice.actions;
 
 export const userLogged = (state) => state.auth.user;
 export const token = (state) => state.auth.token;

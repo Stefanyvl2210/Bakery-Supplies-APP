@@ -33,7 +33,7 @@ export const theme = createTheme({
             height: 50,
             margin: '5px 10px',
             color: '#fff',
-            boxShadow: 'none',
+            boxShadow: 'none !important',
             fontWeight: '400'
           },
         },

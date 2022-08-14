@@ -23,6 +23,7 @@ import classNames from "classnames";
 import { useNavigate } from "react-router-dom";
 import { allProducts } from "../../features/counter/counterSlice";
 import { useSelector } from "react-redux";
+import { allAddresses } from "../../features/auth/AuthSlice";
 
 function createData(product, unitPrice, quantity, subtotal) {
   return { product, unitPrice, quantity, subtotal };
@@ -56,6 +57,7 @@ const ShoppingCart = () => {
   const [totalBeforeTaxes, setTotalBeforeTaxes] = useState(0);
   const [totalOrder, setTotalOrder] = useState(0);
   const [products, setProducts] = useState(useSelector(allProducts));
+  const addresses = useSelector(allAddresses);
 
   const handleChangePayment = (event) => {
     setPayment(event.target.value);
@@ -93,7 +95,6 @@ const ShoppingCart = () => {
   }
 
   useEffect(() => {
-
     const formatProducts = products.map(item => {
       let subtotal = parseInt(item.price) * parseInt(item.qty);
       return createData(item.name, item.price, item.qty, parseInt(subtotal));
@@ -180,9 +181,12 @@ const ShoppingCart = () => {
               <MenuItem value="">
                 <em>None</em>
               </MenuItem>
-              <MenuItem value="Address 1">Address 1</MenuItem>
-              <MenuItem value="Address 2">Address 2</MenuItem>
-              <MenuItem value="Address 3">Address 3</MenuItem>
+              {addresses &&
+                addresses.map((address, i) => {
+                  let addressString = `${address.address}, ${address.city}, ${address.state}`;
+                  return <MenuItem key={i} value={addressString}>{addressString}</MenuItem>
+                })
+              }
             </Select>
           </FormControl>
         </Grid>

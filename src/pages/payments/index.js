@@ -1,17 +1,19 @@
-import React, { useState } from "react";
-import { Avatar, Button, Grid } from "@mui/material";
+import React, { useState, useEffect } from "react";
+import { Button, Grid } from "@mui/material";
 
 // hook form
 import { useForm } from "react-hook-form";
 
 import ProfileSidebar from "../../components/profile-sidebar";
-import CustomInput from "../../components/input";
 import { makeStyles } from "@mui/styles";
-
-import ProfileAvatar from "../../assets/images/profile-avatar.png";
+import { useSelector } from "react-redux";
+import { token } from "../../features/auth/AuthSlice";
+import { useNavigate } from "react-router-dom";
 
 const Payments = () => {
   const classes = useStyles();
+  const navigate = useNavigate();
+  const userIsLogged = useSelector(token);
   const [showInput, setShowInput] = useState({
     firstName: true,
     lastName: true,
@@ -19,7 +21,6 @@ const Payments = () => {
     phoneNumber: true,
     address: true,
   });
-
   const [showAddressInput, setShowAddressInput] = useState(false);
 
   // form structure
@@ -36,6 +37,12 @@ const Payments = () => {
       setShowInput((prev) => ({ ...prev, [key]: false }));
     }
   };
+
+  useEffect(() => {
+    if(!userIsLogged) {
+      navigate('/');
+    }
+  }, []);
 
   return (
     <Grid container className={classes.grid}>
