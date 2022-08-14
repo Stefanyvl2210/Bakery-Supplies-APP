@@ -4,6 +4,7 @@ import { Route, Routes, useLocation } from "react-router-dom";
 // components
 import NavBar from "../components/NavBar";
 import Footer from "../components/Footer";
+import { Grid } from "@mui/material";
 
 // admin components
 import AdminNavBar from "../components/Admin/NavBar";
@@ -25,9 +26,10 @@ import Orders from "../pages/orders";
 
 // Admin
 import AdminProducts from "../pages/Admin/products";
-import { Grid } from "@mui/material";
 import Sidebar from "../components/Admin/Sidebar";
-import ProductForm from "../pages/Admin/new-product-form";
+import ProductForm from "../pages/Admin/new-product";
+import Category from "../pages/Admin/new-category";
+import Categories from "../pages/Admin/categories";
 
 /**
  * Use this component for any new section of routes (any config object that has a "routes" property
@@ -45,7 +47,9 @@ export function RenderRoutes() {
               <AdminNavBar />
               <Routes>
                 <Route path="/admin/products" element={<AdminProducts />} />
-                <Route path="/admin/new-product" element={<ProductForm />} />
+                <Route path="/admin/new-product" element={<ProductForm />} />+
+                <Route path="/admin/categories" element={<Categories />} />
+                <Route path="/admin/new-category" element={<Category />} />
                 <Route path="*" element={<h1>404 Not Found!</h1>} />
               </Routes>
             </Grid>
