@@ -16,3 +16,24 @@ export const verifyEmail = async (data, token) =>
       Authorization: `Bearer ${token}`,
     },
   });
+
+export const addAddressUser = async (data, token) => 
+  await axios.post(`${ApiUrl}/address`, data, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+
+export const getAddressUser = async (token) =>
+  await axios.get(`${ApiUrl}/address`, '', {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+
+export const deleteAddressUser = async (id, token) =>
+  await axios.delete(`${ApiUrl}/address/${id}`, '', {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });

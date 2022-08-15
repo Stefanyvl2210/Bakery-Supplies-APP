@@ -23,7 +23,8 @@ import classNames from "classnames";
 import { useNavigate } from "react-router-dom";
 import { allProducts } from "../../features/counter/counterSlice";
 import { useSelector } from "react-redux";
-import { allAddresses } from "../../features/auth/AuthSlice";
+import { token } from "../../features/auth/AuthSlice";
+import { getAddressUser } from "../../helpers/api/auth";
 
 function createData(product, unitPrice, quantity, subtotal) {
   return { product, unitPrice, quantity, subtotal };
@@ -51,13 +52,14 @@ const columns = [
 const ShoppingCart = () => {
   const navigate = useNavigate();
   const classes = useStyles();
+  const userIsLogged = useSelector(token);
   const [payment, setPayment] = useState('');
   const [address, setAddress] = useState('');
   const [delivery, setDelivery] = useState(0);
   const [totalBeforeTaxes, setTotalBeforeTaxes] = useState(0);
   const [totalOrder, setTotalOrder] = useState(0);
   const [products, setProducts] = useState(useSelector(allProducts));
-  const addresses = useSelector(allAddresses);
+  const [allAddresses, setAllAddresses] = useState([]);
 
   const handleChangePayment = (event) => {
     setPayment(event.target.value);
@@ -68,6 +70,22 @@ const ShoppingCart = () => {
   const handleChangeDelivery = (event) => {
     setDelivery(parseFloat(event.target.value));
   };
+
+  const getAddresses = async () => {
+    try {
+      const newAddresses = await getAddressUser(userIsLogged);
+      let addressFormat = newAddresses.data.map((item) => {
+        let addressJson = {
+          id: item.id,
+          address: JSON.parse(item.address)
+        }
+        return addressJson
+      })
+      setAllAddresses(addressFormat)
+    } catch (error) {
+      console.log(error);
+    }
+  }
   
   const handleOrderInfo = () => {
     let expectedDelivery = '';
@@ -95,6 +113,7 @@ const ShoppingCart = () => {
   }
 
   useEffect(() => {
+    getAddresses();
     const formatProducts = products.map(item => {
       let subtotal = parseInt(item.price) * parseInt(item.qty);
       return createData(item.name, item.price, item.qty, parseInt(subtotal));
@@ -181,10 +200,10 @@ const ShoppingCart = () => {
               <MenuItem value="">
                 <em>None</em>
               </MenuItem>
-              {addresses &&
-                addresses.map((address, i) => {
-                  let addressString = `${address.address}, ${address.city}, ${address.state}`;
-                  return <MenuItem key={i} value={addressString}>{addressString}</MenuItem>
+              {allAddresses &&
+                allAddresses.map((item, i) => {
+                  let addressString = `${item.address.address}, ${item.address.city}, ${item.address.state}`;
+                  return <MenuItem key={i} value={item.id}>{addressString}</MenuItem>
                 })
               }
             </Select>
