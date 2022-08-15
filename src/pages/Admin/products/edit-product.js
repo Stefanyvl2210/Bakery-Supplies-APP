@@ -22,21 +22,36 @@ import CustomInput from "../../../components/input";
 
 import classNames from "classnames";
 import { getCategories } from "../../../helpers/api/category";
-import { createProduct } from "../../../helpers/api/product";
+import {
+  createProduct,
+  editProduct,
+  getProductById,
+} from "../../../helpers/api/product";
+import SnackBar from "../../../components/Snackbar";
+import { useNavigate, useParams } from "react-router-dom";
 
 const validationSchema = yup.object({
   name: yup.string().required("Required"),
   description: yup.string().required("Required"),
   price: yup.number().min(1).required("Required"),
-  quantity_avalaible: yup.number().min(1).required("Required"),
+  quantity_available: yup.number().min(1).required("Required"),
   categories: yup.number().required("Required"),
 });
 
-const ProductForm = () => {
+const EditProduct = () => {
   const classes = useStyles();
+  const params = useParams();
+  const navigate = useNavigate();
   const [categories, setCategories] = React.useState([]);
+  const [categoryId, setCategoryId] = React.useState(null);
   const [productImage, setProductImage] = React.useState(null);
   const [file, setFile] = React.useState(null);
+  const [loading, setLoading] = React.useState(false);
+  const [openSnack, setOpenSnack] = React.useState({
+    open: false,
+    message: "",
+    severity: "",
+  });
 
   const {
     register,
@@ -49,7 +64,7 @@ const ProductForm = () => {
     defaultValues: {
       name: "",
       description: "",
-      quantity_avalaible: 1,
+      quantity_available: 1,
       price: 1,
       categories: 0,
     },
@@ -62,15 +77,31 @@ const ProductForm = () => {
       if (data.length > 0) {
         setCategories(data);
 
-        setValue("category", data[0].id);
+        setValue("categories", data[0].id);
       }
     } catch (error) {
       console.log(error);
     }
   };
 
+  const getProduct = async () => {
+    try {
+      const { data } = await getProductById(params?.id);
+
+      setValue("name", data.name);
+      setValue("description", data.description);
+      setValue("quantity_available", data.quantity_available);
+      setValue("price", data.price);
+      setCategoryId(data.categories[0].id);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   React.useEffect(() => {
+    if (!params?.id) navigate("/admin/products");
     categoryList();
+    getProduct();
   }, []);
 
   const onSubmit = async (values) => {
@@ -81,17 +112,39 @@ const ProductForm = () => {
     formData.append("name", values.name);
     formData.append("description", values.description);
     formData.append("price", values.price);
-    formData.append("quantity_avalaible", values.quantity_avalaible);
-    formData.append("categories", `[${values.category}]`);
-    console.log(formData.get("image"));
+    formData.append("quantity_available", values.quantity_available);
+    formData.append("categories", `[${values.categories}]`);
 
     try {
-      const response = await createProduct(formData);
-      console.log(response);
+      const response = await editProduct(formData, params.id);
+
+      setOpenSnack({
+        open: true,
+        message: "The product has been created",
+        severity: "success",
+      });
+
+      setTimeout(() => {
+        navigate("/admin/products");
+      }, 1000);
     } catch (error) {
-      console.log(error);
+      setOpenSnack({
+        open: true,
+        message: "There has been an error",
+        severity: "error",
+      });
     }
   };
+
+  const handleCloseSnack = (event, reason) => {
+    if (reason === "clickaway") {
+      return;
+    }
+
+    setOpenSnack(false);
+  };
+
+  console.log(categoryId);
   return (
     <>
       <div className={classes.container}>
@@ -158,13 +211,13 @@ const ProductForm = () => {
             <Grid item xs={12} className={classes.input}>
               <CustomInput
                 register={register}
-                field="quantity_avalaible"
+                field="quantity_available"
                 fullWidth={true}
                 width="100%"
                 type="number"
                 label="Quantity"
                 placeholder=" "
-                error={errors?.quantity_avalaible?.message}
+                error={errors?.quantity_available?.message}
               />
             </Grid>
 
@@ -188,7 +241,7 @@ const ProductForm = () => {
               display="flex"
               justifyContent="flex-end"
             >
-              {categories.length > 0 && (
+              {categories.length > 0 && categoryId && (
                 <FormControl style={{ minWidth: 300 }}>
                   <InputLabel
                     id="demo-simple-select-label"
@@ -203,7 +256,7 @@ const ProductForm = () => {
                     fullWidth
                     name="categories"
                     {...register("categories")}
-                    defaultValue={categories[0]?.id}
+                    defaultValue={categoryId}
                   >
                     {categories.map((category, i) => (
                       <MenuItem
@@ -218,8 +271,46 @@ const ProductForm = () => {
                       </MenuItem>
                     ))}
                   </Select>
-                  {errors?.category?.message && (
-                    <small>{errors?.category?.message}</small>
+
+                  {errors?.categories?.message && (
+                    <small>{errors?.categories?.message}</small>
+                  )}
+                </FormControl>
+              )}
+
+              {categories.length > 0 && !categoryId && !params?.id && (
+                <FormControl style={{ minWidth: 300 }}>
+                  <InputLabel
+                    id="demo-simple-select-label"
+                    sx={{ fontSize: "18px !important" }}
+                  >
+                    Category
+                  </InputLabel>
+
+                  <Select
+                    placeholder="Select"
+                    variant="outlined"
+                    fullWidth
+                    name="categories"
+                    {...register("categories")}
+                    defaultValue={categories[0].id}
+                  >
+                    {categories.map((category, i) => (
+                      <MenuItem
+                        value={category.id}
+                        sx={{
+                          fontSize: "18px !important",
+                          lineHeight: "20px !important",
+                        }}
+                        key={i}
+                      >
+                        {category.name}
+                      </MenuItem>
+                    ))}
+                  </Select>
+
+                  {errors?.categories?.message && (
+                    <small>{errors?.categories?.message}</small>
                   )}
                 </FormControl>
               )}
@@ -230,6 +321,7 @@ const ProductForm = () => {
                 variant="contained"
                 type="submit"
                 className={classes.button}
+                disabled={loading}
               >
                 Save
               </Button>
@@ -237,6 +329,10 @@ const ProductForm = () => {
           </Grid>
         </form>
       </div>
+
+      {openSnack.open && (
+        <SnackBar openSnack={openSnack} handleCloseSnack={handleCloseSnack} />
+      )}
     </>
   );
 };
@@ -284,4 +380,4 @@ const useStyles = makeStyles(() => ({
   inputFile: {},
 }));
 
-export default ProductForm;
+export default EditProduct;

@@ -1,5 +1,4 @@
 import axios from "../../config/axios";
-import Axios from "axios";
 import { ApiUrl } from "../url";
 
 export const loginUser = async (data) =>

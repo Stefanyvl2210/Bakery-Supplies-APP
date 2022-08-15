@@ -27,9 +27,11 @@ import Orders from "../pages/orders";
 // Admin
 import AdminProducts from "../pages/Admin/products";
 import Sidebar from "../components/Admin/Sidebar";
-import ProductForm from "../pages/Admin/new-product";
-import Category from "../pages/Admin/new-category";
+import ProductForm from "../pages/Admin/products/new-product";
+import Category from "../pages/Admin/categories/new-category";
 import Categories from "../pages/Admin/categories";
+import EditCategory from "../pages/Admin/categories/edit-category";
+import EditProduct from "../pages/Admin/products/edit-product";
 
 /**
  * Use this component for any new section of routes (any config object that has a "routes" property
@@ -47,9 +49,11 @@ export function RenderRoutes() {
               <AdminNavBar />
               <Routes>
                 <Route path="/admin/products" element={<AdminProducts />} />
-                <Route path="/admin/new-product" element={<ProductForm />} />+
+                <Route path="/admin/new-product" element={<ProductForm />} />
+                <Route path="/admin/product/:id" element={<EditProduct />} />
                 <Route path="/admin/categories" element={<Categories />} />
                 <Route path="/admin/new-category" element={<Category />} />
+                <Route path="/admin/category/:id" element={<EditCategory />} />
                 <Route path="*" element={<h1>404 Not Found!</h1>} />
               </Routes>
             </Grid>

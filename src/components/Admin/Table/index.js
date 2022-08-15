@@ -15,7 +15,10 @@ import FirstPageIcon from "@mui/icons-material/FirstPage";
 import KeyboardArrowLeft from "@mui/icons-material/KeyboardArrowLeft";
 import KeyboardArrowRight from "@mui/icons-material/KeyboardArrowRight";
 import LastPageIcon from "@mui/icons-material/LastPage";
+import EditIcon from "@mui/icons-material/Edit";
+import DeleteIcon from "@mui/icons-material/Delete";
 import { TableHead } from "@mui/material";
+import { makeStyles } from "@mui/styles";
 
 function TablePaginationActions(props) {
   const theme = useTheme();
@@ -89,9 +92,12 @@ TablePaginationActions.propTypes = {
 export default function CustomPaginationActionsTable({
   rows = [],
   columns = [],
+  onEdit,
+  onDelete,
 }) {
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(5);
+  const classes = useStyles();
 
   // Avoid a layout jump when reaching the last page with empty rows.
   const emptyRows =
@@ -107,12 +113,14 @@ export default function CustomPaginationActionsTable({
   };
 
   return (
-    <TableContainer component={Paper}>
+    <TableContainer component={Paper} className={classes.table}>
       <Table sx={{ minWidth: 500 }} aria-label="custom pagination table">
         <TableHead>
           <TableRow>
             {columns.map((column, i) => (
-              <TableCell key={i}>{column.name}</TableCell>
+              <TableCell key={i} align="center" colSpan={1}>
+                {column.name}
+              </TableCell>
             ))}
           </TableRow>
         </TableHead>
@@ -123,7 +131,32 @@ export default function CustomPaginationActionsTable({
           ).map((row) => (
             <TableRow key={row.name}>
               {columns.map((column, i) => (
-                <TableCell key={i}>{row[column.key]}</TableCell>
+                <React.Fragment key={i}>
+                  {column.key !== "actions" ? (
+                    <>
+                      <TableCell align="center">{row[column.key]}</TableCell>
+                    </>
+                  ) : (
+                    <>
+                      <TableCell align="center">
+                        <React.Fragment>
+                          <span
+                            style={{ cursor: "pointer", margin: "0 5px" }}
+                            onClick={() => onEdit(row.slug || row.id)}
+                          >
+                            <EditIcon fontSize="small" />
+                          </span>
+                          <span
+                            style={{ cursor: "pointer", margin: "0 5px" }}
+                            onClick={() => onDelete(row.id)}
+                          >
+                            <DeleteIcon fontSize="small" />
+                          </span>
+                        </React.Fragment>
+                      </TableCell>
+                    </>
+                  )}
+                </React.Fragment>
               ))}
             </TableRow>
           ))}
@@ -138,7 +171,6 @@ export default function CustomPaginationActionsTable({
           <TableRow>
             <TablePagination
               rowsPerPageOptions={[5, 10, 25, { label: "All", value: -1 }]}
-              colSpan={3}
               count={rows.length}
               rowsPerPage={rowsPerPage}
               page={page}
@@ -158,3 +190,9 @@ export default function CustomPaginationActionsTable({
     </TableContainer>
   );
 }
+
+const useStyles = makeStyles(() => ({
+  table: {
+    border: "1px solid #000",
+  },
+}));

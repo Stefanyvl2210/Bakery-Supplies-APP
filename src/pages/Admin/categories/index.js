@@ -4,7 +4,8 @@ import { useNavigate } from "react-router-dom";
 import { makeStyles } from "@mui/styles";
 import Table from "../../../components/Admin/Table";
 import { Button } from "@mui/material";
-import { getCategories } from "../../../helpers/api/category";
+import { deleteCategory, getCategories } from "../../../helpers/api/category";
+import SnackBar from "../../../components/Snackbar";
 
 function createData({ id, name, slug, created_at }) {
   return { id, name, slug, created_at };
@@ -27,12 +28,21 @@ const columns = [
     key: "created_at",
     name: "Created at",
   },
+  {
+    key: "actions",
+    name: "Actions",
+  },
 ];
 
 const Categories = () => {
   const navigate = useNavigate();
   const classes = useStyles();
   const [rows, setRows] = React.useState([]);
+  const [openSnack, setOpenSnack] = React.useState({
+    open: false,
+    message: "",
+    severity: "",
+  });
 
   const categoryList = async () => {
     try {
@@ -49,6 +59,8 @@ const Categories = () => {
             })
           )
         );
+      } else {
+        setRows([]);
       }
     } catch (error) {
       console.log(error);
@@ -58,6 +70,38 @@ const Categories = () => {
   React.useEffect(() => {
     categoryList();
   }, []);
+
+  const onEdit = (id) => {
+    navigate(`/admin/category/${id}`);
+  };
+
+  const onDelete = async (id) => {
+    try {
+      await deleteCategory(id);
+
+      setOpenSnack({
+        open: true,
+        message: "Successfully deleted",
+        severity: "success",
+      });
+
+      categoryList();
+    } catch (error) {
+      setOpenSnack({
+        open: true,
+        message: "An error has ocurred",
+        severity: "error",
+      });
+    }
+  };
+
+  const handleCloseSnack = (event, reason) => {
+    if (reason === "clickaway") {
+      return;
+    }
+
+    setOpenSnack(false);
+  };
 
   return (
     <div className={classes.container}>
@@ -72,7 +116,16 @@ const Categories = () => {
         </Button>
       </div>
 
-      <Table rows={rows} columns={columns} />
+      <Table
+        rows={rows}
+        columns={columns}
+        onEdit={onEdit}
+        onDelete={onDelete}
+      />
+
+      {openSnack.open && (
+        <SnackBar openSnack={openSnack} handleCloseSnack={handleCloseSnack} />
+      )}
     </div>
   );
 };
@@ -81,7 +134,7 @@ const useStyles = makeStyles(() => ({
   container: {
     width: "100%",
     maxWidth: "1068px",
-    margin: "30px auto 500px auto",
+    margin: "30px auto 630px auto",
   },
   titleWrapper: {
     display: "flex",

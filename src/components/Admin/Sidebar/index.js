@@ -72,21 +72,6 @@ const Sidebar = () => {
             </ListItemButton>
           </List>
         </Collapse>
-
-        <ListItemButton onClick={() => handleClick("users")}>
-          <ListItemText primary="Users" />
-          {openMenu.users ? <ExpandLess /> : <ExpandMore />}
-        </ListItemButton>
-        <Collapse in={openMenu.users} timeout="auto" unmountOnExit>
-          <List component="div" disablePadding>
-            <ListItemButton sx={{ pl: 4, color: "white" }}>
-              <ListItemText primary="All users" />
-            </ListItemButton>
-            <ListItemButton sx={{ pl: 4, color: "white" }}>
-              <ListItemText primary="Add new" />
-            </ListItemButton>
-          </List>
-        </Collapse>
       </List>
     );
   };

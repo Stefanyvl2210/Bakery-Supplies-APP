@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 
 // hook form
 import { useForm } from "react-hook-form";
@@ -9,26 +9,32 @@ import { Button, Divider, Grid } from "@mui/material";
 import { makeStyles } from "@mui/styles";
 
 import CustomInput from "../../../components/input";
-import { createCategory } from "../../../helpers/api/category";
+import { editCategory, getCategoryById } from "../../../helpers/api/category";
 import SnackBar from "../../../components/Snackbar";
+import { useNavigate, useParams } from "react-router-dom";
 
 const validationSchema = yup.object({
   name: yup.string().required("Required"),
   slug: yup.string().required("Required"),
 });
 
-const Category = () => {
+const EditCategory = () => {
   const classes = useStyles();
+  const params = useParams();
+  const navigate = useNavigate();
   const [loading, setLoading] = React.useState(false);
   const [openSnack, setOpenSnack] = React.useState({
     open: false,
     message: "",
     severity: "",
   });
+  const [categoryId, setCategoryId] = React.useState(null);
 
   const {
     register,
     handleSubmit,
+    reset,
+    setValue,
     formState: { errors },
   } = useForm({
     resolver: yupResolver(validationSchema),
@@ -38,15 +44,37 @@ const Category = () => {
     },
   });
 
+  const category = async () => {
+    try {
+      const { data } = await getCategoryById(params?.id);
+
+      console.log(data);
+      setCategoryId(data.id);
+      setValue("name", data.name);
+      setValue("slug", data.slug);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  useEffect(() => {
+    if (!params?.id) navigate("/admin/categories");
+    category();
+  }, []);
+
   const onSubmit = async (values) => {
     try {
-      const response = await createCategory(values);
+      const response = await editCategory(values, categoryId);
 
       setOpenSnack({
         open: true,
-        message: "The category has been created",
+        message: "Category edited successfully",
         severity: "success",
       });
+
+      setTimeout(() => {
+        navigate("/admin/categories");
+      }, 1000);
     } catch (error) {
       setOpenSnack({
         open: true,
@@ -68,7 +96,7 @@ const Category = () => {
   return (
     <>
       <div className={classes.container}>
-        <h1 className={classes.title}>Add new category</h1>
+        <h1 className={classes.title}>Edit category</h1>
 
         <Divider />
 
@@ -105,7 +133,7 @@ const Category = () => {
                 className={classes.button}
                 disabled={loading}
               >
-                Save
+                Edit
               </Button>
             </Grid>
           </Grid>
@@ -163,4 +191,4 @@ const useStyles = makeStyles(() => ({
   inputFile: {},
 }));
 
-export default Category;
+export default EditCategory;
