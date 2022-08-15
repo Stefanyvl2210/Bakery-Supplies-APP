@@ -18,22 +18,23 @@ export const verifyEmail = async (data, token) =>
     },
   });
 
-export const addAddressUser = async (data) => {
-  console.log('data', data.data)
-  console.log('token', data.token)
-  await axios.post(`${ApiUrl}/address`, data.data, {
+export const addAddressUser = async (data, token) => 
+  await axios.post(`${ApiUrl}/address`, data, {
     headers: {
-      Authorization: `Bearer ${data.token}`,
+      Authorization: `Bearer ${token}`,
     },
   });
-}
 
-export const getAddressUser = async (data) =>
-  await axios.get(`${ApiUrl}/address`, data);
+export const getAddressUser = async (token) =>
+  await axios.get(`${ApiUrl}/address`, '', {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
 
-// export const deleteAddressUser = async (data) =>
-//   await axios.delete(`${ApiUrl}/address/${data.id}`, data, {
-//     headers: {
-//       Authorization: `Bearer ${params?.id}`,
-//     },
-//   });
+export const deleteAddressUser = async (id, token) =>
+  await axios.delete(`${ApiUrl}/address/${id}`, '', {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });

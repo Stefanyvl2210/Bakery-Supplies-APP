@@ -1,17 +1,18 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 import { Avatar, Button, Grid, IconButton } from "@mui/material";
 
 // hook form
 import { useForm } from "react-hook-form";
-import { addAddress, allAddresses, deleteAddress, token, userLogged } from "../../features/auth/AuthSlice";
+import { token, userLogged } from "../../features/auth/AuthSlice";
 import ProfileSidebar from "../../components/profile-sidebar";
 import CustomInput from "../../components/input";
 import { makeStyles } from "@mui/styles";
 import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
 import ProfileAvatar from "../../assets/images/profile-avatar.png";
-import { addAddressUser } from "../../helpers/api/auth";
+import { addAddressUser, deleteAddressUser, getAddressUser } from "../../helpers/api/auth";
+import SnackBar from "../../components/Snackbar";
 
 const MyAccount = () => {
   const classes = useStyles();
@@ -22,19 +23,41 @@ const MyAccount = () => {
     phoneNumber: true,
     address: true,
   });
-  const dispatch = useDispatch();
   const navigate = useNavigate();
-  const addresses = useSelector(allAddresses);
   const userIsLogged = useSelector(token);
   const user = useSelector(userLogged);
+  const [addresses, setAddresses] = useState([]);
   const [showAddressInput, setShowAddressInput] = useState(false);
+  const [loading, setLoading] = React.useState(false);
+  const [openSnack, setOpenSnack] = React.useState({
+    open: false,
+    message: "",
+    severity: "",
+  });
 
   useEffect(() => {
     if(!userIsLogged) {
       navigate('/');
     }
-    console.log('user', user)
+    getAddresses();
+    
   }, []);
+
+  const getAddresses = async () => {
+    try {
+      const newAddresses = await getAddressUser(userIsLogged);
+      let addressFormat = newAddresses.data.map((address) => {
+        let addressJson = {
+          id: address.id,
+          address: JSON.parse(address.address)
+        }
+        return addressJson
+      })
+      setAddresses(addressFormat)
+    } catch (error) {
+      console.log(error);
+    }
+  }
 
   // form structure user profile
   const {
@@ -61,61 +84,32 @@ const MyAccount = () => {
     // resetField("");
   };
 
-  // const onSubmit = async (data) => {
-  //   setLoading(true);
-  //   try {
-  //     const response = await registerUser(data);
-  //     console.log(response);
-  //     setOpenSnack({
-  //       open: true,
-  //       message: "Successfully registered",
-  //       severity: "success",
-  //     });
-  //     setLoading(false);
-
-  //     setTimeout(() => {
-  //       navigate(`/verify-email/${response.data.token}`);
-  //     }, 2000);
-  //   } catch (error) {
-  //     console.log(error);
-  //     // setOpenSnack({
-  //     //   open: true,
-  //     //   message: error,
-  //     //   severity: "error",
-  //     // });
-  //     setLoading(false);
-  //   }
-  // };
-
   const onSubmitAddress = async (data) => {
     if(!showAddressInput && data.address !== "" && data.city !== "" && data.state !== "" ) {
-      // setLoading(true);
+      setLoading(true);
       let addressString = JSON.stringify({address: data.address, city: data.city, state: data.state});
-      console.log('address', addressString)
-      console.log('token', userIsLogged)
       try {
-        const response = await addAddressUser({data: {address: addressString}, token: userIsLogged});
-        console.log(response);
-        // setOpenSnack({
-        //   open: true,
-        //   message: "New Address Added",
-        //   severity: "success",
-        // });
-        // setLoading(false)
+        const response = await addAddressUser({address: addressString}, userIsLogged);
+        if(response.status === 200) {
+          setOpenSnack({
+            open: true,
+            message: "New Address Added",
+            severity: "success",
+          });
+          setLoading(false)
+          resetField("address");
+          resetField("city");
+          resetField("state");
+          getAddresses();
+        }
       } catch (error) {
-        console.log(error);
-        // setOpenSnack({
-        //   open: true,
-        //   message: error,
-        //   severity: "error",
-        // });
-        // setLoading(false);
+        setOpenSnack({
+          open: true,
+          message: error,
+          severity: "error",
+        });
+        setLoading(false);
       }
-        
-      // dispatch(addAddress({address: data.address, city: data.city, state: data.state}))
-      // resetField("address");
-      // resetField("city");
-      // resetField("state");
     }
   };
 
@@ -127,9 +121,22 @@ const MyAccount = () => {
     }
   };
 
-  const handleDeleteAddress = (index) => {
-    dispatch(deleteAddress({index: index}));
+  const handleDeleteAddress = async (index) => {
+    try {
+      const response = await deleteAddressUser(index, userIsLogged);
+      getAddresses();
+    } catch (error) {
+      console.log(error);
+    }
   }
+
+  const handleCloseSnack = (event, reason) => {
+    if (reason === "clickaway") {
+      return;
+    }
+
+    setOpenSnack(false);
+  };
 
   return (
     <Grid container className={classes.grid}>
@@ -295,10 +302,10 @@ const MyAccount = () => {
                     </>
                   ) : (
                     addresses.length > 0 ?
-                      addresses.map((address, i) => (
+                      addresses.map((item, i) => (
                         <Grid item xs={12} key={i} className={classes.addresses}>
                           <p className={classes.paragraph}>
-                            {address.address}, {address.city}, {address.state} 
+                            {item.address.address}, {item.address.city}, {item.address.state} 
                             <IconButton
                               size="small"
                               edge="start"
@@ -311,7 +318,7 @@ const MyAccount = () => {
                                   height: "24px !important"
                                 }
                               }}
-                              onClick={() => handleDeleteAddress(i)}
+                              onClick={() => handleDeleteAddress(item.id)}
                             >
                               <DeleteOutlineIcon />
                             </IconButton>
@@ -361,6 +368,9 @@ const MyAccount = () => {
           </Grid>
         </Grid>
       </Grid>
+      {openSnack.open && (
+        <SnackBar openSnack={openSnack} handleCloseSnack={handleCloseSnack} />
+      )}
     </Grid>
   );
 };
