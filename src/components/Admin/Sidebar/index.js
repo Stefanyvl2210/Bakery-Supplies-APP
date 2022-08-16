@@ -72,6 +72,12 @@ const Sidebar = () => {
             </ListItemButton>
           </List>
         </Collapse>
+
+        <ListItemButton>
+          <Link to="/admin/logs">
+            <ListItemText primary="Logs" />
+          </Link>
+        </ListItemButton>
       </List>
     );
   };

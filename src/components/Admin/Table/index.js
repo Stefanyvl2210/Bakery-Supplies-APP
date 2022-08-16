@@ -118,7 +118,7 @@ export default function CustomPaginationActionsTable({
         <TableHead>
           <TableRow>
             {columns.map((column, i) => (
-              <TableCell key={i} align="center" colSpan={1}>
+              <TableCell key={column.key} align="center" colSpan={1}>
                 {column.name}
               </TableCell>
             ))}

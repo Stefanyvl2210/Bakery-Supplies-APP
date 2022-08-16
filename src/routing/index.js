@@ -32,6 +32,7 @@ import Category from "../pages/Admin/categories/new-category";
 import Categories from "../pages/Admin/categories";
 import EditCategory from "../pages/Admin/categories/edit-category";
 import EditProduct from "../pages/Admin/products/edit-product";
+import Logs from "../pages/Admin/logs";
 
 /**
  * Use this component for any new section of routes (any config object that has a "routes" property
@@ -54,6 +55,9 @@ export function RenderRoutes() {
                 <Route path="/admin/categories" element={<Categories />} />
                 <Route path="/admin/new-category" element={<Category />} />
                 <Route path="/admin/category/:id" element={<EditCategory />} />
+
+                <Route path="/admin/logs" element={<Logs />} />
+
                 <Route path="*" element={<h1>404 Not Found!</h1>} />
               </Routes>
             </Grid>
