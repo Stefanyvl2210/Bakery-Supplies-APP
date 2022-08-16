@@ -5,9 +5,10 @@ import Table from "../../../components/Admin/Table";
 
 import { getLogs } from "../../../helpers/api/logs";
 
-function createData({ id, action, created_at }) {
+function createData({ id, name, action, created_at }) {
   return {
     id,
+    name,
     action,
     created_at,
   };
@@ -17,6 +18,10 @@ const columns = [
   {
     key: "id",
     name: "ID",
+  },
+  {
+    key: "name",
+    name: "User",
   },
   {
     key: "action",
@@ -42,6 +47,7 @@ const Logs = () => {
           data.map((log) =>
             createData({
               ...log,
+              name: `${log.user.first_name} ${log.user.last_name}`,
               created_at: new Date(log.created_at).toLocaleDateString(),
             })
           )
@@ -55,6 +61,8 @@ const Logs = () => {
   React.useEffect(() => {
     logs();
   }, []);
+
+  console.log(rows);
 
   return (
     <div className={classes.container}>
