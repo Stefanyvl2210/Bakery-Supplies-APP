@@ -43,6 +43,7 @@ const EditProduct = () => {
   const params = useParams();
   const navigate = useNavigate();
   const [categories, setCategories] = React.useState([]);
+  const [image, setImage] = React.useState("");
   const [categoryId, setCategoryId] = React.useState(null);
   const [productImage, setProductImage] = React.useState(null);
   const [file, setFile] = React.useState(null);
@@ -93,6 +94,10 @@ const EditProduct = () => {
       setValue("quantity_available", data.quantity_available);
       setValue("price", data.price);
       setCategoryId(data.categories[0].id);
+
+      if (data.image) {
+        setImage(data.image);
+      }
     } catch (error) {
       console.log(error);
     }
@@ -120,7 +125,7 @@ const EditProduct = () => {
 
       setOpenSnack({
         open: true,
-        message: "The product has been created",
+        message: "The product has been edited",
         severity: "success",
       });
 
@@ -144,7 +149,6 @@ const EditProduct = () => {
     setOpenSnack(false);
   };
 
-  console.log(categoryId);
   return (
     <>
       <div className={classes.container}>
@@ -154,7 +158,12 @@ const EditProduct = () => {
 
         <div>
           {!productImage ? (
-            <img src={EmptyImage} alt="empty" />
+            <img
+              src={image ? image : EmptyImage}
+              alt="empty"
+              width={255}
+              height={255}
+            />
           ) : (
             <img src={productImage} alt="product" width={255} height={255} />
           )}
@@ -179,7 +188,7 @@ const EditProduct = () => {
                   }
                 }}
               />
-              Custom Upload
+              Update Image
             </label>
           </Box>
         </div>

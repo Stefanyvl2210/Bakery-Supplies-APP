@@ -157,7 +157,7 @@ const ProductForm = () => {
                   }
                 }}
               />
-              Custom Upload
+              Upload Image
             </label>
           </Box>
         </div>
