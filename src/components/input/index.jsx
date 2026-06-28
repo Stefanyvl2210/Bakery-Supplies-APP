@@ -3,7 +3,7 @@ import { alpha, styled } from "@mui/material/styles";
 import InputBase from "@mui/material/InputBase";
 import InputLabel from "@mui/material/InputLabel";
 import FormControl from "@mui/material/FormControl";
-import { EditOutlined } from "@mui/icons-material";
+import EditOutlined from "@mui/icons-material/EditOutlined";
 
 const BootstrapInput = styled(InputBase)(({ theme }) => ({
   "label + &": {

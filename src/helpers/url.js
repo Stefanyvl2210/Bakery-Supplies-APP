@@ -1,1 +1,2 @@
-export const ApiUrl = process.env.NODE_ENV === 'production' ? 'https://bakery-supplies.herokuapp.com/api' : 'http://127.0.0.1:8000/api'
+export const ApiUrl =
+  import.meta.env.VITE_API_URL || "http://127.0.0.1:8000/api";

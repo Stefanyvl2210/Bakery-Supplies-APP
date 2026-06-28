@@ -3,7 +3,7 @@ import { Swiper, SwiperSlide } from "swiper/react";
 import { makeStyles } from "@mui/styles";
 
 // import Swiper core and required modules
-import { Navigation, Pagination, Scrollbar, A11y } from "swiper";
+import { Navigation, Pagination, Scrollbar, A11y } from "swiper/modules";
 
 // Import Swiper styles
 import "swiper/css";

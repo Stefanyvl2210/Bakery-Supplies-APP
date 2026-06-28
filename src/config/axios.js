@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { ApiUrl } from '../helpers/url';
 
 export const generateCancelToken = () => {
   const CancelToken = axios.CancelToken;
@@ -8,10 +9,7 @@ export const generateCancelToken = () => {
 }
 
 const instance = axios.create({
-  baseURL:
-    process.env.NODE_ENV === 'production'
-      ? 'https://bakery-supplies.herokuapp.com/api'
-      : 'http://dev.bakery-supplies.lc/api',
+  baseURL: ApiUrl,
 });
 
 export default instance;

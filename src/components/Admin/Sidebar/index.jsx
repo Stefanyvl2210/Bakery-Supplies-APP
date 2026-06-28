@@ -9,7 +9,8 @@ import {
 import React from "react";
 import { makeStyles } from "@mui/styles";
 import Logo from "../../../assets/images/admin-logo.png";
-import { ExpandLess, ExpandMore } from "@mui/icons-material";
+import ExpandLess from "@mui/icons-material/ExpandLess";
+import ExpandMore from "@mui/icons-material/ExpandMore";
 import { Link } from "react-router-dom";
 
 const Sidebar = () => {
