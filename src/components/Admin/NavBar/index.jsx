@@ -20,6 +20,13 @@ import {
   Grid,
   Drawer,
 } from "@mui/material";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  sessionAnonymous,
+  userLogged,
+} from "../../../features/auth/AuthSlice";
+import { logoutUser } from "../../../helpers/api/auth";
+import { storeAuthToken } from "../../../config/axios";
 
 const drawerWidth = 240;
 
@@ -27,7 +34,8 @@ export default function NavBar(props) {
   const { window } = props;
   const classes = useStyles();
   const navigate = useNavigate();
-  const userIsLogged = localStorage.getItem("userLogged");
+  const dispatch = useDispatch();
+  const userIsLogged = Boolean(useSelector(userLogged));
   const anchorRef = React.useRef(null);
 
   const [mobileOpen, setMobileOpen] = React.useState(false);
@@ -39,9 +47,14 @@ export default function NavBar(props) {
     users: false,
   });
 
-  const handleLogout = () => {
-    localStorage.removeItem("userLogged");
-    navigate("/");
+  const handleLogout = async () => {
+    try {
+      await logoutUser();
+    } finally {
+      storeAuthToken(null);
+      dispatch(sessionAnonymous());
+      navigate("/");
+    }
   };
 
   // return focus to the button when we transitioned from !open -> open
@@ -120,7 +133,7 @@ export default function NavBar(props) {
     window !== undefined ? () => window().document.body : undefined;
 
   return (
-    <Grid container>
+    <Grid container className={classes.root}>
       <Grid item xs={12}>
         <AppBar position="static" className={classes.container}>
           <Toolbar className={classes.toolbar}>
@@ -227,6 +240,10 @@ export default function NavBar(props) {
 }
 
 const useStyles = makeStyles((theme) => ({
+  root: {
+    flexShrink: 0,
+    width: "100%",
+  },
   underlined: {
     borderRadius: "4px 4px 0px 0px !important",
     paddingBottom: "4px !important",

@@ -5,17 +5,19 @@ import { useForm } from "react-hook-form";
 import * as yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
 
-import { Button, Divider, Grid } from "@mui/material";
+import { Button, Divider, Grid, MenuItem, TextField } from "@mui/material";
 import { makeStyles } from "@mui/styles";
 
 import CustomInput from "../../../components/input";
-import { editCategory, getCategoryById } from "../../../helpers/api/category";
+import { editCategory, getCategories, getCategoryById } from "../../../helpers/api/category";
 import SnackBar from "../../../components/Snackbar";
 import { useNavigate, useParams } from "react-router-dom";
+import { getErrorMessage, getResourceCollection, getResourceData } from "../../../helpers/api/response";
 
 const validationSchema = yup.object({
   name: yup.string().required("Required"),
-  slug: yup.string().required("Required"),
+  slug: yup.string(),
+  parent_id: yup.string().nullable(),
 });
 
 const EditCategory = () => {
@@ -29,6 +31,7 @@ const EditCategory = () => {
     severity: "",
   });
   const [categoryId, setCategoryId] = React.useState(null);
+  const [parentCategories, setParentCategories] = React.useState([]);
 
   const {
     register,
@@ -41,19 +44,44 @@ const EditCategory = () => {
     defaultValues: {
       name: "",
       slug: "",
+      parent_id: "",
     },
   });
 
+  const categoryList = async (currentCategoryId) => {
+    try {
+      const response = await getCategories();
+      const categories = getResourceCollection(response);
+      const parents = categories.filter(
+        (category) => !category.parent_id && category.id !== currentCategoryId
+      );
+
+      setParentCategories(parents);
+    } catch (error) {
+      setOpenSnack({
+        open: true,
+        message: getErrorMessage(error, "Unable to load parent categories."),
+        severity: "error",
+      });
+    }
+  };
+
   const category = async () => {
     try {
-      const { data } = await getCategoryById(params?.id);
+      const response = await getCategoryById(params?.id);
+      const data = getResourceData(response);
 
-      console.log(data);
       setCategoryId(data.id);
       setValue("name", data.name);
       setValue("slug", data.slug);
+      setValue("parent_id", data.parent_id || "");
+      categoryList(data.id);
     } catch (error) {
-      console.log(error);
+      setOpenSnack({
+        open: true,
+        message: getErrorMessage(error, "Unable to load category."),
+        severity: "error",
+      });
     }
   };
 
@@ -64,7 +92,11 @@ const EditCategory = () => {
 
   const onSubmit = async (values) => {
     try {
-      const response = await editCategory(values, categoryId);
+      const response = await editCategory({
+        ...values,
+        slug: values.slug || undefined,
+        parent_id: values.parent_id || null,
+      }, categoryId);
 
       setOpenSnack({
         open: true,
@@ -78,7 +110,7 @@ const EditCategory = () => {
     } catch (error) {
       setOpenSnack({
         open: true,
-        message: "There has been an error",
+        message: getErrorMessage(error),
         severity: "error",
       });
       setLoading(false);
@@ -120,10 +152,31 @@ const EditCategory = () => {
                 field="slug"
                 fullWidth={true}
                 width="100%"
-                label="Slug"
+                label="Slug (optional)"
                 placeholder=" "
                 error={errors?.slug?.message}
               />
+            </Grid>
+
+            <Grid item xs={12} className={classes.input}>
+              <TextField
+                select
+                label="Parent category"
+                fullWidth
+                {...register("parent_id")}
+                defaultValue=""
+                error={Boolean(errors?.parent_id?.message)}
+                helperText={errors?.parent_id?.message}
+              >
+                <MenuItem value="">
+                  <em>None</em>
+                </MenuItem>
+                {parentCategories.map((category) => (
+                  <MenuItem key={category.id} value={category.id}>
+                    {category.name}
+                  </MenuItem>
+                ))}
+              </TextField>
             </Grid>
 
             <Grid item xs={12}>
@@ -151,9 +204,7 @@ const useStyles = makeStyles(() => ({
   container: {
     width: "100%",
     maxWidth: "1038px",
-    paddingLeft: 60,
-    marginTop: 50,
-    marginBottom: 400,
+    margin: "0 auto",
   },
 
   title: {

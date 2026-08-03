@@ -32,8 +32,12 @@ import {
 } from "@mui/material";
 import { useSelector, useDispatch } from "react-redux";
 import { cartQtySelector } from "../../features/counter/counterSlice";
-import { token, logout } from "../../features/auth/AuthSlice";
+import {
+  sessionAnonymous,
+  userLogged,
+} from "../../features/auth/AuthSlice";
 import { logoutUser } from "../../helpers/api/auth";
+import { storeAuthToken } from "../../config/axios";
 
 const menuMobile = [
   {
@@ -57,29 +61,28 @@ export default function NavBar() {
   const location = useLocation();
   const anchorRef = React.useRef(null);
   const cartQty = useSelector(cartQtySelector);
-  const userIsLogged = useSelector(token);
+  const user = useSelector(userLogged);
+  const userIsLogged = Boolean(user);
 
   const [openMenuMobile, setOpenMenuMobile] = React.useState(false);
   const [open, setOpen] = React.useState(false);
   const [openAccordion, setOpenAccordion] = React.useState(false);
-  const [navMobile, setNavMobile] = React.useState(menuMobile);
+  const navMobile = userIsLogged
+    ? [...menuMobile, { name: "Account", url: "/my-account" }]
+    : menuMobile;
 
   const handleDrawer = () => {
     setOpenMenuMobile(!openMenuMobile);
   };
 
   const handleLogout = async () => {
-   try {
-    const resp = await logoutUser()
-
-    if(resp.status === 200){
-      dispatch(logout());
+    try {
+      await logoutUser();
+    } finally {
+      storeAuthToken(null);
+      dispatch(sessionAnonymous());
       navigate("/");
     }
-    
-   } catch (error) {
-    console.log(error)
-   }
   };
 
   const handleToggle = () => {
@@ -100,7 +103,7 @@ export default function NavBar() {
     if (item.name === "Desserts") {
       navigate(item.url, {
         state: {
-          category: "dessert",
+          category: "desserts",
           title: "Desserts",
         },
       });
@@ -119,11 +122,7 @@ export default function NavBar() {
   };
 
   const handleGoToCart = () => {
-    if(userIsLogged) {
-      navigate("/cart");
-    } else {
-      navigate("/login");
-    }
+    navigate("/cart");
   }
 
   function handleListKeyDown(event) {
@@ -134,17 +133,6 @@ export default function NavBar() {
       setOpen(false);
     }
   }
-
-  React.useEffect(() => {
-    if (userIsLogged) {
-      navMobile.push({
-        name: "Account",
-        url: "/my-account",
-      });
-    } else if (!userIsLogged && navMobile.length > 3) {
-      navMobile.pop();
-    }
-  }, [userIsLogged]);
 
   // return focus to the button when we transitioned from !open -> open
   const prevOpen = React.useRef(open);
@@ -244,14 +232,14 @@ export default function NavBar() {
               color="inherit"
               className={
                 location.pathname === "/products" &&
-                location.state.category === "dessert"
+                location.state?.category === "desserts"
                   ? classes.underlined
                   : ""
               }
               onClick={() =>
                 navigate("/products", {
                   state: {
-                    category: "dessert",
+                    category: "desserts",
                     title: "Desserts",
                   },
                 })
@@ -263,7 +251,7 @@ export default function NavBar() {
               color="inherit"
               className={
                 location.pathname === "/products" &&
-                location.state.category === "utensils-and-ingredients"
+                location.state?.category === "utensils-and-ingredients"
                   ? classes.underlined
                   : ""
               }
@@ -380,22 +368,6 @@ export default function NavBar() {
                             >
                               Orders
                             </MenuItem>
-                            <MenuItem
-                              onClick={() => {
-                                navigate("/payments");
-                                setOpen(false);
-                              }}
-                              sx={{
-                                paddingTop: "7px",
-                                paddingBottom: "7px",
-                                paddingLeft: "20px",
-                                paddingRight: "20px",
-                                fontFamily: "Open Sans",
-                                fontSize: 16,
-                              }}
-                            >
-                              Payments
-                            </MenuItem>
                           </MenuList>
                         </ClickAwayListener>
                       </Paper>
@@ -465,11 +437,6 @@ export default function NavBar() {
               <Link to="/orders" className={classes.link} onClick={() => setOpenMenuMobile(!openMenuMobile)}>
                 <ListItemButton sx={{ pl: 4 }}>
                   <ListItemText primary="Orders" />
-                </ListItemButton>
-              </Link>
-              <Link to="/payments" className={classes.link} onClick={() => setOpenMenuMobile(!openMenuMobile)}>
-                <ListItemButton sx={{ pl: 4 }}>
-                  <ListItemText primary="Payments" />
                 </ListItemButton>
               </Link>
             </List>

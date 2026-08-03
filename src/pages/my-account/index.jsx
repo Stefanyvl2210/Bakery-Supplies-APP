@@ -1,21 +1,23 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { Avatar, Button, Grid, IconButton } from "@mui/material";
 
 // hook form
 import { useForm } from "react-hook-form";
-import { token, userLogged } from "../../features/auth/AuthSlice";
+import { sessionAuthenticated, userLogged } from "../../features/auth/AuthSlice";
 import ProfileSidebar from "../../components/profile-sidebar";
 import CustomInput from "../../components/input";
 import { makeStyles } from "@mui/styles";
 import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
 import ProfileAvatar from "../../assets/images/profile-avatar.png";
-import { addAddressUser, deleteAddressUser, getAddressUser } from "../../helpers/api/auth";
+import { addAddressUser, deleteAddressUser, getAddressUser, updateUser } from "../../helpers/api/auth";
 import SnackBar from "../../components/Snackbar";
+import { getErrorMessage, getResourceCollection, getResourceData } from "../../helpers/api/response";
+import { parseAddressValue } from "../../helpers/formatters";
 
 const MyAccount = () => {
   const classes = useStyles();
+  const dispatch = useDispatch();
   const [showInput, setShowInput] = useState({
     firstName: true,
     lastName: true,
@@ -23,8 +25,6 @@ const MyAccount = () => {
     phoneNumber: true,
     address: true,
   });
-  const navigate = useNavigate();
-  const userIsLogged = useSelector(token);
   const user = useSelector(userLogged);
   const [addresses, setAddresses] = useState([]);
   const [showAddressInput, setShowAddressInput] = useState(false);
@@ -36,26 +36,19 @@ const MyAccount = () => {
   });
 
   useEffect(() => {
-    if(!userIsLogged) {
-      navigate('/');
-    }
     getAddresses();
-    
   }, []);
 
   const getAddresses = async () => {
     try {
-      const newAddresses = await getAddressUser(userIsLogged);
-      let addressFormat = newAddresses.data.map((address) => {
-        let addressJson = {
-          id: address.id,
-          address: JSON.parse(address.address)
-        }
-        return addressJson
-      })
-      setAddresses(addressFormat)
+      const newAddresses = await getAddressUser();
+      setAddresses(getResourceCollection(newAddresses));
     } catch (error) {
-      console.log(error);
+      setOpenSnack({
+        open: true,
+        message: getErrorMessage(error, "Unable to load addresses."),
+        severity: "error",
+      });
     }
   }
 
@@ -78,10 +71,38 @@ const MyAccount = () => {
     }
   });
 
-  const onSubmit = (data) => {
-    console.log('data perfil',data)
-    // resetField("password");
-    // resetField("");
+  const onSubmit = async (data) => {
+    setLoading(true);
+
+    try {
+      const payload = {
+        first_name: data.firstName,
+        last_name: data.lastName,
+        email: data.email,
+        phone_number: data.phoneNumber,
+      };
+
+      if (data.newPassword) {
+        payload.password = data.newPassword;
+        payload.password_confirmation = data.newPassword;
+      }
+
+      const response = await updateUser(user.id, payload);
+      dispatch(sessionAuthenticated(getResourceData(response)));
+      setOpenSnack({
+        open: true,
+        message: "Profile updated",
+        severity: "success",
+      });
+    } catch (error) {
+      setOpenSnack({
+        open: true,
+        message: getErrorMessage(error, "Unable to update profile."),
+        severity: "error",
+      });
+    } finally {
+      setLoading(false);
+    }
   };
 
   const onSubmitAddress = async (data) => {
@@ -89,8 +110,8 @@ const MyAccount = () => {
       setLoading(true);
       let addressString = JSON.stringify({address: data.address, city: data.city, state: data.state});
       try {
-        const response = await addAddressUser({address: addressString}, userIsLogged);
-        if(response.status === 200) {
+        const response = await addAddressUser({address: addressString});
+          if(response.status === 200 || response.status === 201) {
           setOpenSnack({
             open: true,
             message: "New Address Added",
@@ -105,7 +126,7 @@ const MyAccount = () => {
       } catch (error) {
         setOpenSnack({
           open: true,
-          message: error,
+          message: getErrorMessage(error),
           severity: "error",
         });
         setLoading(false);
@@ -123,10 +144,14 @@ const MyAccount = () => {
 
   const handleDeleteAddress = async (index) => {
     try {
-      const response = await deleteAddressUser(index, userIsLogged);
-      getAddresses();
+      await deleteAddressUser(index);
+      await getAddresses();
     } catch (error) {
-      console.log(error);
+      setOpenSnack({
+        open: true,
+        message: getErrorMessage(error, "Unable to delete address."),
+        severity: "error",
+      });
     }
   }
 
@@ -252,6 +277,7 @@ const MyAccount = () => {
                     type="submit"
                     variant="contained"
                     onClick={handleSubmit(onSubmit)}
+                    disabled={loading}
                     sx={{marginLeft: "0 !important"}}
                   >
                     <span className={classes.buttonText}>Save</span>
@@ -305,7 +331,7 @@ const MyAccount = () => {
                       addresses.map((item, i) => (
                         <Grid item xs={12} key={i} className={classes.addresses}>
                           <p className={classes.paragraph}>
-                            {item.address.address}, {item.address.city}, {item.address.state} 
+                            {parseAddressValue(item.address)}
                             <IconButton
                               size="small"
                               edge="start"

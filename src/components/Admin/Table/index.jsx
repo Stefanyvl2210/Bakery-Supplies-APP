@@ -114,7 +114,7 @@ export default function CustomPaginationActionsTable({
 
   return (
     <TableContainer component={Paper} className={classes.table}>
-      <Table sx={{ minWidth: 500 }} aria-label="custom pagination table">
+      <Table sx={{ minWidth: 900 }} aria-label="custom pagination table">
         <TableHead>
           <TableRow>
             {columns.map((column, i) => (
@@ -128,13 +128,13 @@ export default function CustomPaginationActionsTable({
           {(rowsPerPage > 0
             ? rows.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
             : rows
-          ).map((row) => (
-            <TableRow key={row.name}>
+          ).map((row, rowIndex) => (
+            <TableRow key={row.id || row.name || rowIndex}>
               {columns.map((column, i) => (
                 <React.Fragment key={i}>
                   {column.key !== "actions" ? (
                     <>
-                      <TableCell align="center">{row[column.key]}</TableCell>
+                      <TableCell align="center" className={classes.cell}>{row[column.key]}</TableCell>
                     </>
                   ) : (
                     <>
@@ -194,5 +194,11 @@ export default function CustomPaginationActionsTable({
 const useStyles = makeStyles(() => ({
   table: {
     border: "1px solid #000",
+    overflowX: "auto",
+  },
+  cell: {
+    maxWidth: 260,
+    whiteSpace: "normal",
+    wordBreak: "break-word",
   },
 }));

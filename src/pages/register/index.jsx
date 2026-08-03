@@ -4,7 +4,13 @@ import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 
 // api
-import { registerUser } from "../../helpers/api/auth";
+import {
+  getTokenFromAuthResponse,
+  getUserFromAuthResponse,
+  registerUser,
+} from "../../helpers/api/auth";
+import { storeAuthToken } from "../../config/axios";
+import { getErrorMessage } from "../../helpers/api/response";
 
 // material ui components
 import { Card, Grid, Button } from "@mui/material";
@@ -63,13 +69,15 @@ const Register = () => {
   });
 
   const onSubmit = async (data) => {
-    console.log("register", data);
     setLoading(true);
 
     try {
       const response = await registerUser(data);
+      const token = getTokenFromAuthResponse(response);
 
-      console.log(response);
+      if (token) {
+        storeAuthToken(token);
+      }
 
       setOpenSnack({
         open: true,
@@ -79,15 +87,16 @@ const Register = () => {
       setLoading(false);
 
       setTimeout(() => {
-        navigate(`/verify-email/${response.data.token}`);
+        navigate(`/verify-email/${token || ""}`, {
+          state: { email: getUserFromAuthResponse(response)?.email || data.email },
+        });
       }, 2000);
     } catch (error) {
-      console.log(error);
-      // setOpenSnack({
-      //   open: true,
-      //   message: error,
-      //   severity: "error",
-      // });
+      setOpenSnack({
+        open: true,
+        message: getErrorMessage(error),
+        severity: "error",
+      });
       setLoading(false);
     }
   };

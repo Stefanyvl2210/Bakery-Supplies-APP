@@ -5,99 +5,100 @@ import Table from "../../components/table";
 import ResumeTable from "../../components/ResumeTable";
 
 // material ui components
-import { 
-  Grid, 
-  Button,
-  Typography,
-} from "@mui/material";
-import { makeStyles, propsToClassKey } from "@mui/styles";
+import { Grid, Button, Typography } from "@mui/material";
+import { makeStyles } from "@mui/styles";
 import { useLocation, useNavigate } from "react-router-dom";
+import { getOrder, getGuestOrder } from "../../helpers/api/orders";
+import { getErrorMessage, getResourceData } from "../../helpers/api/response";
+import { formatDate, formatMoney } from "../../helpers/formatters";
 
 const columns = [
-  {
-    name: "Product",
-    key: "product",
-  },
-  {
-    name: "Unit price",
-    key: "unitPrice",
-  },
-  {
-    name: "Quantity",
-    key: "quantity",
-  },
-  {
-    name: "Subtotal",
-    key: "subtotal",
-  },
+  { name: "Product", key: "product" },
+  { name: "Unit price", key: "unitPrice" },
+  { name: "Quantity", key: "quantity" },
+  { name: "Subtotal", key: "subtotal" },
 ];
+
+const productsToRows = (products = []) =>
+  products.map((product) => ({
+    product: product.name,
+    unitPrice: product.ordered_unit_price ?? product.unit_price ?? product.price,
+    quantity: product.ordered_quantity ?? product.pivot?.quantity ?? product.quantity,
+    subtotal:
+      Number(product.ordered_unit_price ?? product.unit_price ?? product.price ?? 0) *
+      Number(product.ordered_quantity ?? product.pivot?.quantity ?? product.quantity ?? 0),
+  }));
 
 const OrderDetail = () => {
   const classes = useStyles();
   const navigate = useNavigate();
   const { state } = useLocation();
+  const [order, setOrder] = React.useState(state?.order || null);
+  const [message, setMessage] = React.useState("");
+  const trackingToken = state?.trackingToken;
+
+  React.useEffect(() => {
+    const loadOrder = async () => {
+      try {
+        if (!order?.id && !trackingToken) return;
+
+        const response = trackingToken
+          ? await getGuestOrder(trackingToken)
+          : await getOrder(order.id);
+
+        setOrder(getResourceData(response));
+      } catch (error) {
+        setMessage(getErrorMessage(error, "Unable to load order detail."));
+      }
+    };
+
+    loadOrder();
+  }, [order?.id, trackingToken]);
+
+  const rows = productsToRows(order?.products || []);
 
   return (
-    <>
-      <Grid container className={classes.container}>
-        <Grid item xs={12}>
-          <h2 className={classes.title}>Order detail</h2>
-        </Grid>
+    <Grid container className={classes.container}>
+      <Grid item xs={12}>
+        <h2 className={classes.title}>Order detail</h2>
+        {message && <p className={classes.total}>{message}</p>}
+      </Grid>
 
-        <Grid item xs={12} display="flex" justifyContent="center" sx={{marginTop: "5px !important"}}>
-          <Grid container justifyContent="space-between" maxWidth={600}>
-            <Grid item xs={12} md={6}>
-              <Typography sx={{fontSize: "20px !important", fontWeight: "300 !important"}}>Order #{state.orderInfo.id}</Typography>
-            </Grid>
-            <Grid item xs={12} md={6} display="flex" justifyContent="flex-end" >
-              <Typography sx={{fontSize: "20px !important", fontWeight: "300 !important"}}>Order Date: {state.orderInfo.stringCreatedDate}</Typography>
-            </Grid>
+      <Grid item xs={12} display="flex" justifyContent="center" sx={{marginTop: "5px !important"}}>
+        <Grid container justifyContent="space-between" maxWidth={600}>
+          <Grid item xs={12} md={6}>
+            <Typography sx={{fontSize: "20px !important", fontWeight: "300 !important"}}>Order #{order?.id || "-"}</Typography>
+          </Grid>
+          <Grid item xs={12} md={6} display="flex" justifyContent="flex-end">
+            <Typography sx={{fontSize: "20px !important", fontWeight: "300 !important"}}>Order Date: {formatDate(order?.created_at)}</Typography>
           </Grid>
         </Grid>
-
-        <Grid
-          item
-          xs={12}
-          display="flex"
-          justifyContent="center"
-          className={classes.table}
-          sx={{marginTop: "15px !important"}}
-        >
-          <ResumeTable orderDetails={state.orderInfo} maxWidth={600} />
-        </Grid>
-
-        <Grid
-          item
-          xs={12}
-          display="flex"
-          justifyContent="center"
-          className={classes.table}
-        >
-          <Table rows={state.products} columns={columns} maxWidth={600} />
-        </Grid>
-
-        <Grid item xs={12} container justifyContent="center">
-          { state.ordersView &&
-            <Button
-              color="primary"
-              variant="contained"
-              className={classes.button}
-              onClick={() => navigate('/orders')}
-            >
-              Back
-            </Button>
-          }
-          <Button
-            color="primary"
-            variant="contained"
-            className={classes.button}
-            onClick={() => navigate('/')}
-          >
-            Home
-          </Button>
-        </Grid>
       </Grid>
-    </>
+
+      <Grid item xs={12} display="flex" justifyContent="center" className={classes.table} sx={{marginTop: "15px !important"}}>
+        <ResumeTable orderDetails={order || {}} maxWidth={600} />
+      </Grid>
+
+      <Grid item xs={12} display="flex" justifyContent="center" className={classes.table}>
+        <Table rows={rows} columns={columns} maxWidth={600} />
+      </Grid>
+
+      <Grid item xs={12} className={classes.total}>
+        <p>Total: {formatMoney(order?.total)}</p>
+        {trackingToken && <p>Tracking token: {trackingToken}</p>}
+      </Grid>
+
+      <Grid item xs={12} container justifyContent="center">
+        {state?.ordersView && (
+          <Button color="primary" variant="contained" className={classes.button} onClick={() => navigate('/orders')}>
+            Back
+          </Button>
+        )}
+        <Button color="primary" variant="contained" className={classes.button} onClick={() => navigate('/')}>
+          Home
+        </Button>
+      </Grid>
+    </Grid>
   );
 };
 
@@ -127,58 +128,25 @@ const useStyles = makeStyles((theme) => ({
     "& table": {
       minWidth: "485px",
     },
-    "& thead": {
-      "& th": {
-        backgroundColor: "#F5EEE6",
-        borderBottom: "1px solid #AAAAAA !important",
-        fontSize: "16px",
-        fontWeight: "400",
-        padding: "10px 25px"
-      },
+    "& thead th": {
+      backgroundColor: "#F5EEE6",
+      borderBottom: "1px solid #AAAAAA !important",
+      fontSize: "16px",
+      fontWeight: "400",
+      padding: "10px 25px"
     },
-    "& tbody": {
-      "& th": {
-        backgroundColor: "#F5EEE6",
-        borderBottom: "none !important",
-        fontSize: "14px",
-        fontWeight: "300",
-        padding: "10px 25px"
-      },
+    "& tbody th": {
+      backgroundColor: "#F5EEE6",
+      borderBottom: "none !important",
+      fontSize: "14px",
+      fontWeight: "300",
+      padding: "10px 25px"
     },
-  },
-  subtitle: {
-    color: "#000000 !important",
-    fontSize: "18px !important",
-    lineHeight: "20px !important",
-    margin: "20px 0 15px"
   },
   total: {
     maxWidth: 600,
-    margin: "0 auto",
-    marginTop: 30,
-    marginBottom: 15,
+    margin: "30px auto 0",
     fontSize: 18,
-  },
-  divider: {
-    maxWidth: 600,
-    margin: "30px auto 0px auto !important",
-  },
-  paymentMethodText: {
-    fontSize: 18,
-  },
-  paymentSelect: {
-    display: "flex !important",
-    justifyContent: "center !important",
-    maxWidth: 600,
-    margin: "10px auto 0 auto !important",
-  },
-  formControlLabel: {
-    fontSize: "16px !important",
-  },
-  grayText: {
-    fontSize: "14px !important",
-    lineHeight: "20px !important",
-    color: "#767676",
   },
   button: {
     margin: "60px auto 0px !important"

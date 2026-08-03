@@ -1,4 +1,3 @@
 import axios from "../../config/axios";
-import { ApiUrl } from "../url";
 
-export const getLogs = async () => await axios.get(`${ApiUrl}/logs`);
+export const getLogs = async () => await axios.get("/logs");

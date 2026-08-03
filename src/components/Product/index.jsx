@@ -2,11 +2,11 @@ import React, { useState } from "react";
 import { Button, Grid } from "@mui/material";
 import { makeStyles } from "@mui/styles";
 import CustomDialog from "../productModal";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
+import { getImageUrl } from "../../helpers/formatters";
 
 const Product = (props) => {
   const classes = useStyles();
-  const location = useLocation();
   const [openDialog, setOpenDialog] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState({});
   const navigate = useNavigate();
@@ -15,7 +15,7 @@ const Product = (props) => {
 
     let relatedProducts = [];
     props.productList.map((elem) => {
-      if(elem.category === product.category && elem.name !== product.name) {
+      if(elem.id !== product.id && elem.name !== product.name) {
         relatedProducts.push(elem);
       }
     })
@@ -29,8 +29,7 @@ const Product = (props) => {
 
   return (
     <>
-      {props.productList.map((product, i) =>
-        product.category === location.state.category ? (
+      {props.productList.map((product, i) => (
           <Grid
             item
             xs={12}
@@ -42,7 +41,9 @@ const Product = (props) => {
             justifyContent="center"
           >
             <div className={classes.container}>
-              <img src={product.image} alt={product.alt} width = "330" height = "220" />
+              <div className={classes.imageWrapper}>
+                <img src={getImageUrl(product.image)} alt={product.name} />
+              </div>
 
               <p className={classes.productName}>{product.name}</p>
 
@@ -50,7 +51,6 @@ const Product = (props) => {
                 <Button
                   color="primary"
                   variant="contained"
-                  sx={{marginRight: '15px !important'}}
                   className={classes.button}
                   onClick={() => {
                     setOpenDialog(true);
@@ -63,7 +63,6 @@ const Product = (props) => {
                 <Button
                   color="primary"
                   variant="contained"
-                  sx={{marginLeft: '15px !important'}}
                   className={classes.button}
                   onClick={() => handleDetail(product)}
                 >
@@ -72,10 +71,7 @@ const Product = (props) => {
               </div>
             </div>
           </Grid>
-        ) : (
-          ""
-        )
-      )}
+      ))}
 
       {openDialog && (
         <CustomDialog
@@ -96,26 +92,49 @@ const useStyles = makeStyles((theme) => ({
     marginBottom: 60,
     marginTop: 0,
     textAlign: "center",
+    width: "100%",
+    maxWidth: 330,
+    minHeight: 390,
+    display: "flex",
+    flexDirection: "column",
 
     "& a": {
       textDecoration: "none",
     },
   },
+  imageWrapper: {
+    width: "100%",
+    height: 220,
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    "& img": {
+      width: "100%",
+      height: "100%",
+      objectFit: "contain",
+    },
+  },
   productName: {
     textAlign: "center",
     fontSize: 30,
+    lineHeight: "34px",
     fontWeight: "400",
     marginTop: "30px !important",
     fontFamily: "Poiret One",
     marginBottom: "30px !important",
+    minHeight: 68,
   },
   buttonWrapper: {
     display: "flex",
     justifyContent: "space-between",
+    gap: 16,
+    marginTop: "auto",
   },
   button: {
     margin:"0px !important",
     padding:"0px !important",
+    minWidth: "150px !important",
+    height: "50px !important",
   }
 }));
 

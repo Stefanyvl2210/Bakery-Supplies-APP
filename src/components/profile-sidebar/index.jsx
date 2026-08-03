@@ -17,9 +17,6 @@ const ProfileSidebar = () => {
           <p className={classes.paragraph}>
             <Link to="/orders">Orders</Link>
           </p>
-          <p className={classes.paragraph}>
-            <Link to="/payments">Payments</Link>
-          </p>
         </Grid>
       </Grid>
     </>

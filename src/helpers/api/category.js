@@ -1,16 +1,17 @@
 import axios from "../../config/axios";
-import { ApiUrl } from "../url";
 
-export const getCategories = async () => await axios.get(`${ApiUrl}/category`);
+export const getCategories = async () => await axios.get("/category");
+
+export const getCategoryTree = async () => await axios.get("/category/tree");
 
 export const createCategory = async (data) =>
-  await axios.post(`${ApiUrl}/category`, data);
+  await axios.post("/category", data);
 
 export const getCategoryById = async (id) =>
-  await axios.get(`${ApiUrl}/category/${id}`);
+  await axios.get(`/category/${id}`);
 
 export const editCategory = async (data, id) =>
-  await axios.patch(`${ApiUrl}/category/${id}`, data);
+  await axios.patch(`/category/${id}`, data);
 
 export const deleteCategory = async (id) =>
-  await axios.delete(`${ApiUrl}/category/${id}`);
+  await axios.delete(`/category/${id}`);

@@ -29,6 +29,8 @@ import {
 } from "../../../helpers/api/product";
 import SnackBar from "../../../components/Snackbar";
 import { useNavigate, useParams } from "react-router-dom";
+import { getErrorMessage, getResourceCollection, getResourceData } from "../../../helpers/api/response";
+import { getImageUrl } from "../../../helpers/formatters";
 
 const validationSchema = yup.object({
   name: yup.string().required("Required"),
@@ -73,7 +75,8 @@ const EditProduct = () => {
 
   const categoryList = async () => {
     try {
-      const { data } = await getCategories();
+      const response = await getCategories();
+      const data = getResourceCollection(response);
 
       if (data.length > 0) {
         setCategories(data);
@@ -81,25 +84,36 @@ const EditProduct = () => {
         setValue("categories", data[0].id);
       }
     } catch (error) {
-      console.log(error);
+      setOpenSnack({
+        open: true,
+        message: getErrorMessage(error, "Unable to load categories."),
+        severity: "error",
+      });
     }
   };
 
   const getProduct = async () => {
     try {
-      const { data } = await getProductById(params?.id);
+      const response = await getProductById(params?.id);
+      const data = getResourceData(response);
 
       setValue("name", data.name);
       setValue("description", data.description);
       setValue("quantity_available", data.quantity_available);
       setValue("price", data.price);
-      setCategoryId(data.categories[0].id);
+      const productCategoryId = data.categories?.[0]?.id;
+      setCategoryId(productCategoryId);
+      if (productCategoryId) setValue("categories", productCategoryId);
 
       if (data.image) {
         setImage(data.image);
       }
     } catch (error) {
-      console.log(error);
+      setOpenSnack({
+        open: true,
+        message: getErrorMessage(error, "Unable to load product."),
+        severity: "error",
+      });
     }
   };
 
@@ -118,7 +132,7 @@ const EditProduct = () => {
     formData.append("description", values.description);
     formData.append("price", values.price);
     formData.append("quantity_available", values.quantity_available);
-    formData.append("categories", `[${values.categories}]`);
+    formData.append("categories[]", values.categories);
 
     try {
       const response = await editProduct(formData, params.id);
@@ -135,7 +149,7 @@ const EditProduct = () => {
     } catch (error) {
       setOpenSnack({
         open: true,
-        message: "There has been an error",
+        message: getErrorMessage(error),
         severity: "error",
       });
     }
@@ -159,7 +173,7 @@ const EditProduct = () => {
         <div>
           {!productImage ? (
             <img
-              src={image ? image : EmptyImage}
+              src={image ? getImageUrl(image) : EmptyImage}
               alt="empty"
               width={255}
               height={255}
@@ -350,8 +364,7 @@ const useStyles = makeStyles(() => ({
   container: {
     width: "100%",
     maxWidth: "1038px",
-    paddingLeft: 60,
-    marginTop: 50,
+    margin: "0 auto",
   },
 
   title: {

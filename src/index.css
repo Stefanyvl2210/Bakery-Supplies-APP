@@ -1,3 +1,9 @@
+html,
+body,
+#root {
+  min-height: 100%;
+}
+
 body {
   margin: 0;
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen",
@@ -5,6 +11,65 @@ body {
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+.App,
+.public-layout {
+  min-height: 100vh;
+}
+
+.public-layout {
+  display: flex;
+  flex-direction: column;
+}
+
+.public-main {
+  flex: 1 0 auto;
+}
+
+.admin-layout,
+.admin-shell,
+.admin-content {
+  min-height: 100vh;
+}
+
+.admin-layout {
+  display: flex;
+  flex-direction: column;
+}
+
+.admin-shell {
+  flex: 1 0 auto;
+}
+
+.admin-content {
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  width: calc(100% - 238px);
+}
+
+.admin-content > * {
+  box-sizing: border-box;
+  width: 100%;
+}
+
+.admin-main {
+  box-sizing: border-box;
+  flex: 1 0 auto;
+  overflow-x: auto;
+  padding: 30px 32px 48px;
+  width: 100%;
+}
+
+@media (max-width: 900px) {
+  .admin-content {
+    width: 100%;
+  }
+
+  .admin-main {
+    padding: 104px 20px 32px;
+  }
 }
 
 code {

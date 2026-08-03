@@ -4,38 +4,33 @@ import { useNavigate } from "react-router-dom";
 import { makeStyles } from "@mui/styles";
 import Table from "../../../components/Admin/Table";
 import { Button } from "@mui/material";
-import { deleteCategory, getCategories } from "../../../helpers/api/category";
-import SnackBar from "../../../components/Snackbar";
+import {
+  deletePaymentMethod,
+  getAdminPaymentMethods,
+} from "../../../helpers/api/paymentMethods";
 import { getErrorMessage, getResourceCollection } from "../../../helpers/api/response";
+import SnackBar from "../../../components/Snackbar";
 
-function createData({ id, name, slug, created_at }) {
-  return { id, name, slug, created_at };
+function createData({ id, name, type, currency, is_active }) {
+  return {
+    id,
+    name,
+    type,
+    currency,
+    is_active: is_active ? "Yes" : "No",
+  };
 }
 
 const columns = [
-  {
-    key: "id",
-    name: "ID",
-  },
-  {
-    key: "name",
-    name: "Name",
-  },
-  {
-    key: "slug",
-    name: "Slug",
-  },
-  {
-    key: "created_at",
-    name: "Created at",
-  },
-  {
-    key: "actions",
-    name: "Actions",
-  },
+  { key: "id", name: "ID" },
+  { key: "name", name: "Name" },
+  { key: "type", name: "Type" },
+  { key: "currency", name: "Currency" },
+  { key: "is_active", name: "Active" },
+  { key: "actions", name: "Actions" },
 ];
 
-const Categories = () => {
+const AdminPaymentMethods = () => {
   const navigate = useNavigate();
   const classes = useStyles();
   const [rows, setRows] = React.useState([]);
@@ -45,53 +40,40 @@ const Categories = () => {
     severity: "",
   });
 
-  const categoryList = async () => {
+  const loadPaymentMethods = async () => {
     try {
-      const response = await getCategories();
-      const data = getResourceCollection(response);
+      const response = await getAdminPaymentMethods();
+      const methods = getResourceCollection(response);
 
-      if (data.length > 0) {
-        setRows(
-          data.map((category) =>
-            createData({
-              id: category.id,
-              name: category.name,
-              slug: category.slug,
-              created_at: new Date(category.created_at).toLocaleDateString(),
-            })
-          )
-        );
-      } else {
-        setRows([]);
-      }
+      setRows(methods.map((method) => createData(method)));
     } catch (error) {
       setOpenSnack({
         open: true,
-        message: getErrorMessage(error, "Unable to load categories."),
+        message: getErrorMessage(error, "Unable to load payment methods."),
         severity: "error",
       });
     }
   };
 
   React.useEffect(() => {
-    categoryList();
+    loadPaymentMethods();
   }, []);
 
   const onEdit = (id) => {
-    navigate(`/admin/category/${id}`);
+    navigate(`/admin/payment-method/${id}`);
   };
 
   const onDelete = async (id) => {
     try {
-      await deleteCategory(id);
+      await deletePaymentMethod(id);
 
       setOpenSnack({
         open: true,
-        message: "Successfully deleted",
+        message: "Payment method deleted",
         severity: "success",
       });
 
-      categoryList();
+      loadPaymentMethods();
     } catch (error) {
       setOpenSnack({
         open: true,
@@ -112,11 +94,11 @@ const Categories = () => {
   return (
     <div className={classes.container}>
       <div className={classes.titleWrapper}>
-        <h1>Categories</h1>
+        <h1>Payment methods</h1>
         <Button
           variant="contained"
           className={classes.button}
-          onClick={() => navigate("/admin/new-category")}
+          onClick={() => navigate("/admin/new-payment-method")}
         >
           Add new
         </Button>
@@ -146,7 +128,7 @@ const useStyles = makeStyles(() => ({
     display: "flex",
     alignItems: "center",
     justifyContent: "space-between",
-    marginBottom: "32px",
+    marginBottom: 32,
 
     "& h1": {
       font: "400 36px/20px Open Sans",
@@ -158,4 +140,4 @@ const useStyles = makeStyles(() => ({
   },
 }));
 
-export default Categories;
+export default AdminPaymentMethods;

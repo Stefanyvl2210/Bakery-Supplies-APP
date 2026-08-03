@@ -1,38 +1,51 @@
 import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
-  token: null,
   user: null,
-  addresses: []
+  token: null,
+  status: "idle",
 };
 
 export const authSlice = createSlice({
   name: "auth",
   initialState,
   reducers: {
-    login: (state, { payload }) => {
-      state.token = payload.token;
-      state.user = payload.user;
+    sessionLoading: (state) => {
+      state.status = "loading";
     },
-    logout: (state) => {
-      state.token = null;
+    sessionAuthenticated: (state, { payload }) => {
+      state.user = payload?.user ?? payload;
+      state.token = payload?.token ?? state.token ?? null;
+      state.status = "authenticated";
+    },
+    sessionAnonymous: (state) => {
       state.user = null;
+      state.token = null;
+      state.status = "anonymous";
     },
-    addAddress: (state, { payload }) => {
-      state.addresses = [...state.addresses, payload];
-      sessionStorage.setItem("addresses", JSON.stringify(state.addresses));
-    },
-    deleteAddress: (state, {payload}) => {
-      state.addresses = state.addresses.filter((item, index) => index !== payload.index);
-      sessionStorage.setItem("addresses", JSON.stringify(state.addresses));
-    }
   },
 });
 
-export const { login, logout, addAddress, deleteAddress } = authSlice.actions;
+export const {
+  sessionLoading,
+  sessionAuthenticated,
+  sessionAnonymous,
+} = authSlice.actions;
 
 export const userLogged = (state) => state.auth.user;
-export const token = (state) => state.auth.token;
-export const allAddresses = (state) => state.auth.addresses;
+export const authToken = (state) => state.auth.token;
+export const authStatus = (state) => state.auth.status;
+export const isAuthenticated = (state) =>
+  state.auth.status === "authenticated" && Boolean(state.auth.user);
+
+export const userHasRole = (user, roleName) =>
+  user?.role === roleName ||
+  user?.role?.name === roleName ||
+  (Array.isArray(user?.roles) &&
+    user.roles.some((role) =>
+      typeof role === "string" ? role === roleName : role?.name === roleName
+    ));
+
+export const isAdmin = (state) => userHasRole(state.auth.user, "admin");
 
 export default authSlice.reducer;

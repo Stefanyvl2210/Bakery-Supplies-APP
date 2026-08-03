@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 
 // components
 import Table from "../../components/table";
@@ -17,120 +17,190 @@ import {
   Radio,
   Typography,
   Button,
+  TextField,
 } from "@mui/material";
 import { makeStyles } from "@mui/styles";
 import classNames from "classnames";
 import { useNavigate } from "react-router-dom";
-import { allProducts } from "../../features/counter/counterSlice";
-import { useSelector } from "react-redux";
-import { token } from "../../features/auth/AuthSlice";
+import { allProducts, deleteAllProducts } from "../../features/counter/counterSlice";
+import { isAuthenticated, userLogged } from "../../features/auth/AuthSlice";
+import { useDispatch, useSelector } from "react-redux";
 import { getAddressUser } from "../../helpers/api/auth";
+import { createGuestOrder, createOrder } from "../../helpers/api/orders";
+import { getPaymentMethods } from "../../helpers/api/paymentMethods";
+import { getErrorMessage, getResourceCollection, getResourceData } from "../../helpers/api/response";
+import { formatAccountDetails, formatMoney, parseAddressValue } from "../../helpers/formatters";
+import SnackBar from "../../components/Snackbar";
 
 function createData(product, unitPrice, quantity, subtotal) {
   return { product, unitPrice, quantity, subtotal };
 }
 
 const columns = [
-  {
-    name: "Product",
-    key: "product",
-  },
-  {
-    name: "Unit price",
-    key: "unitPrice",
-  },
-  {
-    name: "Quantity",
-    key: "quantity",
-  },
-  {
-    name: "Subtotal",
-    key: "subtotal",
-  },
+  { name: "Product", key: "product" },
+  { name: "Unit price", key: "unitPrice" },
+  { name: "Quantity", key: "quantity" },
+  { name: "Subtotal", key: "subtotal" },
 ];
+
+const isTransferMethod = (paymentMethod) =>
+  String(paymentMethod?.type || "").toLowerCase() === "transfer";
 
 const ShoppingCart = () => {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
   const classes = useStyles();
-  const userIsLogged = useSelector(token);
-  const [payment, setPayment] = useState('');
-  const [address, setAddress] = useState('');
-  const [delivery, setDelivery] = useState(0);
-  const [totalBeforeTaxes, setTotalBeforeTaxes] = useState(0);
-  const [totalOrder, setTotalOrder] = useState(0);
-  const [products, setProducts] = useState(useSelector(allProducts));
-  const [allAddresses, setAllAddresses] = useState([]);
+  const cartProducts = useSelector(allProducts);
+  const authenticated = useSelector(isAuthenticated);
+  const user = useSelector(userLogged);
 
-  const handleChangePayment = (event) => {
-    setPayment(event.target.value);
-  };
-  const handleChangeAddress = (event) => {
-    setAddress(event.target.value);
-  };
-  const handleChangeDelivery = (event) => {
-    setDelivery(parseFloat(event.target.value));
-  };
+  const [paymentMethodId, setPaymentMethodId] = useState("");
+  const [addressId, setAddressId] = useState("");
+  const [deliveryType, setDeliveryType] = useState("delivery");
+  const [addresses, setAddresses] = useState([]);
+  const [paymentMethods, setPaymentMethods] = useState([]);
+  const [reference, setReference] = useState("");
+  const [reportedAmount, setReportedAmount] = useState("");
+  const [proof, setProof] = useState(null);
+  const [guest, setGuest] = useState({ name: "", phone: "", email: "" });
+  const [guestAddress, setGuestAddress] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [openSnack, setOpenSnack] = useState({
+    open: false,
+    message: "",
+    severity: "",
+  });
 
-  const getAddresses = async () => {
-    try {
-      const newAddresses = await getAddressUser(userIsLogged);
-      let addressFormat = newAddresses.data.map((item) => {
-        let addressJson = {
-          id: item.id,
-          address: JSON.parse(item.address)
-        }
-        return addressJson
-      })
-      setAllAddresses(addressFormat)
-    } catch (error) {
-      console.log(error);
-    }
-  }
-  
-  const handleOrderInfo = () => {
-    let expectedDelivery = '';
-    let today = new Date();
-    if(delivery === 3) {
-      expectedDelivery = new Date(today.setDate(today.getDate() + 2))
-    } else {
-      expectedDelivery = new Date(today.setHours(today.getHours() + 12));
-    }
+  const selectedPaymentMethod = paymentMethods.find(
+    (method) => String(method.id) === String(paymentMethodId)
+  );
+  const usesTransfer = isTransferMethod(selectedPaymentMethod);
+  const accountDetails = formatAccountDetails(selectedPaymentMethod?.account_details);
 
-    let orderInfo = {
-      shippingAddress: address,
-      paymentMethod: payment,
-      deliveryValue: delivery,
-      deliveryType: delivery === 3 ? 'standard' : "express",
-      totalBeforeTaxes: totalBeforeTaxes,
-      totalOrder: totalOrder,
-      status: "In progress",
-      deliveryTime: expectedDelivery,
-    }
+  const rows = useMemo(
+    () =>
+      cartProducts.map((item) => {
+        const quantity = Number(item.qty || 1);
+        const price = Number(item.price || 0);
+        return createData(item.name, price, quantity, price * quantity);
+      }),
+    [cartProducts]
+  );
 
-    if(address !== "" && payment !== "" && products.length > 0 && delivery !== 0) {
-      navigate('/order-completed', {state: {orderInfo}});
-    }
-  }
+  const totalBeforeTaxes = useMemo(
+    () => rows.reduce((total, item) => total + Number(item.subtotal || 0), 0),
+    [rows]
+  );
+  const estimatedTaxes = totalBeforeTaxes * 0.16;
+  const estimatedTotal = totalBeforeTaxes + estimatedTaxes;
 
   useEffect(() => {
-    getAddresses();
-    const formatProducts = products.map(item => {
-      let subtotal = parseInt(item.price) * parseInt(item.qty);
-      return createData(item.name, item.price, item.qty, parseInt(subtotal));
-    });
-    setProducts(formatProducts)
-  }, []);
+    const loadCheckoutData = async () => {
+      try {
+        const paymentResponse = await getPaymentMethods();
+        setPaymentMethods(getResourceCollection(paymentResponse));
 
-  useEffect(() => { 
-    let totalbeftax = 0;
-    let totOrder = 0;
-    products.map(item => {
-      totalbeftax += parseFloat(item.subtotal);
-    });
-    totOrder = (totalbeftax * 0.05) + totalbeftax + delivery;
-    setTotalBeforeTaxes(totalbeftax);
-    setTotalOrder(totOrder);
-  }, [delivery]);
+        if (authenticated) {
+          const addressResponse = await getAddressUser();
+          setAddresses(getResourceCollection(addressResponse));
+        }
+      } catch (error) {
+        setOpenSnack({
+          open: true,
+          message: getErrorMessage(error, "Unable to load checkout data."),
+          severity: "error",
+        });
+      }
+    };
+
+    loadCheckoutData();
+  }, [authenticated]);
+
+  const buildProductsPayload = () =>
+    cartProducts.map((item) => ({
+      id: item.id,
+      quantity: Number(item.qty || 1),
+    }));
+
+  const validateOrder = () => {
+    if (!cartProducts.length) return "Your cart is empty.";
+    if (cartProducts.some((item) => !item.id)) {
+      return "One or more cart products are missing an API product id.";
+    }
+    if (!paymentMethodId) return "Choose a payment method.";
+    if (deliveryType === "delivery" && authenticated && !addressId) {
+      return "Choose a shipping address.";
+    }
+    if (deliveryType === "delivery" && !authenticated && !guestAddress) {
+      return "Enter a shipping address.";
+    }
+    if (!authenticated && (!guest.name || !guest.phone)) {
+      return "Enter guest name and phone.";
+    }
+    if (usesTransfer && !reference) {
+      return "Enter the transfer reference.";
+    }
+
+    return null;
+  };
+
+  const handleOrder = async () => {
+    const validationMessage = validateOrder();
+
+    if (validationMessage) {
+      setOpenSnack({
+        open: true,
+        message: validationMessage,
+        severity: "error",
+      });
+      return;
+    }
+
+    setLoading(true);
+
+    const payload = {
+      delivery_type: deliveryType,
+      payment_method_id: paymentMethodId,
+      reference,
+      reported_amount: reportedAmount,
+      proof,
+      products: buildProductsPayload(),
+    };
+
+    try {
+      const response = authenticated
+        ? await createOrder({
+            ...payload,
+            address_id: deliveryType === "delivery" ? addressId : undefined,
+          })
+        : await createGuestOrder({
+            ...payload,
+            guest,
+            guest_address: deliveryType === "delivery" ? guestAddress : undefined,
+          });
+
+      const responseData = getResourceData(response);
+      const order = responseData?.order ?? responseData;
+      const trackingToken = responseData?.tracking_token ?? null;
+
+      dispatch(deleteAllProducts());
+      navigate("/order-completed", {
+        state: { order, trackingToken },
+      });
+    } catch (error) {
+      setOpenSnack({
+        open: true,
+        message: getErrorMessage(error, "Unable to create order."),
+        severity: "error",
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleCloseSnack = (_, reason) => {
+    if (reason !== "clickaway") setOpenSnack((prev) => ({ ...prev, open: false }));
+  };
 
   return (
     <>
@@ -139,101 +209,170 @@ const ShoppingCart = () => {
           <h2 className={classes.title}>Shopping Cart</h2>
         </Grid>
 
-        <Grid
-          item
-          xs={12}
-          display="flex"
-          justifyContent="center"
-          className={classes.table}
-        >
-          <Table rows={products} columns={columns} maxWidth={600} minWidth={485} />
+        <Grid item xs={12} display="flex" justifyContent="center" className={classes.table}>
+          <Table rows={rows} columns={columns} maxWidth={600} minWidth={485} />
         </Grid>
 
         <Grid item xs={12}>
           <div className={classes.total}>
-            <p>Delivery: ${delivery}</p>
-            <p>Total before taxes: ${totalBeforeTaxes}</p>
-            <p>Total: ${totalOrder}</p>
+            <p>Total before taxes: {formatMoney(totalBeforeTaxes)}</p>
+            <p>Estimated taxes: {formatMoney(estimatedTaxes)}</p>
+            <p>Estimated total: {formatMoney(estimatedTotal)}</p>
           </div>
 
           <Divider className={classes.divider} />
         </Grid>
 
         <Grid item xs={12}>
-          <p className={classes.total}>Choose a payment method</p>
-
           <FormControl fullWidth className={classes.paymentSelect}>
-            <InputLabel id="payment-select-label" className={classes.selectLabel} >Payment</InputLabel>
-            <Select
-              labelId="payment-select"
-              id="payment-select"
-              value={payment}
-              label="filter"
-              onChange={handleChangePayment}
-              fullWidth
-              className={classNames(classes.input)}
-            >
-              <MenuItem value="">
-                <em>None</em>
-              </MenuItem>
-              <MenuItem value="Cash">Cash</MenuItem>
-              {/* <MenuItem value={20}>Option 2</MenuItem> */}
-              {/* <MenuItem value={30}>Option 3</MenuItem> */}
-            </Select>
-          </FormControl>
-        </Grid>
-
-        <Grid item xs={12}>
-          <p className={classes.total}>Choose a shipping address</p>
-
-          <FormControl fullWidth className={classes.paymentSelect}>
-            <InputLabel id="address-select-label" className={classes.selectLabel}>Address</InputLabel>
-            <Select
-              labelId="address-select"
-              id="address-select"
-              value={address}
-              label="filter"
-              onChange={handleChangeAddress}
-              fullWidth
-              className={classNames(classes.input)}
-            >
-              <MenuItem value="">
-                <em>None</em>
-              </MenuItem>
-              {allAddresses &&
-                allAddresses.map((item, i) => {
-                  let addressString = `${item.address.address}, ${item.address.city}, ${item.address.state}`;
-                  return <MenuItem key={i} value={item.id}>{addressString}</MenuItem>
-                })
-              }
-            </Select>
-          </FormControl>
-        </Grid>
-        <Grid item xs={12}>
-          <FormControl fullWidth className={classes.paymentSelect}>
-            <FormLabel id="demo-controlled-radio-buttons-group" className={classes.subtitle}>Choose a delivery option</FormLabel>
+            <FormLabel className={classes.subtitle}>Choose a delivery option</FormLabel>
             <RadioGroup
-              aria-labelledby="demo-controlled-radio-buttons-group"
-              name="controlled-radio-buttons-group"
-              value={delivery}
-              onChange={handleChangeDelivery}
+              name="delivery_type"
+              value={deliveryType}
+              onChange={(event) => setDeliveryType(event.target.value)}
             >
-              <FormControlLabel value={3} control={<Radio size="small" />} label={<Typography className={classes.formControlLabel}>Standard <span className={classes.grayText}>(1-2 working days)</span></Typography>} />
-              <FormControlLabel value={5} control={<Radio size="small" />} label={<Typography className={classes.formControlLabel}>Express <span className={classes.grayText}>(12 hours, extra charge) </span></Typography>} />
+              <FormControlLabel value="delivery" control={<Radio size="small" />} label={<Typography className={classes.formControlLabel}>Delivery</Typography>} />
+              <FormControlLabel value="pickup" control={<Radio size="small" />} label={<Typography className={classes.formControlLabel}>Pickup</Typography>} />
             </RadioGroup>
           </FormControl>
         </Grid>
+
+        <Grid item xs={12}>
+          <p className={classes.total}>Choose a payment method</p>
+
+          <FormControl fullWidth className={classes.paymentSelect}>
+            <InputLabel id="payment-select-label" className={classes.selectLabel}>Payment</InputLabel>
+            <Select
+              labelId="payment-select"
+              value={paymentMethodId}
+              label="Payment"
+              onChange={(event) => setPaymentMethodId(event.target.value)}
+              fullWidth
+              className={classNames(classes.input)}
+            >
+              <MenuItem value="">
+                <em>None</em>
+              </MenuItem>
+              {paymentMethods.map((method) => (
+                <MenuItem key={method.id} value={method.id}>
+                  {method.name} ({method.type})
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+        </Grid>
+
+        {selectedPaymentMethod && (
+          <Grid item xs={12} className={classes.paymentSelect}>
+            {selectedPaymentMethod.instructions && (
+              <div className={classes.paymentInfo}>
+                <strong>Instructions</strong>
+                <p>{selectedPaymentMethod.instructions}</p>
+              </div>
+            )}
+            {accountDetails && (
+              <div className={classes.paymentInfo}>
+                <strong>Account details</strong>
+                <p>{accountDetails}</p>
+              </div>
+            )}
+            <div className={classes.paymentInfo}>
+              <strong>Amount to pay</strong>
+              <p>{formatMoney(estimatedTotal * Number(selectedPaymentMethod.exchange_rate || 1), selectedPaymentMethod.currency || "USD")}</p>
+            </div>
+          </Grid>
+        )}
+
+        {usesTransfer && (
+          <Grid item xs={12} className={classes.paymentSelect}>
+            <TextField
+              label="Transfer reference"
+              value={reference}
+              onChange={(event) => setReference(event.target.value)}
+              fullWidth
+              className={classes.input}
+            />
+            <TextField
+              label="Reported amount"
+              value={reportedAmount}
+              onChange={(event) => setReportedAmount(event.target.value)}
+              fullWidth
+              className={classes.input}
+              sx={{ marginTop: "15px !important" }}
+            />
+            <label className={classes.uploadButton}>
+              <input
+                type="file"
+                accept="image/jpeg,image/png,image/webp"
+                onChange={(event) => setProof(event.target.files?.[0] || null)}
+              />
+              {proof ? proof.name : "Upload payment proof"}
+            </label>
+          </Grid>
+        )}
+
+        {deliveryType === "delivery" && authenticated && (
+          <Grid item xs={12}>
+            <p className={classes.total}>Choose a shipping address</p>
+
+            <FormControl fullWidth className={classes.paymentSelect}>
+              <InputLabel id="address-select-label" className={classes.selectLabel}>Address</InputLabel>
+              <Select
+                labelId="address-select"
+                value={addressId}
+                label="Address"
+                onChange={(event) => setAddressId(event.target.value)}
+                fullWidth
+                className={classNames(classes.input)}
+              >
+                <MenuItem value="">
+                  <em>None</em>
+                </MenuItem>
+                {addresses.map((item) => (
+                  <MenuItem key={item.id} value={item.id}>
+                    {parseAddressValue(item.address)}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+          </Grid>
+        )}
+
+        {!authenticated && (
+          <Grid item xs={12}>
+            <p className={classes.total}>User information</p>
+            <Grid item xs={12} alignContent={"center"} className={classes.userInfo}>
+              <TextField label="Name" value={guest.name} onChange={(event) => setGuest((prev) => ({ ...prev, name: event.target.value }))} fullWidth className={classes.input} />
+              <TextField label="Phone" value={guest.phone} onChange={(event) => setGuest((prev) => ({ ...prev, phone: event.target.value }))} fullWidth className={classes.input} sx={{ marginTop: "15px !important" }} />
+              <TextField label="Email" value={guest.email} onChange={(event) => setGuest((prev) => ({ ...prev, email: event.target.value }))} fullWidth className={classes.input} sx={{ marginTop: "15px !important" }} />
+              {deliveryType === "delivery" && (
+                <TextField label="Shipping address" value={guestAddress} onChange={(event) => setGuestAddress(event.target.value)} fullWidth className={classes.input} sx={{ marginTop: "15px !important" }} />
+              )}
+            </Grid>
+          </Grid>
+        )}
+
+        {authenticated && user && (
+          <Grid item xs={12}>
+            <p className={classes.total}>Ordering as {user.first_name} {user.last_name}</p>
+          </Grid>
+        )}
+
         <Grid item xs={12} container justifyContent="center">
           <Button
             color="primary"
             variant="contained"
             className={classes.button}
-            onClick={() => handleOrderInfo()}
+            onClick={handleOrder}
+            disabled={loading}
           >
-            Order
+            {loading ? "Ordering..." : "Order"}
           </Button>
         </Grid>
       </Grid>
+      {openSnack.open && (
+        <SnackBar openSnack={openSnack} handleCloseSnack={handleCloseSnack} />
+      )}
     </>
   );
 };
@@ -261,16 +400,12 @@ const useStyles = makeStyles((theme) => ({
   table: {
     marginTop: "10px !important",
     borderRadius: "4px !important",
-    "& thead": {
-      "& th": {
-        borderBottom: "none !important",
-      },
+    "& thead th": {
+      borderBottom: "none !important",
     },
-    "& tbody": {
-      "& th": {
-        backgroundColor: "#F5EEE6",
-        borderBottom: "none !important",
-      },
+    "& tbody th": {
+      backgroundColor: "#F5EEE6",
+      borderBottom: "none !important",
     },
   },
   subtitle: {
@@ -295,14 +430,15 @@ const useStyles = makeStyles((theme) => ({
     maxWidth: 600,
     margin: "30px auto 0px auto !important",
   },
-  paymentMethodText: {
-    fontSize: 18,
-  },
   paymentSelect: {
     display: "flex !important",
+    flexDirection: "column !important",
     justifyContent: "center !important",
     maxWidth: 600,
     margin: "10px auto 0 auto !important",
+  },
+  userInfo: {
+    maxWidth: 600,
   },
   selectLabel: {
     fontSize: "16px !important"
@@ -310,10 +446,39 @@ const useStyles = makeStyles((theme) => ({
   formControlLabel: {
     fontSize: "16px !important",
   },
-  grayText: {
-    fontSize: "14px !important",
-    lineHeight: "20px !important",
-    color: "#767676",
+  input: {
+    "& .MuiInputBase-root": {
+      fontSize: "16px !important",
+    },
+  },
+  paymentInfo: {
+    backgroundColor: "#F5EEE6",
+    border: "1px solid #E6A4B4",
+    borderRadius: 4,
+    marginTop: 12,
+    padding: "12px 14px",
+    whiteSpace: "pre-line",
+    "& strong": {
+      display: "block",
+      fontSize: 15,
+      marginBottom: 4,
+    },
+    "& p": {
+      margin: "0 !important",
+      fontSize: 15,
+      lineHeight: "22px",
+    },
+  },
+  uploadButton: {
+    marginTop: "15px",
+    padding: "14px 21px",
+    backgroundColor: "#C86B85",
+    color: "#fff",
+    fontFamily: "Open Sans",
+    cursor: "pointer",
+    "& input[type='file']": {
+      display: "none",
+    },
   },
   button: {
     margin: "60px auto 0px !important"

@@ -6,6 +6,7 @@ import Table from "../../../components/Admin/Table";
 import { Button } from "@mui/material";
 import { deleteProduct, getProducts } from "../../../helpers/api/product";
 import SnackBar from "../../../components/Snackbar";
+import { getErrorMessage, getResourceCollection } from "../../../helpers/api/response";
 
 function createData({
   id,
@@ -70,7 +71,8 @@ const Products = () => {
 
   const productList = async () => {
     try {
-      const { data } = await getProducts();
+      const response = await getProducts();
+      const data = getResourceCollection(response);
 
       if (data.length > 0) {
         setRows(
@@ -83,7 +85,11 @@ const Products = () => {
         );
       }
     } catch (error) {
-      console.log(error);
+      setOpenSnack({
+        open: true,
+        message: getErrorMessage(error, "Unable to load products."),
+        severity: "error",
+      });
     }
   };
 
@@ -109,7 +115,7 @@ const Products = () => {
     } catch (error) {
       setOpenSnack({
         open: true,
-        message: "An error has ocurred",
+        message: "An error has occurred",
         severity: "error",
       });
     }
@@ -153,13 +159,14 @@ const Products = () => {
 const useStyles = makeStyles(() => ({
   container: {
     width: "100%",
-    maxWidth: "1068px",
-    margin: "30px auto 630px auto",
+    maxWidth: "1280px",
+    margin: "0 auto",
   },
   titleWrapper: {
     display: "flex",
     alignItems: "center",
-    marginBottom: 56,
+    justifyContent: "space-between",
+    marginBottom: 32,
 
     "& h1": {
       font: "400 36px/20px Open Sans",
@@ -167,7 +174,7 @@ const useStyles = makeStyles(() => ({
   },
   button: {
     backgroundColor: "#0978DE !important",
-    marginLeft: "20px !important",
+    marginRight: "0px !important",
   },
 }));
 

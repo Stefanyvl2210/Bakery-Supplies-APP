@@ -1,46 +1,153 @@
-# Getting Started with Create React App and Redux
+# Bakery Supplies APP
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app), using the [Redux](https://redux.js.org/) and [Redux Toolkit](https://redux-toolkit.js.org/) template.
+React/Vite frontend for Bakery Supplies. The app consumes the Bakery Supplies REST API for catalog browsing, shopping cart, authenticated and guest checkout, orders, payments, profile management, addresses, and administration.
 
-## Available Scripts
+## Requirements
 
-In the project directory, you can run:
+- Node.js compatible with Vite 8.
+- npm.
+- Bakery Supplies API running locally or in the published development environment.
 
-### `npm start`
+Published development API:
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+- API docs: `https://dev.bakery-supplies-api.lc/docs/api`
+- API base URL: `https://dev.bakery-supplies-api.lc/api`
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+## Installation
 
-### `npm test`
+```bash
+npm install
+```
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+Create a local `.env` file from `.env.example`.
 
-### `npm run build`
+Development API example:
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+```env
+VITE_BACKEND_URL=https://dev.bakery-supplies-api.lc
+VITE_API_URL=https://dev.bakery-supplies-api.lc/api
+```
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+Local API example:
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+```env
+VITE_BACKEND_URL=http://localhost:8000
+VITE_API_URL=http://localhost:8000/api
+```
 
-### `npm run eject`
+## Development
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+```bash
+npm run dev
+```
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+Vite will print the local app URL in the terminal.
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+## Production build
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+```bash
+npm run build
+```
 
-## Learn More
+The production output is generated in `dist/`.
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+## API integration
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+The frontend is wired to the published Laravel API using Bearer Token authentication.
+
+Connected areas:
+
+- Authentication:
+  - login
+  - register
+  - logout
+  - email verification
+  - resend verification code
+  - forgot password
+  - reset password
+- Catalog:
+  - products
+  - categories
+- Checkout:
+  - authenticated checkout
+  - guest checkout
+  - delivery or pickup
+  - active payment methods
+  - transfer reference and payment proof upload
+- Account:
+  - profile
+  - addresses
+  - customer orders
+  - available payment methods
+- Admin:
+  - dashboard stats
+  - products
+  - categories
+  - orders
+  - payment workflow actions
+  - payment methods
+  - user logs
+
+## Authentication
+
+The API uses Bearer Token authentication:
+
+```http
+Authorization: Bearer <token>
+```
+
+The current user is loaded with:
+
+```http
+GET /user
+```
+
+The token is stored in browser storage because the published API documents Bearer Token auth rather than httpOnly cookie sessions.
+
+## Project structure
+
+```text
+src/
+  components/        Shared UI components
+  config/axios.js    Axios client and auth token handling
+  features/          Redux slices
+  helpers/api/       API helpers by backend resource
+  helpers/           Formatting and response utilities
+  pages/             Public, account, checkout, and admin views
+  routing/           Routes and route guards
+```
+
+## Testing checklist
+
+Before shipping changes, run:
+
+```bash
+npm run build
+```
+
+Manual flows to verify:
+
+1. Register a customer.
+2. Verify email.
+3. Log in.
+4. Browse products and categories.
+5. Add products to the cart.
+6. Complete authenticated checkout.
+7. Complete guest checkout.
+8. Track a guest order by token.
+9. View customer orders.
+10. Update profile and addresses.
+11. Log in as admin.
+12. Review admin dashboard stats.
+13. Manage products and categories.
+14. Manage payment methods.
+15. Review admin orders and payment actions.
+16. Review logs.
+
+## Security notes
+
+- Do not store secrets in the frontend.
+- Do not send calculated order totals or order statuses from the frontend; the backend calculates and owns them.
+- Admin routes are protected by the `admin` role guard.
+- Payment proof files are uploaded to the backend and must pass backend validation.
+- Keep `.env` local and commit only safe examples in `.env.example`.

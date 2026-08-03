@@ -6,18 +6,19 @@ import { useParams } from "react-router-dom";
 import { useForm } from "react-hook-form";
 
 // material ui components
-import { Grid, Button, Typography, TextField } from "@mui/material";
+import { Grid, Button, Typography } from "@mui/material";
 import { makeStyles } from "@mui/styles";
 
 import * as yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
 
 // components
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import CustomInput from "../../components/input";
-import { verifyEmail } from "../../helpers/api/auth";
+import { resendEmailVerification, verifyEmail } from "../../helpers/api/auth";
 import SnackBar from "../../components/Snackbar";
-import axios from "axios";
+import { getErrorMessage } from "../../helpers/api/response";
+import { storeAuthToken } from "../../config/axios";
 
 const validationSchema = yup.object({
   code: yup.string().required("Required"),
@@ -26,6 +27,7 @@ const validationSchema = yup.object({
 const VerifyEmail = () => {
   const classes = useStyles();
   const navigate = useNavigate();
+  const location = useLocation();
   const params = useParams();
   const [loading, setLoading] = React.useState(false);
   const [openSnack, setOpenSnack] = React.useState({
@@ -46,8 +48,6 @@ const VerifyEmail = () => {
     },
   });
 
-  if (!params?.id) navigate("/login");
-
   const onSubmit = async (data) => {
     setLoading(true);
 
@@ -58,6 +58,7 @@ const VerifyEmail = () => {
         message: "Successfully verified",
         severity: "success",
       });
+      storeAuthToken(null);
       setLoading(false);
 
       setTimeout(() => {
@@ -66,10 +67,27 @@ const VerifyEmail = () => {
     } catch (error) {
       setOpenSnack({
         open: true,
-        message: "There has been an error",
+        message: getErrorMessage(error),
         severity: "error",
       });
       setLoading(false);
+    }
+  };
+
+  const handleResend = async () => {
+    try {
+      await resendEmailVerification();
+      setOpenSnack({
+        open: true,
+        message: "Verification code sent",
+        severity: "success",
+      });
+    } catch (error) {
+      setOpenSnack({
+        open: true,
+        message: getErrorMessage(error),
+        severity: "error",
+      });
     }
   };
 
@@ -89,7 +107,8 @@ const VerifyEmail = () => {
         </Grid>
         <Grid item xs={12} md={6} className={classes.content}>
           <Typography className={classes.text}>
-            Please enter the 6-digit verification code sent by test@gmail.com.
+            Please enter the 6-digit verification code sent
+            {location.state?.email ? ` to ${location.state.email}` : ""}.
             The code will be active for 30 minutes.
           </Typography>
 
@@ -114,7 +133,9 @@ const VerifyEmail = () => {
             >
               <span className={classes.buttonText}>Send</span>
             </Button>
-            <p className={classes.codeText}>Did you not receive the code?</p>
+            <p className={classes.codeText} onClick={handleResend}>
+              Did you not receive the code? Resend it.
+            </p>
           </form>
         </Grid>
       </Grid>

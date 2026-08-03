@@ -18,6 +18,7 @@ const Sidebar = () => {
   const [openMenu, setOpenMenu] = React.useState({
     products: false,
     categories: false,
+    payments: false,
     users: false,
   });
   const [mobileOpen, setMobileOpen] = React.useState(false);
@@ -36,22 +37,34 @@ const Sidebar = () => {
         sx={{ width: "100%", maxWidth: 360, color: "#fff !important" }}
         className={classes.listWrapper}
       >
+        <Link to="/admin">
+          <ListItemButton>
+            <ListItemText primary="Dashboard" />
+          </ListItemButton>
+        </Link>
+
+        <Link to="/admin/orders">
+          <ListItemButton>
+            <ListItemText primary="Orders" />
+          </ListItemButton>
+        </Link>
+
         <ListItemButton onClick={() => handleClick("products")}>
           <ListItemText primary="Products" />
           {openMenu.products ? <ExpandLess /> : <ExpandMore />}
         </ListItemButton>
         <Collapse in={openMenu.products} timeout="auto" unmountOnExit>
           <List component="div" disablePadding>
-            <ListItemButton sx={{ pl: 4, color: "white" }}>
-              <Link to="/admin/products">
+            <Link to="/admin/products">
+              <ListItemButton sx={{ pl: 4, color: "white" }}>
                 <ListItemText primary="All products" />
-              </Link>
-            </ListItemButton>
-            <ListItemButton sx={{ pl: 4, color: "white" }}>
-              <Link to="/admin/new-product">
+              </ListItemButton>
+            </Link>
+            <Link to="/admin/new-product">
+              <ListItemButton sx={{ pl: 4, color: "white" }}>
                 <ListItemText primary="Add New" />
-              </Link>
-            </ListItemButton>
+              </ListItemButton>
+            </Link>
           </List>
         </Collapse>
 
@@ -61,37 +74,61 @@ const Sidebar = () => {
         </ListItemButton>
         <Collapse in={openMenu.categories} timeout="auto" unmountOnExit>
           <List component="div" disablePadding>
-            <ListItemButton sx={{ pl: 4, color: "white" }}>
-              <Link to="/admin/categories">
+            <Link to="/admin/categories">
+              <ListItemButton sx={{ pl: 4, color: "white" }}>
                 <ListItemText primary="All categories" />
-              </Link>
-            </ListItemButton>
-            <ListItemButton sx={{ pl: 4, color: "white" }}>
-              <Link to="/admin/new-category">
+              </ListItemButton>
+            </Link>
+            <Link to="/admin/new-category">
+              <ListItemButton sx={{ pl: 4, color: "white" }}>
                 <ListItemText primary="Add new" />
-              </Link>
-            </ListItemButton>
+              </ListItemButton>
+            </Link>
           </List>
         </Collapse>
 
-        <ListItemButton>
-          <Link to="/admin/logs">
-            <ListItemText primary="Logs" />
-          </Link>
+        <ListItemButton onClick={() => handleClick("payments")}>
+          <ListItemText primary="Payments" />
+          {openMenu.payments ? <ExpandLess /> : <ExpandMore />}
         </ListItemButton>
+        <Collapse in={openMenu.payments} timeout="auto" unmountOnExit>
+          <List component="div" disablePadding>
+            <Link to="/admin/pending-payments">
+              <ListItemButton sx={{ pl: 4, color: "white" }}>
+                <ListItemText primary="Pending payments" />
+              </ListItemButton>
+            </Link>
+            <Link to="/admin/payment-methods">
+              <ListItemButton sx={{ pl: 4, color: "white" }}>
+                <ListItemText primary="All payment methods" />
+              </ListItemButton>
+            </Link>
+            <Link to="/admin/new-payment-method">
+              <ListItemButton sx={{ pl: 4, color: "white" }}>
+                <ListItemText primary="Add new" />
+              </ListItemButton>
+            </Link>
+          </List>
+        </Collapse>
+
+        <Link to="/admin/logs">
+          <ListItemButton>
+            <ListItemText primary="Logs" />
+          </ListItemButton>
+        </Link>
       </List>
     );
   };
   return (
     <>
-      <Grid item xs={2} className={classes.sidebarWrapper}>
+      <Grid item className={classes.sidebarWrapper}>
         <div className={classes.sidebar}>
           <Box
             sx={{
               display: {
                 xs: "none",
                 md: "flex",
-                padding: "28px 20px 28px 28px",
+                padding: "16px",
               },
             }}
           >
@@ -131,6 +168,10 @@ const useStyles = makeStyles((theme) => ({
     },
   },
   sidebarWrapper: {
+    flex: "0 0 238px !important",
+    maxWidth: "238px !important",
+    minWidth: "238px !important",
+    width: "238px !important",
     "@media (max-width: 900px)": {
       display: "none",
     },
@@ -138,6 +179,12 @@ const useStyles = makeStyles((theme) => ({
   sidebar: {
     backgroundColor: "#2C3338",
     height: "100%",
+    width: "100%",
+
+    "& img": {
+      maxWidth: "100%",
+      height: "auto",
+    },
 
     "& a": {
       color: "#fff",
@@ -146,7 +193,7 @@ const useStyles = makeStyles((theme) => ({
   },
   listWrapper: {
     "& span": {
-      font: "400 24px/20px Open Sans !important",
+      font: "400 20px Open Sans !important",
     },
   },
   toolbar: {

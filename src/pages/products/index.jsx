@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import { productsList } from "./products";
 import classnames from "classnames";
 
 // material ui components
@@ -17,13 +16,21 @@ import { makeStyles } from "@mui/styles";
 import SearchIcon from "@mui/icons-material/Search";
 import Product from "../../components/Product";
 import { useLocation } from "react-router-dom";
+import { getProducts } from "../../helpers/api/product";
+import { getCategories } from "../../helpers/api/category";
+import { getResourceCollection, getErrorMessage } from "../../helpers/api/response";
 
 const Products = () => {
   const location = useLocation();
   const classes = useStyles();
   const [search, setSearch] = useState("");
   const [filter, setFilter] = useState("");
-  const [products, setProducts] = useState(productsList);
+  const [products, setProducts] = useState([]);
+  const [allProducts, setAllProducts] = useState([]);
+  const [filterCategories, setFilterCategories] = useState([]);
+  const [message, setMessage] = useState("");
+  const requestedCategory = location.state?.category || "";
+  const pageTitle = location.state?.title || "Products";
 
   const handleChange = (event) => {
     setFilter(event.target.value);
@@ -33,26 +40,81 @@ const Products = () => {
     setSearch(event.target.value);
   };
 
-  useEffect(() => {
-    if(search !== "") {
-      let filteredProducts = products.filter((product) => {
-        const name = product.name ? product.name.toLowerCase() : "";
-  
-        return (
-          name.toLowerCase().includes(search.toLowerCase())
-        );
-      });
-      setProducts(filteredProducts)
-    } else {
-      setProducts(productsList)
+  const applyFilters = React.useCallback(() => {
+    let nextProducts = allProducts;
+
+    if (filter) {
+      const selectedCategoryIds = filterCategories
+        .filter(
+          (category) =>
+            String(category.id) === String(filter) ||
+            String(category.parent_id) === String(filter)
+        )
+        .map((category) => String(category.id));
+
+      nextProducts = nextProducts.filter((product) =>
+        product.categories?.some((category) =>
+          selectedCategoryIds.includes(String(category.id))
+        )
+      );
     }
-  }, [search]);
+
+    if (search) {
+      nextProducts = nextProducts.filter((product) => {
+        const name = product.name ? product.name.toLowerCase() : "";
+        return name.includes(search.toLowerCase());
+      });
+    }
+
+    setProducts(nextProducts);
+  }, [allProducts, filter, filterCategories, search]);
+
+  useEffect(() => {
+    const loadProducts = async () => {
+      try {
+        const categoriesResponse = await getCategories();
+        const categoryData = getResourceCollection(categoriesResponse);
+        const parentCategory = requestedCategory
+          ? categoryData.find((category) => {
+              const slug = String(category.slug || "").toLowerCase();
+              const name = String(category.name || "").toLowerCase();
+              const target = String(requestedCategory).toLowerCase();
+
+              return slug === target || name === target;
+            })
+          : null;
+        const scopedCategories = parentCategory
+          ? categoryData.filter(
+              (category) =>
+                category.id === parentCategory.id ||
+                category.parent_id === parentCategory.id
+            )
+          : categoryData;
+        const productsResponse = await getProducts(
+          parentCategory ? { category_id: parentCategory.id } : {}
+        );
+        const productData = getResourceCollection(productsResponse);
+
+        setAllProducts(productData);
+        setFilterCategories(scopedCategories);
+        setMessage(productData.length ? "" : "No products available.");
+      } catch (error) {
+        setMessage(getErrorMessage(error, "Unable to load products."));
+      }
+    };
+
+    loadProducts();
+  }, [requestedCategory]);
+
+  useEffect(() => {
+    applyFilters();
+  }, [applyFilters]);
   
   return (
     <>
       <Grid container className={classes.container}>
         <Grid item xs={12} > 
-          <h2 className={classes.title}>{location.state.title}</h2>
+          <h2 className={classes.title}>{pageTitle}</h2>
         </Grid>
 
         <Grid
@@ -100,25 +162,32 @@ const Products = () => {
                 <MenuItem value="" sx={{fontSize: "18px !important", lineHeight: "20px !important"}}>
                   <em>None</em>
                 </MenuItem>
-                <MenuItem value={10} sx={{fontSize: "18px !important", lineHeight: "20px !important"}}>Subcategory 1</MenuItem>
-                <MenuItem value={20} sx={{fontSize: "18px !important", lineHeight: "20px !important"}}>Subcategory 2</MenuItem>
-                <MenuItem value={30} sx={{fontSize: "18px !important", lineHeight: "20px !important"}}>Subcategory 3</MenuItem>
+                {filterCategories.map((category) => (
+                  <MenuItem
+                    key={category.id}
+                    value={category.id}
+                    sx={{fontSize: "18px !important", lineHeight: "20px !important"}}
+                  >
+                    {category.name}
+                  </MenuItem>
+                ))}
               </Select>
             </FormControl>
           </Grid>
         </Grid>
       </Grid>
       <Grid container className={classes.containerProduct}>
+        {message && <Grid item xs={12} className={classes.total}>{message}</Grid>}
         <Product productList={products} />
         <Grid item xs={12} sx={{textAlign: 'center'}}>
-          {search === "" ?
+          {search === "" && products.length > 0 ?
           <Button
             color="primary"
             variant="contained"
             className={classes.button}
-            onClick={() => console.log('load more')}
+            disabled
           >
-            Load More
+            {products.length} products
           </Button> : ""}
         </Grid>
       </Grid>
@@ -194,6 +263,7 @@ const useStyles = makeStyles((theme) => ({
   total: {
     maxWidth: 600,
     margin: "0 auto",
+    padding: "0 25px",
     marginTop: 30,
     fontSize: 18,
   },

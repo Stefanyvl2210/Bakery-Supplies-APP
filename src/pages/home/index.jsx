@@ -13,7 +13,7 @@ import step3 from "../../assets/images/truck.svg";
 import EastIcon from '@mui/icons-material/East';
 import { useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
-import { token } from "../../features/auth/AuthSlice";
+import { userLogged } from "../../features/auth/AuthSlice";
 
 const dessert = {
   name: "Desserts",
@@ -29,7 +29,7 @@ const utensil = {
 
 const Home = () => {
   const navigate = useNavigate();
-  const userLogged = useSelector(token);
+  const user = useSelector(userLogged);
 
   const [values, setValues] = React.useState({
     email: '',
@@ -49,7 +49,7 @@ const Home = () => {
             <Typography className={classes.mainTitle}>
               Prepare your favorite recipe or buy your favorite dessert without leaving home!
             </Typography>
-            {!userLogged && (
+            {!user && (
               <div className={classes.registerInput}>
                 <TextField 
                   id="email-register" 
@@ -127,7 +127,7 @@ const Home = () => {
                 onClick={() =>
                   navigate("/products", {
                     state: {
-                      category: "dessert",
+                      category: "desserts",
                       title: "Desserts",
                     },
                   })

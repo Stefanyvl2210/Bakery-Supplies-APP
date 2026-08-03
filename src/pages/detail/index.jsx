@@ -7,11 +7,14 @@ import { addCartProduct } from "../../features/counter/counterSlice";
 // carousel
 import RelatedProducts from "../../components/ProductCarousel";
 import { useLocation } from "react-router-dom";
+import { getImageUrl } from "../../helpers/formatters";
 
 export default function CustomDialog(props) {
   const classes = useStyles();
   const dispatch = useDispatch();
   const { state } = useLocation();
+  const product = state?.product;
+  const relatedProducts = state?.relatedProducts || [];
 
   const [quantity, setQuantity] = React.useState(1);
   const [openSnack, setOpenSnack] = React.useState(false);
@@ -44,7 +47,7 @@ export default function CustomDialog(props) {
           justifyContent="center"
         >
           <img
-            src={state.product.image}
+            src={getImageUrl(product?.image)}
             alt="detail"
             className={classes.productImage}
           />
@@ -52,14 +55,14 @@ export default function CustomDialog(props) {
 
         <Grid item xs={12} sm={12} md={6} >
           <div className={classes.productContent}>
-            <h4 className={classes.productName}>{state.product.name}</h4>
+            <h4 className={classes.productName}>{product?.name}</h4>
 
             <Typography fontSize={16} className={classes.description}>
-              {state.product.description}
+              {product?.description}
             </Typography>
 
             <div>
-              <p className={classes.price}>Price: ${state.product.price}</p>
+              <p className={classes.price}>Price: ${product?.price}</p>
 
               <div className={classes.quantityWrapper}>
                 <span>Quantity:</span>
@@ -97,8 +100,10 @@ export default function CustomDialog(props) {
                 onClick={() => {
                   dispatch(
                     addCartProduct({
-                      name: state.product.name,
-                      price: state.product.price,
+                      id: product?.id,
+                      name: product?.name,
+                      price: product?.price,
+                      image: product?.image,
                       qty: quantity,
                     })
                   )
@@ -117,7 +122,7 @@ export default function CustomDialog(props) {
 
         <Grid item xs={12}>
           <h3 className={classes.relatedProductsTitle}>Related Products</h3>
-          <RelatedProducts products={state.relatedProducts} />
+          <RelatedProducts products={relatedProducts} />
         </Grid>
         <Stack spacing={2} sx={{ width: '100%' }}>
           <Snackbar 
@@ -186,6 +191,8 @@ const useStyles = makeStyles((theme) => ({
   },
   productImage: {
     width: "100%",
+    maxHeight: 420,
+    objectFit: "contain",
     [theme.breakpoints.down('md')]: {
       marginBottom: 30,
     },

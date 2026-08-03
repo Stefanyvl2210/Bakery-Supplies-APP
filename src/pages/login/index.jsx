@@ -1,7 +1,13 @@
 import React from "react";
 
 // api
-import { loginUser } from "../../helpers/api/auth";
+import {
+  getTokenFromAuthResponse,
+  getUserFromAuthResponse,
+  loginUser,
+} from "../../helpers/api/auth";
+import { getErrorMessage } from "../../helpers/api/response";
+import { storeAuthToken } from "../../config/axios";
 
 // hook form
 import { useForm } from "react-hook-form";
@@ -16,7 +22,10 @@ import { useNavigate } from "react-router-dom";
 
 import LogoSimple from "../../assets/images/logo-simple.svg";
 
-import { login } from "../../features/auth/AuthSlice";
+import {
+  sessionAuthenticated,
+  userHasRole,
+} from "../../features/auth/AuthSlice";
 import { useDispatch } from "react-redux";
 import SnackBar from "../../components/Snackbar";
 
@@ -37,29 +46,33 @@ const Login = () => {
     handleSubmit,
     formState: { errors },
   } = useForm();
-  const onSubmit = async (data) => {
-    await loginUser(data)
-      .then((res) => {
-        dispatch(
-          login({ token: res.data.data.token, user: res.data.data.user })
-        );
 
-        if (
-          res.data.data.user.roles &&
-          res.data.data.user.roles.find((role) => role.name === "admin")
-        ) {
-          navigate("/admin/products");
-        } else {
-          navigate("/");
-        }
-      })
-      .catch((err) => {
-        setOpenSnack({
-          open: true,
-          message: err.response.data.Error,
-          severity: "error",
-        });
+  const onSubmit = async (data) => {
+    try {
+      const loginResponse = await loginUser(data);
+      const token = getTokenFromAuthResponse(loginResponse);
+
+      if (!token) {
+        throw new Error("Authentication token was not returned");
+      }
+
+      storeAuthToken(token);
+      const user = getUserFromAuthResponse(loginResponse);
+
+      if (!user) {
+        throw new Error("Authenticated user was not returned");
+      }
+
+      dispatch(sessionAuthenticated({ user, token }));
+      navigate(userHasRole(user, "admin") ? "/admin" : "/");
+    } catch (error) {
+      storeAuthToken(null);
+      setOpenSnack({
+        open: true,
+        message: getErrorMessage(error, "Unable to sign in. Please try again."),
+        severity: "error",
       });
+    }
   };
 
   const handleCloseSnack = (event, reason) => {
@@ -113,7 +126,7 @@ const Login = () => {
                   />
 
                   <p>
-                    <a href="/" className={classes.forgotPassText}>
+                    <a href="/forgot-password" className={classes.forgotPassText}>
                       Forgot your password?
                     </a>
                   </p>
@@ -125,7 +138,6 @@ const Login = () => {
                   type="submit"
                   variant="contained"
                   className={classes.button}
-                  onClick={handleSubmit(onSubmit)}
                 >
                   <span className={classes.buttonText}>Enter</span>
                 </Button>

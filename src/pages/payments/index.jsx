@@ -1,47 +1,30 @@
-import React, { useState, useEffect } from "react";
-import { Button, Grid } from "@mui/material";
-
-// hook form
-import { useForm } from "react-hook-form";
+import React, { useEffect, useState } from "react";
+import { Grid } from "@mui/material";
 
 import ProfileSidebar from "../../components/profile-sidebar";
 import { makeStyles } from "@mui/styles";
-import { useSelector } from "react-redux";
-import { token } from "../../features/auth/AuthSlice";
-import { useNavigate } from "react-router-dom";
+import { getPaymentMethods } from "../../helpers/api/paymentMethods";
+import { getErrorMessage, getResourceCollection } from "../../helpers/api/response";
+import { formatMoney } from "../../helpers/formatters";
 
 const Payments = () => {
   const classes = useStyles();
-  const navigate = useNavigate();
-  const userIsLogged = useSelector(token);
-  const [showInput, setShowInput] = useState({
-    firstName: true,
-    lastName: true,
-    email: true,
-    phoneNumber: true,
-    address: true,
-  });
-  const [showAddressInput, setShowAddressInput] = useState(false);
-
-  // form structure
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-  } = useForm();
-
-  const handleInput = (key) => {
-    if (!showInput[key]) {
-      setShowInput((prev) => ({ ...prev, [key]: true }));
-    } else {
-      setShowInput((prev) => ({ ...prev, [key]: false }));
-    }
-  };
+  const [paymentMethods, setPaymentMethods] = useState([]);
+  const [message, setMessage] = useState("");
 
   useEffect(() => {
-    if(!userIsLogged) {
-      navigate('/');
-    }
+    const loadPaymentMethods = async () => {
+      try {
+        const response = await getPaymentMethods();
+        const methods = getResourceCollection(response);
+        setPaymentMethods(methods);
+        setMessage(methods.length ? "" : "No payment methods available.");
+      } catch (error) {
+        setMessage(getErrorMessage(error, "Unable to load payment methods."));
+      }
+    };
+
+    loadPaymentMethods();
   }, []);
 
   return (
@@ -53,37 +36,27 @@ const Payments = () => {
       <Grid item xs={12} md={9.5} className={classes.container}>
         <Grid container>
           <Grid item xs={12}>
-            <h1 className={classes.title}>Payments methods</h1>
+            <h1 className={classes.title}>Payment methods</h1>
           </Grid>
 
           <Grid item xs={12}>
             <Grid container className={classes.form}>
-              <Grid item xs={12}>
-                <p className={classes.paragraph}>You don’t have any address yet!</p>
-              </Grid>
+              {message && (
+                <Grid item xs={12}>
+                  <p className={classes.paragraph}>{message}</p>
+                </Grid>
+              )}
 
-              <Grid item xs={12}>
-                <div>
-                  <Button
-                    type="submit"
-                    variant="contained"
-                    className={classes.button}
-                    //   onClick={handleSubmit(onSubmit)}
-                    onClick={() => {
-                      if (showAddressInput) {
-                        alert("saved");
-                        setShowAddressInput(false);
-                      } else {
-                        setShowAddressInput(true);
-                      }
-                    }}
-                  >
-                    <span className={classes.buttonText}>
-                      {showAddressInput ? "Save" : "Add"}
-                    </span>
-                  </Button>
-                </div>
-              </Grid>
+              {paymentMethods.map((method) => (
+                <Grid item xs={12} key={method.id} className={classes.card}>
+                  <h2>{method.name}</h2>
+                  <p>Type: {method.type}</p>
+                  <p>Currency: {method.currency}</p>
+                  <p>Exchange rate: {formatMoney(method.exchange_rate, method.currency || "USD")}</p>
+                  {method.instructions && <p>{method.instructions}</p>}
+                  {method.account_details && <p>{method.account_details}</p>}
+                </Grid>
+              ))}
             </Grid>
           </Grid>
         </Grid>
@@ -96,8 +69,7 @@ export default Payments;
 
 const useStyles = makeStyles((theme) => ({
   grid:{
-    height: "70vh",
-
+    minHeight: "70vh",
   },
   container: {
     padding: 60,
@@ -105,7 +77,6 @@ const useStyles = makeStyles((theme) => ({
     [theme.breakpoints.down('md')]: {
       padding: "140px 36px !important",
     },
-
     "@media (max-width: 768px)": {
       margin: "0 auto !important",
     },
@@ -122,7 +93,6 @@ const useStyles = makeStyles((theme) => ({
     lineHeight: "20px",
     color: "black"
   },
-
   form: {
     "& .MuiGrid-root": {
       "@media (max-width: 768px)": {
@@ -130,28 +100,20 @@ const useStyles = makeStyles((theme) => ({
         justifyContent: "center",
       },
     },
-    "& .MuiFormLabel-root": {
-      color: "#767676",
-      fontSize: "14px",
-      lineHeight: "16px",
-      fontStyle: "normal" 
+  },
+  card: {
+    background: "#F5EEE6",
+    borderRadius: 5,
+    marginBottom: "20px !important",
+    padding: "24px !important",
+    "& h2": {
+      font: "400 30px/28px Poiret One",
+      margin: "0 0 15px 0",
     },
-  },
-  inputWrapper: {
-    maxWidth: 300,
-    marginBottom: "15px !important"
-  },
-  button: {
-    marginTop: "30px !important",
-    marginLeft: "0 !important",
-    marginRight: "0 !important",
-    marginBottom: "0px !important",
-    padding: "0px 16px !important",
-    gap:"8px !important",
-    width: "150px !important",
-    height: "50px !important",
-    background: "#C86B85 !important",
-    borderRadius: "4px !important",
+    "& p": {
+      margin: "5px 0",
+      font: "300 18px Open Sans",
+    },
   },
   paragraph:{
     marginTop: "0px !important",
@@ -160,10 +122,4 @@ const useStyles = makeStyles((theme) => ({
     lineHeight: "20px",
     color: "black"
   },
-  buttonText:{
-    margin: 0,
-    font: "400 24px Open Sans",
-    lineHeight: "26px",
-    color: "white"
-  }
 }));

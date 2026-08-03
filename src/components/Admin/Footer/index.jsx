@@ -15,10 +15,12 @@ const useStyles = makeStyles(() => {
     container: {
       backgroundColor: "#1D2327",
       height: 46,
+      flexShrink: 0,
       display: "flex",
       justifyContent: "center",
       alignItems: "center",
       color: "#fff",
+      width: "100%",
 
       "& span": {
         font: "700 12px/20px Open Sans",

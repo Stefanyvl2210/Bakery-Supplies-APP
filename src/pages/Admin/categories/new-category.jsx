@@ -5,23 +5,26 @@ import { useForm } from "react-hook-form";
 import * as yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
 
-import { Button, Divider, Grid } from "@mui/material";
+import { Button, Divider, Grid, MenuItem, TextField } from "@mui/material";
 import { makeStyles } from "@mui/styles";
 
 import CustomInput from "../../../components/input";
-import { createCategory } from "../../../helpers/api/category";
+import { createCategory, getCategories } from "../../../helpers/api/category";
 import SnackBar from "../../../components/Snackbar";
 import { useNavigate } from "react-router-dom";
+import { getErrorMessage, getResourceCollection } from "../../../helpers/api/response";
 
 const validationSchema = yup.object({
   name: yup.string().required("Required"),
-  slug: yup.string().required("Required"),
+  slug: yup.string(),
+  parent_id: yup.string().required("Required"),
 });
 
 const Category = () => {
   const classes = useStyles();
   const navigate = useNavigate()
   const [loading, setLoading] = React.useState(false);
+  const [parentCategories, setParentCategories] = React.useState([]);
   const [openSnack, setOpenSnack] = React.useState({
     open: false,
     message: "",
@@ -38,12 +41,36 @@ const Category = () => {
     defaultValues: {
       name: "",
       slug: "",
+      parent_id: "",
     },
   });
 
+  const categoryList = async () => {
+    try {
+      const response = await getCategories();
+      const categories = getResourceCollection(response);
+      const parents = categories.filter((category) => !category.parent_id);
+
+      setParentCategories(parents);
+    } catch (error) {
+      setOpenSnack({
+        open: true,
+        message: getErrorMessage(error, "Unable to load parent categories."),
+        severity: "error",
+      });
+    }
+  };
+
+  React.useEffect(() => {
+    categoryList();
+  }, []);
+
   const onSubmit = async (values) => {
     try {
-      const response = await createCategory(values);
+      const response = await createCategory({
+        ...values,
+        slug: values.slug || undefined,
+      });
 
       setOpenSnack({
         open: true,
@@ -57,7 +84,7 @@ const Category = () => {
     } catch (error) {
       setOpenSnack({
         open: true,
-        message: "There has been an error",
+        message: getErrorMessage(error),
         severity: "error",
       });
       setLoading(false);
@@ -99,10 +126,29 @@ const Category = () => {
                 field="slug"
                 fullWidth={true}
                 width="100%"
-                label="Slug"
+                label="Slug (optional)"
                 placeholder=" "
                 error={errors?.slug?.message}
               />
+            </Grid>
+
+            <Grid item xs={12} className={classes.input}>
+              <TextField
+                select
+                label="Parent category"
+                fullWidth
+                required
+                defaultValue=""
+                {...register("parent_id")}
+                error={Boolean(errors?.parent_id?.message)}
+                helperText={errors?.parent_id?.message}
+              >
+                {parentCategories.map((category) => (
+                  <MenuItem key={category.id} value={category.id}>
+                    {category.name}
+                  </MenuItem>
+                ))}
+              </TextField>
             </Grid>
 
             <Grid item xs={12}>
@@ -130,9 +176,7 @@ const useStyles = makeStyles(() => ({
   container: {
     width: "100%",
     maxWidth: "1038px",
-    paddingLeft: 60,
-    marginTop: 50,
-    marginBottom: 400,
+    margin: "0 auto",
   },
 
   title: {

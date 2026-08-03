@@ -10,6 +10,7 @@ import Typography from "@mui/material/Typography";
 import { Alert, Button, Grid, IconButton, Snackbar, Stack } from "@mui/material";
 import { useDispatch } from "react-redux";
 import { addCartProduct } from "../../features/counter/counterSlice";
+import { getImageUrl } from "../../helpers/formatters";
 
 const BootstrapDialog = styled(Dialog)(({ theme }) => ({
   "& .MuiDialogContent-root": {
@@ -104,8 +105,8 @@ export default function CustomDialog(props) {
               sx={{ marginRight: { xs: "0px", md: "40px" }}}
             >
               <img
-                src={selectedProduct.image}
-                alt={selectedProduct.alt}
+                src={getImageUrl(selectedProduct.image)}
+                alt={selectedProduct.name}
                 className={classes.productImage}
               />
             </Grid>
@@ -132,8 +133,10 @@ export default function CustomDialog(props) {
                   onClick={() => {
                     dispatch(
                       addCartProduct({
+                        id: selectedProduct.id,
                         name: selectedProduct.name,
                         price: selectedProduct.price,
+                        image: selectedProduct.image,
                         qty: 1,
                       })
                     );

@@ -4,6 +4,8 @@ import { makeStyles } from "@mui/styles";
 import Table from "../../../components/Admin/Table";
 
 import { getLogs } from "../../../helpers/api/logs";
+import { getResourceCollection } from "../../../helpers/api/response";
+import { formatDate } from "../../../helpers/formatters";
 
 function createData({ id, name, action, created_at }) {
   return {
@@ -40,21 +42,22 @@ const Logs = () => {
 
   const logs = async () => {
     try {
-      const { data } = await getLogs();
+      const response = await getLogs();
+      const data = getResourceCollection(response);
 
       if (data.length > 0) {
         setRows(
           data.map((log) =>
             createData({
               ...log,
-              name: `${log.user.first_name} ${log.user.last_name}`,
-              created_at: new Date(log.created_at).toLocaleDateString(),
+              name: `${log.user?.first_name || ""} ${log.user?.last_name || ""}`,
+              created_at: formatDate(log.created_at),
             })
           )
         );
       }
     } catch (error) {
-      console.log(error);
+      setRows([]);
     }
   };
 
@@ -62,10 +65,11 @@ const Logs = () => {
     logs();
   }, []);
 
-  console.log(rows);
-
   return (
     <div className={classes.container}>
+      <div className={classes.titleWrapper}>
+        <h1>Logs</h1>
+      </div>
       <Table rows={rows} columns={columns} />
     </div>
   );
@@ -75,12 +79,12 @@ const useStyles = makeStyles(() => ({
   container: {
     width: "100%",
     maxWidth: "1068px",
-    margin: "120px auto 630px auto",
+    margin: "0 auto",
   },
   titleWrapper: {
     display: "flex",
     alignItems: "center",
-    marginBottom: 56,
+    marginBottom: 32,
 
     "& h1": {
       font: "400 36px/20px Open Sans",

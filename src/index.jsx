@@ -9,6 +9,7 @@ import { BrowserRouter } from "react-router-dom";
 import { ThemeProvider } from "@mui/material/styles";
 import { theme } from "./theme";
 import { PersistGate } from "redux-persist/integration/react";
+import SessionInitializer from "./features/auth/SessionInitializer";
 
 const container = document.getElementById("root");
 const root = createRoot(container);
@@ -16,11 +17,13 @@ const root = createRoot(container);
 root.render(
   <Provider store={store}>
     <PersistGate persistor={persistor}>
-      <BrowserRouter>
-        <ThemeProvider theme={theme}>
-          <App />
-        </ThemeProvider>
-      </BrowserRouter>
+      <SessionInitializer>
+        <BrowserRouter>
+          <ThemeProvider theme={theme}>
+            <App />
+          </ThemeProvider>
+        </BrowserRouter>
+      </SessionInitializer>
     </PersistGate>
   </Provider>
 );

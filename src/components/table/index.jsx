@@ -17,8 +17,7 @@ export default function BasicTable(props) {
   const handleOrder = (index) => {
     navigate("/order-detail", {
        state: { 
-        orderInfo: orderData[index].orderInfo, 
-        products: orderData[index].orderProducts, 
+        order: orderData[index],
         ordersView: true 
       }})
   }

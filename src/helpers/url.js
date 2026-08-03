@@ -1,2 +1,9 @@
-export const ApiUrl =
-  import.meta.env.VITE_API_URL || "http://127.0.0.1:8000/api";
+const withoutTrailingSlash = (url) => url.replace(/\/+$/, "");
+
+export const BackendUrl = withoutTrailingSlash(
+  import.meta.env.VITE_BACKEND_URL || "http://localhost:8000"
+);
+
+export const ApiUrl = withoutTrailingSlash(
+  import.meta.env.VITE_API_URL || `${BackendUrl}/api`
+);

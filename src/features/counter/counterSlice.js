@@ -42,11 +42,20 @@ export const counterSlice = createSlice({
       state.value += action.payload;
     },
     addCartProduct: (state, action) => {
-      const findProduct = action.payload;
+      const findProduct = {
+        ...action.payload,
+        qty: Number(action.payload.qty || 1),
+      };
 
-      if (state.products.find((product) => product.name === findProduct.name)) {
+      if (
+        state.products.find((product) =>
+          findProduct.id ? product.id === findProduct.id : product.name === findProduct.name
+        )
+      ) {
         state.products = state.products.map((product) => {
-          if (product.name === findProduct.name) {
+          if (
+            findProduct.id ? product.id === findProduct.id : product.name === findProduct.name
+          ) {
             product.qty += findProduct.qty;
 
             return {
@@ -59,7 +68,7 @@ export const counterSlice = createSlice({
           };
         });
       } else {
-        state.products = [...state.products, action.payload];
+        state.products = [...state.products, findProduct];
       }
 
       sessionStorage.setItem("shoppingCart", JSON.stringify(state.products));

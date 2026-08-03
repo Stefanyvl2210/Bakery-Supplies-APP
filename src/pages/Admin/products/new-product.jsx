@@ -25,6 +25,7 @@ import { getCategories } from "../../../helpers/api/category";
 import { createProduct } from "../../../helpers/api/product";
 import SnackBar from "../../../components/Snackbar";
 import { useNavigate } from "react-router-dom";
+import { getErrorMessage, getResourceCollection } from "../../../helpers/api/response";
 
 const validationSchema = yup.object({
   name: yup.string().required("Required"),
@@ -66,7 +67,8 @@ const ProductForm = () => {
 
   const categoryList = async () => {
     try {
-      const { data } = await getCategories();
+      const response = await getCategories();
+      const data = getResourceCollection(response);
 
       if (data.length > 0) {
         setCategories(data);
@@ -74,7 +76,11 @@ const ProductForm = () => {
         setValue("categories", data[0].id);
       }
     } catch (error) {
-      console.log(error);
+      setOpenSnack({
+        open: true,
+        message: getErrorMessage(error, "Unable to load categories."),
+        severity: "error",
+      });
     }
   };
 
@@ -91,7 +97,7 @@ const ProductForm = () => {
     formData.append("description", values.description);
     formData.append("price", values.price);
     formData.append("quantity_available", values.quantity_available);
-    formData.append("categories", `[${values.categories}]`);
+    formData.append("categories[]", values.categories);
 
     try {
       const response = await createProduct(formData);
@@ -106,11 +112,9 @@ const ProductForm = () => {
         navigate("/admin/products");
       }, 1000);
     } catch (error) {
-      console.log(error);
-
       setOpenSnack({
         open: true,
-        message: "There has been an error",
+        message: getErrorMessage(error),
         severity: "error",
       });
     }
@@ -281,8 +285,7 @@ const useStyles = makeStyles(() => ({
   container: {
     width: "100%",
     maxWidth: "1038px",
-    paddingLeft: 60,
-    marginTop: 50,
+    margin: "0 auto",
   },
 
   title: {
