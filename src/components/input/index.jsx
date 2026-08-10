@@ -65,8 +65,13 @@ export default function CustomizedInputs(props) {
     handleInput,
     value,
     error,
+    onChange,
+    multiline = false,
+    minRows,
+    required = false,
   } = props;
   const isPassword = type === "password";
+  const registration = register ? register(field) : {};
 
   const handlePasswordVisibility = () => {
     setShowPassword((isVisible) => !isVisible);
@@ -81,6 +86,7 @@ export default function CustomizedInputs(props) {
       variant="standard"
       className={classname}
       style={{ width: width }}
+      required={required}
     >
       {showValue ? (
         <>
@@ -115,28 +121,57 @@ export default function CustomizedInputs(props) {
             )}
           </InputLabel>
           <BootstrapInput
-            {...register(field)}
+            {...registration}
+            {...(onChange ? { value, onChange } : {})}
             fullWidth={fullWidth}
             type={isPassword && showPassword ? "text" : type}
             placeholder={placeholder || ""}
             error={Boolean(error)}
+            multiline={multiline}
+            minRows={minRows}
+            required={required}
             inputProps={isPassword ? { style: { paddingRight: 48 } } : undefined}
             endAdornment={
               isPassword ? (
                 <InputAdornment
                   position="end"
-                  sx={{ position: "absolute", right: 4 }}
+                  sx={{
+                    position: "absolute",
+                    top: "50%",
+                    right: 6,
+                    height: 32,
+                    maxHeight: "none",
+                    margin: 0,
+                    transform: "translateY(-50%)",
+                  }}
                 >
                   <IconButton
                     aria-label={showPassword ? "Hide password" : "Show password"}
                     aria-pressed={showPassword}
                     onClick={handlePasswordVisibility}
                     onMouseDown={preventPasswordButtonMouseDown}
+                    size="small"
+                    sx={{
+                      width: 32,
+                      height: 32,
+                      padding: 0,
+                      color: "text.secondary",
+                      backgroundColor: "transparent",
+                      "&:hover": {
+                        color: "text.primary",
+                        backgroundColor: "action.hover",
+                      },
+                      "&:focus-visible": {
+                        outline: "2px solid",
+                        outlineColor: "primary.main",
+                        outlineOffset: 1,
+                      },
+                    }}
                   >
                     {showPassword ? (
-                      <VisibilityOffOutlined sx={{ fontSize: 18 }}/>
+                      <VisibilityOffOutlined sx={{ fontSize: 20 }} />
                     ) : (
-                      <VisibilityOutlined  sx={{ fontSize: 18 }}/>
+                      <VisibilityOutlined sx={{ fontSize: 20 }} />
                     )}
                   </IconButton>
                 </InputAdornment>

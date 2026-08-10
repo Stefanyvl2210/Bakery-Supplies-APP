@@ -1,13 +1,18 @@
 import * as React from "react";
 import { makeStyles } from "@mui/styles";
 import { Alert, Button, Divider, Grid, Snackbar, Stack, TextField, Typography } from "@mui/material";
-import { useDispatch } from "react-redux";
-import { addCartProduct } from "../../features/counter/counterSlice";
+import { useDispatch, useSelector } from "react-redux";
+import { addCartProduct, allProducts } from "../../features/counter/counterSlice";
 
 // carousel
 import RelatedProducts from "../../components/ProductCarousel";
 import { useLocation } from "react-router-dom";
 import { getImageUrl } from "../../helpers/formatters";
+import {
+  clampQuantity,
+  getAvailableStock,
+  getRemainingStock,
+} from "../../helpers/stock";
 
 export default function CustomDialog(props) {
   const classes = useStyles();
@@ -15,9 +20,22 @@ export default function CustomDialog(props) {
   const { state } = useLocation();
   const product = state?.product;
   const relatedProducts = state?.relatedProducts || [];
+  const cartProducts = useSelector(allProducts);
+  const availableStock = getAvailableStock(product);
+  const remainingStock = getRemainingStock(product, cartProducts);
+  const isOutOfStock = availableStock === 0;
+  const isMaximumInCart = !isOutOfStock && remainingStock === 0;
 
-  const [quantity, setQuantity] = React.useState(1);
+  const [quantity, setQuantity] = React.useState(() =>
+    remainingStock > 0 ? 1 : 0
+  );
   const [openSnack, setOpenSnack] = React.useState(false);
+
+  React.useEffect(() => {
+    setQuantity((currentQuantity) =>
+      clampQuantity(currentQuantity, remainingStock)
+    );
+  }, [product?.id, remainingStock]);
 
   const handleClick = () => {
     setOpenSnack(true);
@@ -62,6 +80,7 @@ export default function CustomDialog(props) {
             </Typography>
 
             <div>
+              <p className={classes.stock}>Available: {remainingStock}</p>
               <p className={classes.price}>Price: ${product?.price}</p>
 
               <div className={classes.quantityWrapper}>
@@ -69,11 +88,16 @@ export default function CustomDialog(props) {
 
                 <div className={classes.counter}>
                   <span
+                    aria-disabled={quantity <= 1 || remainingStock === 0}
+                    className={
+                      quantity <= 1 || remainingStock === 0
+                        ? classes.disabledControl
+                        : ""
+                    }
                     onClick={() =>
-                      setQuantity((prev) => {
-                        if (prev > 1) return (prev -= 1);
-                        return 1;
-                      })
+                      setQuantity((current) =>
+                        clampQuantity(current - 1, remainingStock)
+                      )
                     }
                   >
                     -
@@ -83,9 +107,29 @@ export default function CustomDialog(props) {
                     variant="outlined"
                     value={quantity}
                     type="number"
-                    onChange={(e) => setQuantity(e.target.value)}
+                    disabled={remainingStock === 0}
+                    inputProps={{ min: 1, max: remainingStock, step: 1 }}
+                    onChange={(event) =>
+                      setQuantity(
+                        clampQuantity(event.target.value, remainingStock)
+                      )
+                    }
                   />
-                  <span onClick={() => setQuantity((prev) => (prev += 1))}>
+                  <span
+                    aria-disabled={
+                      quantity >= remainingStock || remainingStock === 0
+                    }
+                    className={
+                      quantity >= remainingStock || remainingStock === 0
+                        ? classes.disabledControl
+                        : ""
+                    }
+                    onClick={() =>
+                      setQuantity((current) =>
+                        clampQuantity(current + 1, remainingStock)
+                      )
+                    }
+                  >
                     +
                   </span>
                 </div>
@@ -97,6 +141,7 @@ export default function CustomDialog(props) {
                 color="primary"
                 variant="contained"
                 className={classes.button}
+                disabled={!product || remainingStock === 0}
                 onClick={() => {
                   dispatch(
                     addCartProduct({
@@ -104,20 +149,25 @@ export default function CustomDialog(props) {
                       name: product?.name,
                       price: product?.price,
                       image: product?.image,
+                      quantity_available: availableStock,
                       qty: quantity,
                     })
                   )
                   handleClick()
                 }}
               >
-                Add to Cart
+                {isOutOfStock
+                  ? "Out of stock"
+                  : isMaximumInCart
+                    ? "Maximum in cart"
+                    : "Add to Cart"}
               </Button>
             </div>
           </div>
         </Grid>
 
         <Grid item xs={12}>
-          <Divider></Divider>
+          <Divider className={classes.divider} />
         </Grid>
 
         <Grid item xs={12}>
@@ -206,11 +256,15 @@ const useStyles = makeStyles((theme) => ({
     fontFamily: "Poiret One",
   },
   price: {
-    marginBottom: "4px",
+    marginBottom: "8px",
     "@media (max-width: 600px)": {
       // textAlign: "center",
       fontSize: 18,
     },
+  },
+  stock: {
+    margin: "16px 0 0",
+    fontWeight: 600,
   },
   description: {
     margin: "0 auto",
@@ -243,6 +297,11 @@ const useStyles = makeStyles((theme) => ({
       paddingBottom: 5,
     },
   },
+  disabledControl: {
+    cursor: "not-allowed !important",
+    opacity: 0.35,
+    pointerEvents: "none",
+  },
   quantityInput: {
     minWidth: "40px !important",
     width: "100% !important",
@@ -260,7 +319,13 @@ const useStyles = makeStyles((theme) => ({
     marginBottom: 66,
   },
   button: {
-    width: 150,
+    width: "auto",
+    minWidth: 150,
     height: 50,
+    padding: "0 24px !important",
+    whiteSpace: "nowrap",
+  },
+  divider: {
+    margin: "32px 0 !important",
   },
 }));

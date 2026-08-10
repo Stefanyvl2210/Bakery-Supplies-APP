@@ -18,6 +18,7 @@ import { userLogged } from "../../features/auth/AuthSlice";
 import { getOrdersByUser } from "../../helpers/api/orders";
 import { getErrorMessage, getResourceCollection } from "../../helpers/api/response";
 import { formatDate, formatMoney, formatStatus } from "../../helpers/formatters";
+import Loader from "../../components/Loader";
 
 function createData(order, status, dateoforder, total) {
   return { order, status, dateoforder, total };
@@ -36,10 +37,16 @@ const Orders = () => {
   const [date, setDate] = useState(null);
   const [orders, setOrders] = useState([]);
   const [message, setMessage] = useState("");
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const loadOrders = async () => {
-      if (!user?.id) return;
+      if (!user?.id) {
+        setLoading(false);
+        return;
+      }
+
+      setLoading(true);
 
       try {
         const response = await getOrdersByUser(user.id);
@@ -48,6 +55,8 @@ const Orders = () => {
         setMessage(orderData.length ? "" : "You do not have orders yet.");
       } catch (error) {
         setMessage(getErrorMessage(error, "Unable to load orders."));
+      } finally {
+        setLoading(false);
       }
     };
 
@@ -68,6 +77,7 @@ const Orders = () => {
       formatMoney(order.total)
     )
   );
+  const hasOrders = orders.length > 0;
 
   return (
     <Grid container direction="row" justifyContent="flex-start" alignItems="flex-start" className={classes.father}>
@@ -78,27 +88,33 @@ const Orders = () => {
       <Grid item container className={classes.container} xs={12} md={9.5} direction="column">
         <Grid item xs>
           <h1 className={classes.title}>Orders</h1>
-          {message && <p className={classes.paragraph}>{message}</p>}
+          {!loading && message && <p className={classes.paragraph}>{message}</p>}
         </Grid>
-        <Grid container item direction="row" justifyContent="flex-start" alignItems="center" xs>
-          <Grid item xs="auto">
-            <p className={classes.datePickerLabel}>Filter By Date:</p>
+        {!loading && hasOrders ? (
+          <Grid container item direction="row" justifyContent="flex-start" alignItems="center" xs>
+            <Grid item xs="auto">
+              <p className={classes.datePickerLabel}>Filter By Date:</p>
+            </Grid>
+            <Grid item xs className={classes.inputDatePicker}>
+              <LocalizationProvider dateAdapter={AdapterDateFns}>
+                <DatePicker
+                  label="Date"
+                  value={date}
+                  onChange={setDate}
+                  renderInput={(params) => <TextField {...params} />}
+                  className={classes.dateFilter}
+                />
+              </LocalizationProvider>
+            </Grid>
           </Grid>
-          <Grid item xs className={classes.inputDatePicker}>
-            <LocalizationProvider dateAdapter={AdapterDateFns}>
-              <DatePicker
-                label="Date"
-                value={date}
-                onChange={setDate}
-                renderInput={(params) => <TextField {...params} />}
-                className={classes.dateFilter}
-              />
-            </LocalizationProvider>
-          </Grid>
-        </Grid>
+        ) : null}
 
         <Grid item display="flex" className={classes.table} xs={12}>
-          <Table rows={rows} columns={columns} maxWidth={"100%"} viewOrders={true} orderData={filteredOrders} />
+          {loading ? (
+            <Loader label="Loading orders…" minHeight={220} />
+          ) : hasOrders ? (
+            <Table rows={rows} columns={columns} maxWidth={"100%"} viewOrders={true} orderData={filteredOrders} />
+          ) : null}
         </Grid>
       </Grid>
     </Grid>

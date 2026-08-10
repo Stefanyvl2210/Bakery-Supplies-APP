@@ -93,11 +93,6 @@ const Sidebar = () => {
         </ListItemButton>
         <Collapse in={openMenu.payments} timeout="auto" unmountOnExit>
           <List component="div" disablePadding>
-            <Link to="/admin/pending-payments">
-              <ListItemButton sx={{ pl: 4, color: "white" }}>
-                <ListItemText primary="Pending payments" />
-              </ListItemButton>
-            </Link>
             <Link to="/admin/payment-methods">
               <ListItemButton sx={{ pl: 4, color: "white" }}>
                 <ListItemText primary="All payment methods" />

@@ -4,9 +4,11 @@ import { useNavigate } from "react-router-dom";
 import { makeStyles } from "@mui/styles";
 import Table from "../../../components/Admin/Table";
 import { Button } from "@mui/material";
-import { deleteCategory, getCategories } from "../../../helpers/api/category";
+import { deleteCategory, getCategoryTree } from "../../../helpers/api/category";
 import SnackBar from "../../../components/Snackbar";
 import { getErrorMessage, getResourceCollection } from "../../../helpers/api/response";
+import Loader from "../../../components/Loader";
+import { flattenCategoryTree, isCatalogRoot } from "../../../helpers/categories";
 
 function createData({ id, name, slug, created_at }) {
   return { id, name, slug, created_at };
@@ -39,16 +41,22 @@ const Categories = () => {
   const navigate = useNavigate();
   const classes = useStyles();
   const [rows, setRows] = React.useState([]);
+  const [loading, setLoading] = React.useState(true);
+  const [deletingId, setDeletingId] = React.useState(null);
   const [openSnack, setOpenSnack] = React.useState({
     open: false,
     message: "",
     severity: "",
   });
 
-  const categoryList = async () => {
+  const categoryList = async (showLoader = true) => {
+    if (showLoader) setLoading(true);
+
     try {
-      const response = await getCategories();
-      const data = getResourceCollection(response);
+      const response = await getCategoryTree();
+      const data = flattenCategoryTree(getResourceCollection(response)).filter(
+        (category) => !isCatalogRoot(category)
+      );
 
       if (data.length > 0) {
         setRows(
@@ -70,6 +78,8 @@ const Categories = () => {
         message: getErrorMessage(error, "Unable to load categories."),
         severity: "error",
       });
+    } finally {
+      if (showLoader) setLoading(false);
     }
   };
 
@@ -82,6 +92,8 @@ const Categories = () => {
   };
 
   const onDelete = async (id) => {
+    setDeletingId(id);
+
     try {
       await deleteCategory(id);
 
@@ -91,13 +103,15 @@ const Categories = () => {
         severity: "success",
       });
 
-      categoryList();
+      await categoryList(false);
     } catch (error) {
       setOpenSnack({
         open: true,
         message: getErrorMessage(error, "An error has occurred"),
         severity: "error",
       });
+    } finally {
+      setDeletingId(null);
     }
   };
 
@@ -122,12 +136,17 @@ const Categories = () => {
         </Button>
       </div>
 
-      <Table
-        rows={rows}
-        columns={columns}
-        onEdit={onEdit}
-        onDelete={onDelete}
-      />
+      {loading ? (
+        <Loader tone="admin" label="Loading categories…" minHeight={260} />
+      ) : (
+        <Table
+          rows={rows}
+          columns={columns}
+          onEdit={onEdit}
+          onDelete={onDelete}
+          deletingId={deletingId}
+        />
+      )}
 
       {openSnack.open && (
         <SnackBar openSnack={openSnack} handleCloseSnack={handleCloseSnack} />
@@ -139,7 +158,6 @@ const Categories = () => {
 const useStyles = makeStyles(() => ({
   container: {
     width: "100%",
-    maxWidth: "1068px",
     margin: "0 auto",
   },
   titleWrapper: {

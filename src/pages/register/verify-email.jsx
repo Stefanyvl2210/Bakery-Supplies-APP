@@ -19,6 +19,7 @@ import { resendEmailVerification, verifyEmail } from "../../helpers/api/auth";
 import SnackBar from "../../components/Snackbar";
 import { getErrorMessage } from "../../helpers/api/response";
 import { storeAuthToken } from "../../config/axios";
+import { LoadingButtonContent } from "../../components/Loader";
 
 const validationSchema = yup.object({
   code: yup.string().required("Required"),
@@ -30,6 +31,7 @@ const VerifyEmail = () => {
   const location = useLocation();
   const params = useParams();
   const [loading, setLoading] = React.useState(false);
+  const [resending, setResending] = React.useState(false);
   const [openSnack, setOpenSnack] = React.useState({
     open: false,
     message: "",
@@ -75,6 +77,8 @@ const VerifyEmail = () => {
   };
 
   const handleResend = async () => {
+    setResending(true);
+
     try {
       await resendEmailVerification();
       setOpenSnack({
@@ -88,6 +92,8 @@ const VerifyEmail = () => {
         message: getErrorMessage(error),
         severity: "error",
       });
+    } finally {
+      setResending(false);
     }
   };
 
@@ -131,10 +137,18 @@ const VerifyEmail = () => {
               className={classes.button}
               disabled={loading}
             >
-              <span className={classes.buttonText}>Send</span>
+              {loading ? (
+                <LoadingButtonContent label="Verifying…" />
+              ) : (
+                <span className={classes.buttonText}>Send</span>
+              )}
             </Button>
-            <p className={classes.codeText} onClick={handleResend}>
-              Did you not receive the code? Resend it.
+            <p
+              className={classes.codeText}
+              onClick={resending ? undefined : handleResend}
+              aria-disabled={resending}
+            >
+              {resending ? "Sending verification code…" : "Did you not receive the code? Resend it."}
             </p>
           </form>
         </Grid>

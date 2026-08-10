@@ -7,6 +7,7 @@ import { Button } from "@mui/material";
 import { deleteProduct, getProducts } from "../../../helpers/api/product";
 import SnackBar from "../../../components/Snackbar";
 import { getErrorMessage, getResourceCollection } from "../../../helpers/api/response";
+import Loader from "../../../components/Loader";
 
 function createData({
   id,
@@ -60,7 +61,8 @@ const columns = [
 const Products = () => {
   const navigate = useNavigate();
   const classes = useStyles();
-  const [loading, setLoading] = React.useState(false);
+  const [loading, setLoading] = React.useState(true);
+  const [deletingId, setDeletingId] = React.useState(null);
   const [openSnack, setOpenSnack] = React.useState({
     open: false,
     message: "",
@@ -69,7 +71,9 @@ const Products = () => {
 
   const [rows, setRows] = React.useState([]);
 
-  const productList = async () => {
+  const productList = async (showLoader = true) => {
+    if (showLoader) setLoading(true);
+
     try {
       const response = await getProducts();
       const data = getResourceCollection(response);
@@ -90,6 +94,8 @@ const Products = () => {
         message: getErrorMessage(error, "Unable to load products."),
         severity: "error",
       });
+    } finally {
+      if (showLoader) setLoading(false);
     }
   };
 
@@ -102,6 +108,8 @@ const Products = () => {
   };
 
   const onDelete = async (id) => {
+    setDeletingId(id);
+
     try {
       await deleteProduct(id);
 
@@ -111,13 +119,15 @@ const Products = () => {
         severity: "success",
       });
 
-      productList();
+      await productList(false);
     } catch (error) {
       setOpenSnack({
         open: true,
         message: "An error has occurred",
         severity: "error",
       });
+    } finally {
+      setDeletingId(null);
     }
   };
 
@@ -142,12 +152,17 @@ const Products = () => {
         </Button>
       </div>
 
-      <Table
-        rows={rows}
-        columns={columns}
-        onEdit={onEdit}
-        onDelete={onDelete}
-      />
+      {loading ? (
+        <Loader tone="admin" label="Loading products…" minHeight={260} />
+      ) : (
+        <Table
+          rows={rows}
+          columns={columns}
+          onEdit={onEdit}
+          onDelete={onDelete}
+          deletingId={deletingId}
+        />
+      )}
 
       {openSnack.open && (
         <SnackBar openSnack={openSnack} handleCloseSnack={handleCloseSnack} />
@@ -159,7 +174,6 @@ const Products = () => {
 const useStyles = makeStyles(() => ({
   container: {
     width: "100%",
-    maxWidth: "1280px",
     margin: "0 auto",
   },
   titleWrapper: {

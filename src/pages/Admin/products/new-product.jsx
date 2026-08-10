@@ -20,12 +20,13 @@ import { makeStyles } from "@mui/styles";
 import EmptyImage from "../../../assets/images/empty-image.png";
 import CustomInput from "../../../components/input";
 
-import classNames from "classnames";
-import { getCategories } from "../../../helpers/api/category";
+import { getCategoryTree } from "../../../helpers/api/category";
 import { createProduct } from "../../../helpers/api/product";
 import SnackBar from "../../../components/Snackbar";
 import { useNavigate } from "react-router-dom";
 import { getErrorMessage, getResourceCollection } from "../../../helpers/api/response";
+import Loader, { LoadingButtonContent } from "../../../components/Loader";
+import { flattenCategoryTree } from "../../../helpers/categories";
 
 const validationSchema = yup.object({
   name: yup.string().required("Required"),
@@ -42,6 +43,7 @@ const ProductForm = () => {
   const [productImage, setProductImage] = React.useState(null);
   const [file, setFile] = React.useState(null);
   const [loading, setLoading] = React.useState(false);
+  const [initialLoading, setInitialLoading] = React.useState(true);
   const [openSnack, setOpenSnack] = React.useState({
     open: false,
     message: "",
@@ -67,8 +69,8 @@ const ProductForm = () => {
 
   const categoryList = async () => {
     try {
-      const response = await getCategories();
-      const data = getResourceCollection(response);
+      const response = await getCategoryTree();
+      const data = flattenCategoryTree(getResourceCollection(response));
 
       if (data.length > 0) {
         setCategories(data);
@@ -81,6 +83,8 @@ const ProductForm = () => {
         message: getErrorMessage(error, "Unable to load categories."),
         severity: "error",
       });
+    } finally {
+      setInitialLoading(false);
     }
   };
 
@@ -89,6 +93,8 @@ const ProductForm = () => {
   }, []);
 
   const onSubmit = async (values) => {
+    setLoading(true);
+
     const formData = new FormData();
 
     if (file) formData.append("image", file);
@@ -117,6 +123,8 @@ const ProductForm = () => {
         message: getErrorMessage(error),
         severity: "error",
       });
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -132,7 +140,7 @@ const ProductForm = () => {
       <div className={classes.container}>
         <h1 className={classes.title}>Add new product</h1>
 
-        <Divider />
+        <Divider className={classes.divider} />
 
         <div>
           {!productImage ? (
@@ -203,61 +211,61 @@ const ProductForm = () => {
               />
             </Grid>
 
-            <Grid item xs={6} className={classNames(classes.input)}>
-              <CustomInput
-                register={register}
-                field="price"
-                fullWidth={true}
-                width="225px"
-                label="Price"
-                type="number"
-                placeholder=" "
-                error={errors?.price?.message}
-              />
-            </Grid>
+            <Grid item xs={12} className={classes.fieldGroup}>
+              <Grid container spacing={2.5}>
+                <Grid item xs={12} sm={6}>
+                  <CustomInput
+                    register={register}
+                    field="price"
+                    fullWidth={true}
+                    width="100%"
+                    label="Price"
+                    type="number"
+                    placeholder=" "
+                    error={errors?.price?.message}
+                  />
+                </Grid>
 
-            <Grid
-              item
-              xs={6}
-              className={classNames(classes.select)}
-              display="flex"
-              justifyContent="flex-end"
-            >
-              {categories.length > 0 && (
-                <FormControl style={{ minWidth: 300 }}>
-                  <InputLabel
-                    id="demo-simple-select-label"
-                    sx={{ fontSize: "18px !important" }}
-                  >
-                    Category
-                  </InputLabel>
-
-                  <Select
-                    placeholder="Select"
-                    variant="outlined"
-                    fullWidth
-                    name="categories"
-                    {...register("categories")}
-                    defaultValue={categories[0]?.id}
-                  >
-                    {categories.map((category, i) => (
-                      <MenuItem
-                        value={category.id}
-                        sx={{
-                          fontSize: "18px !important",
-                          lineHeight: "20px !important",
-                        }}
-                        key={i}
+                <Grid item xs={12} sm={6} className={classes.select}>
+                  {initialLoading ? (
+                    <Loader tone="admin" label="Loading categories…" minHeight={80} />
+                  ) : categories.length > 0 && (
+                    <FormControl fullWidth>
+                      <InputLabel
+                        id="demo-simple-select-label"
+                        sx={{ fontSize: "18px !important" }}
                       >
-                        {category.name}
-                      </MenuItem>
-                    ))}
-                  </Select>
-                  {errors?.categories?.message && (
-                    <small>{errors?.categories?.message}</small>
+                        Category
+                      </InputLabel>
+
+                      <Select
+                        placeholder="Select"
+                        variant="outlined"
+                        fullWidth
+                        name="categories"
+                        {...register("categories")}
+                        defaultValue={categories[0]?.id}
+                      >
+                        {categories.map((category, i) => (
+                          <MenuItem
+                            value={category.id}
+                            sx={{
+                              fontSize: "18px !important",
+                              lineHeight: "20px !important",
+                            }}
+                            key={i}
+                          >
+                            {category.name}
+                          </MenuItem>
+                        ))}
+                      </Select>
+                      {errors?.categories?.message && (
+                        <small>{errors?.categories?.message}</small>
+                      )}
+                    </FormControl>
                   )}
-                </FormControl>
-              )}
+                </Grid>
+              </Grid>
             </Grid>
 
             <Grid item xs={12}>
@@ -267,7 +275,7 @@ const ProductForm = () => {
                 className={classes.button}
                 disabled={loading}
               >
-                Save
+                {loading ? <LoadingButtonContent label="Saving…" /> : "Save"}
               </Button>
             </Grid>
           </Grid>
@@ -284,12 +292,13 @@ const ProductForm = () => {
 const useStyles = makeStyles(() => ({
   container: {
     width: "100%",
-    maxWidth: "1038px",
     margin: "0 auto",
   },
 
   title: {
     font: "400 36px/20px Open Sans",
+    lineHeight: "1",
+    margin: 0,
   },
   input: {
     margin: "20px 0 !important",
@@ -301,10 +310,12 @@ const useStyles = makeStyles(() => ({
   shortInput: {
     maxWidth: "225px !important",
   },
+  fieldGroup: {
+    margin: "20px 0 !important",
+  },
   select: {
-    marginTop: "15px !important",
     display: "flex",
-    alignItems: "center",
+    alignItems: "flex-end",
   },
   button: {
     backgroundColor: "#0978DE !important",
@@ -321,6 +332,9 @@ const useStyles = makeStyles(() => ({
     color: "#fff",
   },
   inputFile: {},
+  divider: {
+    margin: "32px 0 !important",
+  },
 }));
 
 export default ProductForm;

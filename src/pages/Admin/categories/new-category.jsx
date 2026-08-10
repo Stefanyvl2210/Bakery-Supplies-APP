@@ -9,10 +9,12 @@ import { Button, Divider, Grid, MenuItem, TextField } from "@mui/material";
 import { makeStyles } from "@mui/styles";
 
 import CustomInput from "../../../components/input";
-import { createCategory, getCategories } from "../../../helpers/api/category";
+import { createCategory, getCategoryTree } from "../../../helpers/api/category";
 import SnackBar from "../../../components/Snackbar";
 import { useNavigate } from "react-router-dom";
 import { getErrorMessage, getResourceCollection } from "../../../helpers/api/response";
+import Loader, { LoadingButtonContent } from "../../../components/Loader";
+import { getCatalogRootCategories } from "../../../helpers/categories";
 
 const validationSchema = yup.object({
   name: yup.string().required("Required"),
@@ -24,6 +26,7 @@ const Category = () => {
   const classes = useStyles();
   const navigate = useNavigate()
   const [loading, setLoading] = React.useState(false);
+  const [initialLoading, setInitialLoading] = React.useState(true);
   const [parentCategories, setParentCategories] = React.useState([]);
   const [openSnack, setOpenSnack] = React.useState({
     open: false,
@@ -47,9 +50,10 @@ const Category = () => {
 
   const categoryList = async () => {
     try {
-      const response = await getCategories();
-      const categories = getResourceCollection(response);
-      const parents = categories.filter((category) => !category.parent_id);
+      const response = await getCategoryTree();
+      const parents = getCatalogRootCategories(
+        getResourceCollection(response)
+      );
 
       setParentCategories(parents);
     } catch (error) {
@@ -58,6 +62,8 @@ const Category = () => {
         message: getErrorMessage(error, "Unable to load parent categories."),
         severity: "error",
       });
+    } finally {
+      setInitialLoading(false);
     }
   };
 
@@ -66,6 +72,8 @@ const Category = () => {
   }, []);
 
   const onSubmit = async (values) => {
+    setLoading(true);
+
     try {
       const response = await createCategory({
         ...values,
@@ -87,6 +95,7 @@ const Category = () => {
         message: getErrorMessage(error),
         severity: "error",
       });
+    } finally {
       setLoading(false);
     }
   };
@@ -104,7 +113,7 @@ const Category = () => {
       <div className={classes.container}>
         <h1 className={classes.title}>Add new category</h1>
 
-        <Divider />
+        <Divider className={classes.divider} />
 
         <form onSubmit={handleSubmit(onSubmit)}>
           <Grid container maxWidth={550}>
@@ -133,6 +142,9 @@ const Category = () => {
             </Grid>
 
             <Grid item xs={12} className={classes.input}>
+              {initialLoading ? (
+                <Loader tone="admin" label="Loading parent categories…" minHeight={100} />
+              ) : (
               <TextField
                 select
                 label="Parent category"
@@ -149,6 +161,7 @@ const Category = () => {
                   </MenuItem>
                 ))}
               </TextField>
+              )}
             </Grid>
 
             <Grid item xs={12}>
@@ -158,7 +171,7 @@ const Category = () => {
                 className={classes.button}
                 disabled={loading}
               >
-                Save
+                {loading ? <LoadingButtonContent label="Saving…" /> : "Save"}
               </Button>
             </Grid>
           </Grid>
@@ -175,16 +188,19 @@ const Category = () => {
 const useStyles = makeStyles(() => ({
   container: {
     width: "100%",
-    maxWidth: "1038px",
     margin: "0 auto",
   },
 
   title: {
     font: "400 36px/20px Open Sans",
+    lineHeight: "1",
+    margin: 0,
   },
   input: {
-    margin: "20px 0 !important",
-
+    '&:not(:first-child)': {
+      marginTop: "20px !important",
+    },
+    marginBottom: "20px !important",
     "& input": {
       height: 33,
     },
@@ -211,7 +227,9 @@ const useStyles = makeStyles(() => ({
     fontFamily: "Open Sans",
     color: "#fff",
   },
-  inputFile: {},
+  divider: {
+    margin: "32px 0 !important",
+  },
 }));
 
 export default Category;

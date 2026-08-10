@@ -14,6 +14,7 @@ import { addAddressUser, deleteAddressUser, getAddressUser, updateUser } from ".
 import SnackBar from "../../components/Snackbar";
 import { getErrorMessage, getResourceCollection, getResourceData } from "../../helpers/api/response";
 import { parseAddressValue } from "../../helpers/formatters";
+import Loader, { LoadingButtonContent } from "../../components/Loader";
 
 const MyAccount = () => {
   const classes = useStyles();
@@ -28,7 +29,10 @@ const MyAccount = () => {
   const user = useSelector(userLogged);
   const [addresses, setAddresses] = useState([]);
   const [showAddressInput, setShowAddressInput] = useState(false);
-  const [loading, setLoading] = React.useState(false);
+  const [profileSaving, setProfileSaving] = React.useState(false);
+  const [addressSaving, setAddressSaving] = React.useState(false);
+  const [addressesLoading, setAddressesLoading] = React.useState(true);
+  const [deletingAddressId, setDeletingAddressId] = React.useState(null);
   const [openSnack, setOpenSnack] = React.useState({
     open: false,
     message: "",
@@ -39,16 +43,25 @@ const MyAccount = () => {
     getAddresses();
   }, []);
 
-  const getAddresses = async () => {
+  const getAddresses = async ({ showLoader = true, showError = true } = {}) => {
+    if (showLoader) setAddressesLoading(true);
+
     try {
       const newAddresses = await getAddressUser();
       setAddresses(getResourceCollection(newAddresses));
+      return true;
     } catch (error) {
-      setOpenSnack({
-        open: true,
-        message: getErrorMessage(error, "Unable to load addresses."),
-        severity: "error",
-      });
+      if (showError) {
+        setOpenSnack({
+          open: true,
+          message: getErrorMessage(error, "Unable to load addresses."),
+          severity: "error",
+        });
+      }
+
+      return false;
+    } finally {
+      if (showLoader) setAddressesLoading(false);
     }
   }
 
@@ -72,7 +85,7 @@ const MyAccount = () => {
   });
 
   const onSubmit = async (data) => {
-    setLoading(true);
+    setProfileSaving(true);
 
     try {
       const payload = {
@@ -101,27 +114,30 @@ const MyAccount = () => {
         severity: "error",
       });
     } finally {
-      setLoading(false);
+      setProfileSaving(false);
     }
   };
 
   const onSubmitAddress = async (data) => {
-    if(!showAddressInput && data.address !== "" && data.city !== "" && data.state !== "" ) {
-      setLoading(true);
+    if(showAddressInput && data.address !== "" && data.city !== "" && data.state !== "" ) {
+      setAddressSaving(true);
       let addressString = JSON.stringify({address: data.address, city: data.city, state: data.state});
       try {
         const response = await addAddressUser({address: addressString});
           if(response.status === 200 || response.status === 201) {
-          setOpenSnack({
-            open: true,
-            message: "New Address Added",
-            severity: "success",
-          });
-          setLoading(false)
+          const addressesRefreshed = await getAddresses({ showLoader: false, showError: false });
+
           resetField("address");
           resetField("city");
           resetField("state");
-          getAddresses();
+          setShowAddressInput(false);
+          setOpenSnack({
+            open: true,
+            message: addressesRefreshed
+              ? "New Address Added"
+              : "Address added, but the list could not be refreshed.",
+            severity: addressesRefreshed ? "success" : "warning",
+          });
         }
       } catch (error) {
         setOpenSnack({
@@ -129,7 +145,8 @@ const MyAccount = () => {
           message: getErrorMessage(error),
           severity: "error",
         });
-        setLoading(false);
+      } finally {
+        setAddressSaving(false);
       }
     }
   };
@@ -143,6 +160,8 @@ const MyAccount = () => {
   };
 
   const handleDeleteAddress = async (index) => {
+    setDeletingAddressId(index);
+
     try {
       await deleteAddressUser(index);
       await getAddresses();
@@ -152,6 +171,8 @@ const MyAccount = () => {
         message: getErrorMessage(error, "Unable to delete address."),
         severity: "error",
       });
+    } finally {
+      setDeletingAddressId(null);
     }
   }
 
@@ -277,10 +298,14 @@ const MyAccount = () => {
                     type="submit"
                     variant="contained"
                     onClick={handleSubmit(onSubmit)}
-                    disabled={loading}
+                    disabled={profileSaving}
                     sx={{marginLeft: "0 !important"}}
                   >
-                    <span className={classes.buttonText}>Save</span>
+                    {profileSaving ? (
+                      <LoadingButtonContent label="Saving…" />
+                    ) : (
+                      <span className={classes.buttonText}>Save</span>
+                    )}
                   </Button>
                 </Grid>
               </Grid>
@@ -293,7 +318,11 @@ const MyAccount = () => {
 
               <form onSubmit={handleSubmit(onSubmitAddress)}>
                 <Grid item xs={12} container columnSpacing={2}>
-                  {showAddressInput ? (
+                  {addressesLoading ? (
+                    <Grid item xs={12}>
+                      <Loader label="Loading addresses…" minHeight={120} />
+                    </Grid>
+                  ) : showAddressInput ? (
                     <>
                       <Grid item xs={12} sm={5.7} md={9.4}>
                         <CustomInput
@@ -345,8 +374,13 @@ const MyAccount = () => {
                                 }
                               }}
                               onClick={() => handleDeleteAddress(item.id)}
+                              disabled={deletingAddressId !== null}
                             >
-                              <DeleteOutlineIcon />
+                              {deletingAddressId === item.id ? (
+                                <Loader tone="public" label="Deleting address…" size={20} inline />
+                              ) : (
+                                <DeleteOutlineIcon />
+                              )}
                             </IconButton>
                           </p>
                         </Grid>
@@ -362,25 +396,22 @@ const MyAccount = () => {
                   <div>
                     <Button
                       color="primary"
-                      type="submit"
+                      type={showAddressInput ? "submit" : "button"}
                       variant="contained"
-                      onClick={() => {
-                        if (showAddressInput) {
-                          handleSubmit(onSubmitAddress)
-                          setShowAddressInput(false);
-                        } else {
-                          setShowAddressInput(true);
-                        }
-                      }}
+                      onClick={showAddressInput ? undefined : () => setShowAddressInput(true)}
                       sx={{marginLeft: "0 !important"}}
+                      disabled={addressSaving || addressesLoading}
                     >
-                      {showAddressInput ? "Save" : "Add"}
+                      {addressSaving ? (
+                        <LoadingButtonContent label="Saving…" />
+                      ) : showAddressInput ? "Save" : "Add"}
                     </Button>
                     {showAddressInput &&
                       <Button
                         color="primary"
-                        type="submit"
+                        type="button"
                         variant="contained"
+                        disabled={addressSaving}
                         onClick={() => {
                             setShowAddressInput(false);
                         }}

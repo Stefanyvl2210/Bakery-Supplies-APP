@@ -8,9 +8,10 @@ import DialogContent from "@mui/material/DialogContent";
 import CloseIcon from "@mui/icons-material/Close";
 import Typography from "@mui/material/Typography";
 import { Alert, Button, Grid, IconButton, Snackbar, Stack } from "@mui/material";
-import { useDispatch } from "react-redux";
-import { addCartProduct } from "../../features/counter/counterSlice";
+import { useDispatch, useSelector } from "react-redux";
+import { addCartProduct, allProducts } from "../../features/counter/counterSlice";
 import { getImageUrl } from "../../helpers/formatters";
+import { getAvailableStock, getRemainingStock } from "../../helpers/stock";
 
 const BootstrapDialog = styled(Dialog)(({ theme }) => ({
   "& .MuiDialogContent-root": {
@@ -62,6 +63,11 @@ export default function CustomDialog(props) {
   const classes = useStyles();
   const dispatch = useDispatch();
   const { open, handleClose, selectedProduct } = props;
+  const cartProducts = useSelector(allProducts);
+  const availableStock = getAvailableStock(selectedProduct);
+  const remainingStock = getRemainingStock(selectedProduct, cartProducts);
+  const isOutOfStock = availableStock === 0;
+  const isMaximumInCart = !isOutOfStock && remainingStock === 0;
   
   const [openSnack, setOpenSnack] = React.useState(false);
 
@@ -125,11 +131,15 @@ export default function CustomDialog(props) {
               <p className={classes.productPrice}>
                 Price: ${selectedProduct.price}
               </p>
+              <p className={classes.productStock}>
+                Available: {remainingStock}
+              </p>
 
               <div className={classes.buttonWrapper}>
                 <Button
                   variant="contained"
                   className={classes.button}
+                  disabled={remainingStock === 0}
                   onClick={() => {
                     dispatch(
                       addCartProduct({
@@ -137,14 +147,24 @@ export default function CustomDialog(props) {
                         name: selectedProduct.name,
                         price: selectedProduct.price,
                         image: selectedProduct.image,
+                        quantity_available: availableStock,
                         qty: 1,
                       })
                     );
                     handleClick()
                   }}
-                  sx={{ bgcolor: "#C86B85 !important" }}
+                  sx={{
+                    bgcolor:
+                      remainingStock === 0
+                        ? "#BDBDBD !important"
+                        : "#C86B85 !important",
+                  }}
                 >
-                  Add to Cart
+                  {isOutOfStock
+                    ? "Out of stock"
+                    : isMaximumInCart
+                      ? "Maximum in cart"
+                      : "Add to Cart"}
                 </Button>
               </div>
             </Grid>
@@ -211,9 +231,12 @@ const useStyles = makeStyles((theme) => ({
     marginTop: 20,
   },
   button: {
-    width: 150,
+    width: "auto",
+    minWidth: 150,
     height: 40,
     backgroundColor: "#767676 !important",
+    padding: "0 24px !important",
+    whiteSpace: "nowrap",
   },
   container: {
     justifyContent: "center",
@@ -221,9 +244,15 @@ const useStyles = makeStyles((theme) => ({
   },
   productPrice: {
     margin: 0,
-    marginTop: "20px",
+    marginTop: "12px",
     fontFamily: "Open Sans",
     fontSize: 20,
+  },
+  productStock: {
+    margin: "8px 0 0",
+    fontFamily: "Open Sans",
+    fontSize: 16,
+    fontWeight: 600,
   },
   modalContainer: {
     display: "flex",

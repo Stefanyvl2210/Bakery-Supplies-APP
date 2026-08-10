@@ -6,11 +6,13 @@ import { makeStyles } from "@mui/styles";
 import { getPaymentMethods } from "../../helpers/api/paymentMethods";
 import { getErrorMessage, getResourceCollection } from "../../helpers/api/response";
 import { formatMoney } from "../../helpers/formatters";
+import Loader from "../../components/Loader";
 
 const Payments = () => {
   const classes = useStyles();
   const [paymentMethods, setPaymentMethods] = useState([]);
   const [message, setMessage] = useState("");
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const loadPaymentMethods = async () => {
@@ -21,6 +23,8 @@ const Payments = () => {
         setMessage(methods.length ? "" : "No payment methods available.");
       } catch (error) {
         setMessage(getErrorMessage(error, "Unable to load payment methods."));
+      } finally {
+        setLoading(false);
       }
     };
 
@@ -41,13 +45,19 @@ const Payments = () => {
 
           <Grid item xs={12}>
             <Grid container className={classes.form}>
-              {message && (
+              {loading ? (
+                <Grid item xs={12}>
+                  <Loader label="Loading payment methods…" minHeight={220} />
+                </Grid>
+              ) : null}
+
+              {!loading && message && (
                 <Grid item xs={12}>
                   <p className={classes.paragraph}>{message}</p>
                 </Grid>
               )}
 
-              {paymentMethods.map((method) => (
+              {!loading && paymentMethods.map((method) => (
                 <Grid item xs={12} key={method.id} className={classes.card}>
                   <h2>{method.name}</h2>
                   <p>Type: {method.type}</p>

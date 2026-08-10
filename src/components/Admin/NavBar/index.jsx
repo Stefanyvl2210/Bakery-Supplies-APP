@@ -27,6 +27,7 @@ import {
 } from "../../../features/auth/AuthSlice";
 import { logoutUser } from "../../../helpers/api/auth";
 import { storeAuthToken } from "../../../config/axios";
+import Loader from "../../Loader";
 
 const drawerWidth = 240;
 
@@ -39,6 +40,7 @@ export default function NavBar(props) {
   const anchorRef = React.useRef(null);
 
   const [mobileOpen, setMobileOpen] = React.useState(false);
+  const [logoutLoading, setLogoutLoading] = React.useState(false);
 
   const [open, setOpen] = React.useState(false);
   const [openMenu, setOpenMenu] = React.useState({
@@ -48,6 +50,10 @@ export default function NavBar(props) {
   });
 
   const handleLogout = async () => {
+    if (logoutLoading) return;
+
+    setLogoutLoading(true);
+
     try {
       await logoutUser();
     } finally {
@@ -173,8 +179,14 @@ export default function NavBar(props) {
                   color="inherit"
                   sx={{ margin: "0 !important" }}
                   onClick={handleLogout}
+                  disabled={logoutLoading}
+                  aria-label="Log out"
                 >
-                  <LogoutIcon />
+                  {logoutLoading ? (
+                    <Loader tone="inherit" label="Logging out…" size={20} inline />
+                  ) : (
+                    <LogoutIcon />
+                  )}
                 </IconButton>
               )}
             </Box>
@@ -197,10 +209,14 @@ export default function NavBar(props) {
                     transition
                     disablePortal
                   ></Popper>
-                  <LogoutIcon
-                    className={classes.logButton}
-                    onClick={handleLogout}
-                  />
+                  {logoutLoading ? (
+                    <Loader tone="inherit" label="Logging out…" size={22} inline />
+                  ) : (
+                    <LogoutIcon
+                      className={classes.logButton}
+                      onClick={handleLogout}
+                    />
+                  )}
                 </>
               )}
               {!userIsLogged && (

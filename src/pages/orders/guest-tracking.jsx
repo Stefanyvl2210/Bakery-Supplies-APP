@@ -5,6 +5,7 @@ import { useNavigate, useSearchParams } from "react-router-dom";
 import { getGuestOrder } from "../../helpers/api/orders";
 import { getErrorMessage, getResourceData } from "../../helpers/api/response";
 import SnackBar from "../../components/Snackbar";
+import { LoadingButtonContent } from "../../components/Loader";
 
 const GuestOrderTracking = () => {
   const classes = useStyles();
@@ -63,7 +64,11 @@ const GuestOrderTracking = () => {
               className={classes.button}
               disabled={loading}
             >
-              {loading ? "Searching..." : "Track order"}
+              {loading ? (
+                <LoadingButtonContent label="Searching…" />
+              ) : (
+                "Track order"
+              )}
             </Button>
           </form>
         </Card>

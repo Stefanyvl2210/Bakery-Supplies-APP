@@ -24,6 +24,7 @@ import CustomInput from "../../components/input";
 import classNames from "classnames";
 import { useLocation, useNavigate } from "react-router-dom";
 import SnackBar from "../../components/Snackbar";
+import { LoadingButtonContent } from "../../components/Loader";
 
 const validationSchema = yup.object({
   first_name: yup.string().required("Required"),
@@ -239,7 +240,11 @@ const Register = () => {
             disabled={loading}
           >
             <span className={classes.buttonText}>
-              {loading ? "Loading" : "Register"}
+              {loading ? (
+                <LoadingButtonContent label="Creating account…" />
+              ) : (
+                "Register"
+              )}
             </span>
           </Button>
         </Grid>
@@ -288,11 +293,9 @@ const useStyles = makeStyles((theme) => ({
     },
   },
   shortInput: {
-    "& input": {
-      marginRight: "15px !important",
-      [theme.breakpoints.down("md")]: {
-        marginRight: "0px !important",
-      },
+    width: "calc(100% - 15px) !important",
+    [theme.breakpoints.down("md")]: {
+      width: "100% !important",
     },
   },
   fullWidth: {

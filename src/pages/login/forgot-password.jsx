@@ -7,6 +7,7 @@ import CustomInput from "../../components/input";
 import SnackBar from "../../components/Snackbar";
 import { forgotPassword } from "../../helpers/api/auth";
 import { getErrorMessage } from "../../helpers/api/response";
+import { LoadingButtonContent } from "../../components/Loader";
 
 const ForgotPassword = () => {
   const classes = useStyles();
@@ -67,7 +68,11 @@ const ForgotPassword = () => {
               className={classes.button}
               disabled={loading}
             >
-              {loading ? "Sending..." : "Send reset link"}
+              {loading ? (
+                <LoadingButtonContent label="Sending…" />
+              ) : (
+                "Send reset link"
+              )}
             </Button>
             <p className={classes.link} onClick={() => navigate("/login")}>
               Back to login

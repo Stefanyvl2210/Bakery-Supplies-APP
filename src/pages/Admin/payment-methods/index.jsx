@@ -10,6 +10,7 @@ import {
 } from "../../../helpers/api/paymentMethods";
 import { getErrorMessage, getResourceCollection } from "../../../helpers/api/response";
 import SnackBar from "../../../components/Snackbar";
+import Loader from "../../../components/Loader";
 
 function createData({ id, name, type, currency, is_active }) {
   return {
@@ -34,13 +35,17 @@ const AdminPaymentMethods = () => {
   const navigate = useNavigate();
   const classes = useStyles();
   const [rows, setRows] = React.useState([]);
+  const [loading, setLoading] = React.useState(true);
+  const [deletingId, setDeletingId] = React.useState(null);
   const [openSnack, setOpenSnack] = React.useState({
     open: false,
     message: "",
     severity: "",
   });
 
-  const loadPaymentMethods = async () => {
+  const loadPaymentMethods = async (showLoader = true) => {
+    if (showLoader) setLoading(true);
+
     try {
       const response = await getAdminPaymentMethods();
       const methods = getResourceCollection(response);
@@ -52,6 +57,8 @@ const AdminPaymentMethods = () => {
         message: getErrorMessage(error, "Unable to load payment methods."),
         severity: "error",
       });
+    } finally {
+      if (showLoader) setLoading(false);
     }
   };
 
@@ -64,6 +71,8 @@ const AdminPaymentMethods = () => {
   };
 
   const onDelete = async (id) => {
+    setDeletingId(id);
+
     try {
       await deletePaymentMethod(id);
 
@@ -73,13 +82,15 @@ const AdminPaymentMethods = () => {
         severity: "success",
       });
 
-      loadPaymentMethods();
+      await loadPaymentMethods(false);
     } catch (error) {
       setOpenSnack({
         open: true,
         message: getErrorMessage(error, "An error has occurred"),
         severity: "error",
       });
+    } finally {
+      setDeletingId(null);
     }
   };
 
@@ -104,12 +115,17 @@ const AdminPaymentMethods = () => {
         </Button>
       </div>
 
-      <Table
-        rows={rows}
-        columns={columns}
-        onEdit={onEdit}
-        onDelete={onDelete}
-      />
+      {loading ? (
+        <Loader tone="admin" label="Loading payment methods…" minHeight={260} />
+      ) : (
+        <Table
+          rows={rows}
+          columns={columns}
+          onEdit={onEdit}
+          onDelete={onDelete}
+          deletingId={deletingId}
+        />
+      )}
 
       {openSnack.open && (
         <SnackBar openSnack={openSnack} handleCloseSnack={handleCloseSnack} />
@@ -121,7 +137,6 @@ const AdminPaymentMethods = () => {
 const useStyles = makeStyles(() => ({
   container: {
     width: "100%",
-    maxWidth: "1068px",
     margin: "0 auto",
   },
   titleWrapper: {

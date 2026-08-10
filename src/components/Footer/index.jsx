@@ -10,6 +10,7 @@ import LogoFB from "../../assets/images/facebook-logo.svg";
 import LogoIG from "../../assets/images/instagram-logo.svg";
 
 import { Grid} from '@mui/material';
+import { getCatalogSectionPath } from "../../helpers/categories";
 
 export default function NavBar() {
   const classes = useStyles();
@@ -53,7 +54,7 @@ export default function NavBar() {
                     color="inherit"
                     className={classes.menuItem}
                     onClick={() =>
-                        navigate("/products", {
+                        navigate(getCatalogSectionPath("desserts"), {
                           state: {
                             category: "desserts",
                             title: "Desserts",
@@ -68,7 +69,7 @@ export default function NavBar() {
                     color="inherit"
                     className={classes.menuItem}
                     onClick={() =>
-                        navigate("/products", {
+                        navigate(getCatalogSectionPath("utensils-and-ingredients"), {
                           state: {
                             category: "utensils-and-ingredients",
                             title: "Utensils and Ingredients",

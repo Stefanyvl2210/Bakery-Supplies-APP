@@ -4,11 +4,13 @@ import { makeStyles } from "@mui/styles";
 import { getAdminStats } from "../../../helpers/api/adminStats";
 import { getErrorMessage, getResourceData } from "../../../helpers/api/response";
 import { formatMoney } from "../../../helpers/formatters";
+import Loader from "../../../components/Loader";
 
 const AdminHome = () => {
   const classes = useStyles();
   const [stats, setStats] = React.useState({});
   const [message, setMessage] = React.useState("");
+  const [loading, setLoading] = React.useState(true);
 
   React.useEffect(() => {
     const loadStats = async () => {
@@ -17,24 +19,42 @@ const AdminHome = () => {
         setStats(getResourceData(response));
       } catch (error) {
         setMessage(getErrorMessage(error, "Unable to load admin stats."));
+      } finally {
+        setLoading(false);
       }
     };
 
     loadStats();
   }, []);
 
+  const ordersByStatus = stats.orders_by_status ?? {};
+  const ordersTotal = Object.values(ordersByStatus).reduce(
+    (total, count) => total + (Number(count) || 0),
+    0
+  );
+  const revenue = stats.revenue ?? stats.revenue_this_month_usd ?? 0;
+
   const cards = [
-    ["Orders", stats.orders_count ?? stats.orders ?? "-"],
-    ["Pending orders", stats.pending_orders_count ?? stats.pending_orders ?? "-"],
-    ["Products", stats.products_count ?? stats.products ?? "-"],
-    ["Customers", stats.customers_count ?? stats.customers ?? "-"],
-    ["Revenue", stats.revenue !== undefined ? formatMoney(stats.revenue) : "-"],
+    ["Orders", stats.orders_count ?? stats.orders ?? ordersTotal],
+    [
+      "Pending orders",
+      stats.pending_orders_count ??
+        stats.pending_orders ??
+        ordersByStatus.pending_confirmation ??
+        0,
+    ],
+    ["Products", stats.products_count ?? stats.products ?? stats.active_products ?? 0],
+    ["Customers", stats.customers_count ?? stats.customers ?? 0],
+    ["Revenue", formatMoney(revenue)],
   ];
 
   return (
     <div className={classes.container}>
       <h1>Dashboard</h1>
-      {message && <p>{message}</p>}
+      {!loading && message && <p>{message}</p>}
+      {loading ? (
+        <Loader tone="admin" label="Loading dashboard…" minHeight={260} />
+      ) : (
       <Grid container>
         <Grid container spacing={3}>
           {cards.map(([label, value]) => (
@@ -47,6 +67,7 @@ const AdminHome = () => {
           ))}
         </Grid>
       </Grid>
+      )}
     </div>
   );
 };
@@ -54,7 +75,6 @@ const AdminHome = () => {
 const useStyles = makeStyles(() => ({
   container: {
     width: "100%",
-    maxWidth: "1068px",
     margin: "0 auto",
     "& h1": {
       font: "400 36px/20px Open Sans",

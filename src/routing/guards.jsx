@@ -1,5 +1,5 @@
 import React from "react";
-import { Box, CircularProgress } from "@mui/material";
+import Loader from "../components/Loader";
 import { Navigate, useLocation } from "react-router-dom";
 import { useSelector } from "react-redux";
 import {
@@ -8,17 +8,8 @@ import {
   userLogged,
 } from "../features/auth/AuthSlice";
 
-const SessionLoading = () => (
-  <Box
-    sx={{
-      alignItems: "center",
-      display: "flex",
-      justifyContent: "center",
-      minHeight: 160,
-    }}
-  >
-    <CircularProgress aria-label="Loading session" />
-  </Box>
+const SessionLoading = ({ tone = "public" }) => (
+  <Loader tone={tone} label="Loading session…" minHeight={160} />
 );
 
 export const RequireAuth = ({ children }) => {
@@ -80,7 +71,7 @@ export const RequireAdmin = ({ children }) => {
   const userIsAdmin = useSelector(isAdmin);
 
   if (status === "idle" || status === "loading") {
-    return <SessionLoading />;
+    return <SessionLoading tone="admin" />;
   }
 
   if (!user) {

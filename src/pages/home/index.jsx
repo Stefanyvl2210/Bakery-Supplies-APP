@@ -14,6 +14,7 @@ import EastIcon from '@mui/icons-material/East';
 import { useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { userLogged } from "../../features/auth/AuthSlice";
+import { getCatalogSectionPath } from "../../helpers/categories";
 
 const dessert = {
   name: "Desserts",
@@ -125,7 +126,7 @@ const Home = () => {
                 variant="contained"
                 className={classes.button}
                 onClick={() =>
-                  navigate("/products", {
+                  navigate(getCatalogSectionPath("desserts"), {
                     state: {
                       category: "desserts",
                       title: "Desserts",
@@ -153,7 +154,7 @@ const Home = () => {
                 variant="contained"
                 className={classes.button}
                 onClick={() =>
-                  navigate("/products", {
+                  navigate(getCatalogSectionPath("utensils-and-ingredients"), {
                     state: {
                       category: "utensils-and-ingredients",
                       title: "Utensils and Ingredients",

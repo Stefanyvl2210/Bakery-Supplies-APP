@@ -18,11 +18,8 @@ const OrderCompleted = () => {
       </Grid>
       <Grid item xs={12} className={classes.content}>
         <Typography className={classes.text}>
-          Thank you for ordering with us. Your order is now registered in the backend.
+          Thank you for ordering with us. Your order is now registered.
         </Typography>
-        {order?.id && (
-          <Typography className={classes.text}>Order #{order.id}</Typography>
-        )}
         {trackingToken && (
           <Typography className={classes.token}>
             Guest tracking token: {trackingToken}

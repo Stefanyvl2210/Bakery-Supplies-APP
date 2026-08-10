@@ -28,11 +28,13 @@ import {
 } from "../../features/auth/AuthSlice";
 import { useDispatch } from "react-redux";
 import SnackBar from "../../components/Snackbar";
+import { LoadingButtonContent } from "../../components/Loader";
 
 const Login = () => {
   const classes = useStyles();
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  const [loading, setLoading] = React.useState(false);
 
   const [openSnack, setOpenSnack] = React.useState({
     open: false,
@@ -48,6 +50,8 @@ const Login = () => {
   } = useForm();
 
   const onSubmit = async (data) => {
+    setLoading(true);
+
     try {
       const loginResponse = await loginUser(data);
       const token = getTokenFromAuthResponse(loginResponse);
@@ -72,6 +76,8 @@ const Login = () => {
         message: getErrorMessage(error, "Unable to sign in. Please try again."),
         severity: "error",
       });
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -138,8 +144,13 @@ const Login = () => {
                   type="submit"
                   variant="contained"
                   className={classes.button}
+                  disabled={loading}
                 >
-                  <span className={classes.buttonText}>Enter</span>
+                  {loading ? (
+                    <LoadingButtonContent label="Signing in…" />
+                  ) : (
+                    <span className={classes.buttonText}>Enter</span>
+                  )}
                 </Button>
               </Grid>
             </form>
@@ -154,9 +165,11 @@ const Login = () => {
           <Button
             color="primary"
             type="submit"
-            variant="contained"
+            variant="text"
             className={classes.button}
+            style={{ textTransform: "none", fontSize: "16px", padding: "0", lineHeight: "1.5rem", margin: 0 }}
             onClick={() => navigate("/register")}
+            disabled={loading}
           >
             <span className={classes.buttonText}>Create Account</span>
           </Button>
@@ -226,8 +239,8 @@ const useStyles = makeStyles((theme) => ({
   divider: {
     width: 288,
     margin: "0 auto",
-    marginTop: "45px !important",
-    marginBottom: "37px !important",
+    marginTop: "32px !important",
+    marginBottom: "32px !important",
   },
 }));
 

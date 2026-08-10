@@ -1,11 +1,30 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { fetchCount } from "./counterAPI";
+import { clampQuantity, getAvailableStock } from "../../helpers/stock";
 
 const initialState = {
   value: 0,
   status: "idle",
   products: [],
   cartQty: 0,
+};
+
+const isSameProduct = (product, target) =>
+  target.id !== undefined && target.id !== null
+    ? String(product.id) === String(target.id)
+    : product.name === target.name;
+
+const syncCart = (state) => {
+  state.cartQty = state.products.reduce(
+    (total, product) => total + Math.max(0, Number(product.qty) || 0),
+    0
+  );
+
+  if (state.products.length) {
+    sessionStorage.setItem("shoppingCart", JSON.stringify(state.products));
+  } else {
+    sessionStorage.removeItem("shoppingCart");
+  }
 };
 
 // The function below is called a thunk and allows us to perform async logic. It
@@ -42,9 +61,15 @@ export const counterSlice = createSlice({
       state.value += action.payload;
     },
     addCartProduct: (state, action) => {
+      const availableStock = getAvailableStock(action.payload);
+      const requestedQuantity = clampQuantity(action.payload.qty, availableStock);
+
+      if (requestedQuantity === 0) return;
+
       const findProduct = {
         ...action.payload,
-        qty: Number(action.payload.qty || 1),
+        quantity_available: availableStock,
+        qty: requestedQuantity,
       };
 
       if (
@@ -56,7 +81,11 @@ export const counterSlice = createSlice({
           if (
             findProduct.id ? product.id === findProduct.id : product.name === findProduct.name
           ) {
-            product.qty += findProduct.qty;
+            product.quantity_available = availableStock;
+            product.qty = clampQuantity(
+              Number(product.qty || 0) + findProduct.qty,
+              availableStock
+            );
 
             return {
               ...product,
@@ -71,11 +100,30 @@ export const counterSlice = createSlice({
         state.products = [...state.products, findProduct];
       }
 
-      sessionStorage.setItem("shoppingCart", JSON.stringify(state.products));
+      syncCart(state);
+    },
+    updateCartProductQuantity: (state, action) => {
+      const product = state.products.find((item) =>
+        isSameProduct(item, action.payload)
+      );
 
-      state.cartQty = state.products.reduce((previousValue, currentValue) => {
-        return previousValue + currentValue.qty;
-      }, 0);
+      if (!product) return;
+
+      const quantity = clampQuantity(
+        action.payload.quantity,
+        getAvailableStock(product)
+      );
+
+      if (quantity === 0) return;
+
+      product.qty = quantity;
+      syncCart(state);
+    },
+    removeCartProduct: (state, action) => {
+      state.products = state.products.filter(
+        (product) => !isSameProduct(product, action.payload)
+      );
+      syncCart(state);
     },
     deleteAllProducts: (state) => {
       sessionStorage.removeItem("shoppingCart");
@@ -97,8 +145,15 @@ export const counterSlice = createSlice({
   },
 });
 
-export const { increment, decrement, incrementByAmount, addCartProduct, deleteAllProducts } =
-  counterSlice.actions;
+export const {
+  increment,
+  decrement,
+  incrementByAmount,
+  addCartProduct,
+  updateCartProductQuantity,
+  removeCartProduct,
+  deleteAllProducts,
+} = counterSlice.actions;
 
 // The function below is called a selector and allows us to select a value from
 // the state. Selectors can also be defined inline where they're used instead of

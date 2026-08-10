@@ -41,7 +41,6 @@ import AdminOrders from "../pages/Admin/orders";
 import AdminPaymentMethods from "../pages/Admin/payment-methods";
 import NewPaymentMethod from "../pages/Admin/payment-methods/new-payment-method";
 import EditPaymentMethod from "../pages/Admin/payment-methods/edit-payment-method";
-import PendingPayments from "../pages/Admin/pending-payments";
 
 /**
  * Use this component for any new section of routes (any config object that has a "routes" property
@@ -82,7 +81,6 @@ export function RenderRoutes() {
                     <Route path="/admin/category/:id" element={<EditCategory />} />
 
                     <Route path="/admin/logs" element={<Logs />} />
-                    <Route path="/admin/pending-payments" element={<PendingPayments />} />
                     <Route path="/admin/payment-methods" element={<AdminPaymentMethods />} />
                     <Route path="/admin/new-payment-method" element={<NewPaymentMethod />} />
                     <Route path="/admin/payment-method/:id" element={<EditPaymentMethod />} />

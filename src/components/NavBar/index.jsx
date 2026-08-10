@@ -38,6 +38,7 @@ import {
 } from "../../features/auth/AuthSlice";
 import { logoutUser } from "../../helpers/api/auth";
 import { storeAuthToken } from "../../config/axios";
+import { getCatalogSectionPath } from "../../helpers/categories";
 
 const menuMobile = [
   {
@@ -63,8 +64,12 @@ export default function NavBar() {
   const cartQty = useSelector(cartQtySelector);
   const user = useSelector(userLogged);
   const userIsLogged = Boolean(user);
+  const activeCatalogSection =
+    new URLSearchParams(location.search).get("category") ||
+    location.state?.category;
 
   const [openMenuMobile, setOpenMenuMobile] = React.useState(false);
+  const [logoutLoading, setLogoutLoading] = React.useState(false);
   const [open, setOpen] = React.useState(false);
   const [openAccordion, setOpenAccordion] = React.useState(false);
   const navMobile = userIsLogged
@@ -76,6 +81,10 @@ export default function NavBar() {
   };
 
   const handleLogout = async () => {
+    if (logoutLoading) return;
+
+    setLogoutLoading(true);
+
     try {
       await logoutUser();
     } finally {
@@ -101,14 +110,14 @@ export default function NavBar() {
     setOpenMenuMobile(!openMenuMobile);
 
     if (item.name === "Desserts") {
-      navigate(item.url, {
+      navigate(getCatalogSectionPath("desserts"), {
         state: {
           category: "desserts",
           title: "Desserts",
         },
       });
     } else if (item.name === "Utensils and ingredients") {
-      navigate(item.url, {
+      navigate(getCatalogSectionPath("utensils-and-ingredients"), {
         state: {
           category: "utensils-and-ingredients",
           title: "Utensils and ingredients",
@@ -196,6 +205,8 @@ export default function NavBar() {
                 color="inherit"
                 sx={{ margin: "0 !important" }}
                 onClick={handleLogout}
+                disabled={logoutLoading}
+                aria-label="Log out"
               >
                 <LogoutIcon />
               </IconButton>
@@ -232,12 +243,12 @@ export default function NavBar() {
               color="inherit"
               className={
                 location.pathname === "/products" &&
-                location.state?.category === "desserts"
+                activeCatalogSection === "desserts"
                   ? classes.underlined
                   : ""
               }
               onClick={() =>
-                navigate("/products", {
+                navigate(getCatalogSectionPath("desserts"), {
                   state: {
                     category: "desserts",
                     title: "Desserts",
@@ -251,12 +262,12 @@ export default function NavBar() {
               color="inherit"
               className={
                 location.pathname === "/products" &&
-                location.state?.category === "utensils-and-ingredients"
+                activeCatalogSection === "utensils-and-ingredients"
                   ? classes.underlined
                   : ""
               }
               onClick={() =>
-                navigate("/products", {
+                navigate(getCatalogSectionPath("utensils-and-ingredients"), {
                   state: {
                     category: "utensils-and-ingredients",
                     title: "Utensils and Ingredients",
@@ -377,6 +388,9 @@ export default function NavBar() {
                 <LogoutIcon
                   className={classes.logButton}
                   onClick={handleLogout}
+                  aria-busy={logoutLoading}
+                  aria-disabled={logoutLoading}
+                  aria-label="Log out"
                 />
               </>
             )}

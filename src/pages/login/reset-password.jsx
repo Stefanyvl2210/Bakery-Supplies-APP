@@ -7,6 +7,7 @@ import CustomInput from "../../components/input";
 import SnackBar from "../../components/Snackbar";
 import { resetPassword } from "../../helpers/api/auth";
 import { getErrorMessage } from "../../helpers/api/response";
+import { LoadingButtonContent } from "../../components/Loader";
 
 const ResetPassword = () => {
   const classes = useStyles();
@@ -66,7 +67,11 @@ const ResetPassword = () => {
             <CustomInput register={register} field="password" fullWidth width="100%" label="Password" type="password" />
             <CustomInput register={register} field="password_confirmation" fullWidth width="100%" label="Confirm password" type="password" />
             <Button type="submit" variant="contained" className={classes.button} disabled={loading}>
-              {loading ? "Saving..." : "Reset password"}
+              {loading ? (
+                <LoadingButtonContent label="Saving…" />
+              ) : (
+                "Reset password"
+              )}
             </Button>
           </form>
         </Card>

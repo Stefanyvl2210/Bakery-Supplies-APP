@@ -10,7 +10,7 @@ import { makeStyles } from "@mui/styles";
 import { useLocation, useNavigate } from "react-router-dom";
 import { getOrder, getGuestOrder } from "../../helpers/api/orders";
 import { getErrorMessage, getResourceData } from "../../helpers/api/response";
-import { formatDate, formatMoney } from "../../helpers/formatters";
+import { formatDate } from "../../helpers/formatters";
 
 const columns = [
   { name: "Product", key: "product" },
@@ -61,11 +61,11 @@ const OrderDetail = () => {
     <Grid container className={classes.container}>
       <Grid item xs={12}>
         <h2 className={classes.title}>Order detail</h2>
-        {message && <p className={classes.total}>{message}</p>}
+        {message && <p className={classes.orderMeta}>{message}</p>}
       </Grid>
 
       <Grid item xs={12} display="flex" justifyContent="center" sx={{marginTop: "5px !important"}}>
-        <Grid container justifyContent="space-between" maxWidth={600}>
+        <Grid container justifyContent="space-between" maxWidth={620} sx={{ margin: "0 auto" }}>
           <Grid item xs={12} md={6}>
             <Typography sx={{fontSize: "20px !important", fontWeight: "300 !important"}}>Order #{order?.id || "-"}</Typography>
           </Grid>
@@ -83,10 +83,13 @@ const OrderDetail = () => {
         <Table rows={rows} columns={columns} maxWidth={600} />
       </Grid>
 
-      <Grid item xs={12} className={classes.total}>
-        <p>Total: {formatMoney(order?.total)}</p>
-        {trackingToken && <p>Tracking token: {trackingToken}</p>}
-      </Grid>
+      {trackingToken && (
+        <Grid item xs={12}>
+          <div className={classes.orderMeta}>
+            <p>Tracking token: {trackingToken}</p>
+          </div>
+        </Grid>
+      )}
 
       <Grid item xs={12} container justifyContent="center">
         {state?.ordersView && (
@@ -125,8 +128,16 @@ const useStyles = makeStyles((theme) => ({
   table: {
     marginTop: "45px !important",
     borderRadius: "4px !important",
+    minWidth: 0,
     "& table": {
-      minWidth: "485px",
+      minWidth: 0,
+      tableLayout: "fixed",
+      width: "100%",
+    },
+    "& th, & td": {
+      overflowWrap: "anywhere",
+      wordBreak: "break-word",
+      whiteSpace: "normal",
     },
     "& thead th": {
       backgroundColor: "#F5EEE6",
@@ -143,10 +154,13 @@ const useStyles = makeStyles((theme) => ({
       padding: "10px 25px"
     },
   },
-  total: {
+  orderMeta: {
     maxWidth: 600,
+    minWidth: 0,
     margin: "30px auto 0",
     fontSize: 18,
+    overflowWrap: "anywhere",
+    wordBreak: "break-word",
   },
   button: {
     margin: "60px auto 0px !important"

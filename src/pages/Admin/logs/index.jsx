@@ -6,6 +6,7 @@ import Table from "../../../components/Admin/Table";
 import { getLogs } from "../../../helpers/api/logs";
 import { getResourceCollection } from "../../../helpers/api/response";
 import { formatDate } from "../../../helpers/formatters";
+import Loader from "../../../components/Loader";
 
 function createData({ id, name, action, created_at }) {
   return {
@@ -39,6 +40,7 @@ const Logs = () => {
   const classes = useStyles();
 
   const [rows, setRows] = React.useState([]);
+  const [loading, setLoading] = React.useState(true);
 
   const logs = async () => {
     try {
@@ -58,6 +60,8 @@ const Logs = () => {
       }
     } catch (error) {
       setRows([]);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -70,7 +74,11 @@ const Logs = () => {
       <div className={classes.titleWrapper}>
         <h1>Logs</h1>
       </div>
-      <Table rows={rows} columns={columns} />
+      {loading ? (
+        <Loader tone="admin" label="Loading logs…" minHeight={260} />
+      ) : (
+        <Table rows={rows} columns={columns} />
+      )}
     </div>
   );
 };
@@ -78,7 +86,6 @@ const Logs = () => {
 const useStyles = makeStyles(() => ({
   container: {
     width: "100%",
-    maxWidth: "1068px",
     margin: "0 auto",
   },
   titleWrapper: {

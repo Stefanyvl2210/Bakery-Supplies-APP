@@ -19,6 +19,7 @@ import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import { TableHead } from "@mui/material";
 import { makeStyles } from "@mui/styles";
+import Loader from "../../Loader";
 
 function TablePaginationActions(props) {
   const theme = useTheme();
@@ -94,6 +95,7 @@ export default function CustomPaginationActionsTable({
   columns = [],
   onEdit,
   onDelete,
+  deletingId = null,
 }) {
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(5);
@@ -147,10 +149,15 @@ export default function CustomPaginationActionsTable({
                             <EditIcon fontSize="small" />
                           </span>
                           <span
-                            style={{ cursor: "pointer", margin: "0 5px" }}
-                            onClick={() => onDelete(row.id)}
+                            style={{ cursor: deletingId == null ? "pointer" : "default", margin: "0 5px" }}
+                            onClick={() => deletingId == null && onDelete(row.id)}
+                            aria-disabled={deletingId != null}
                           >
-                            <DeleteIcon fontSize="small" />
+                            {deletingId === row.id ? (
+                              <Loader tone="admin" label="Deleting…" size={20} inline />
+                            ) : (
+                              <DeleteIcon fontSize="small" />
+                            )}
                           </span>
                         </React.Fragment>
                       </TableCell>

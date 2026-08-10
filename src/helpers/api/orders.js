@@ -14,8 +14,6 @@ export const buildOrderFormData = ({
   delivery_type,
   payment_method_id,
   reference,
-  reported_amount,
-  proof,
   products,
 }) => {
   const formData = new FormData();
@@ -30,8 +28,6 @@ export const buildOrderFormData = ({
   formData.append("payment_method_id", payment_method_id);
 
   if (reference) formData.append("reference", reference);
-  if (reported_amount) formData.append("reported_amount", reported_amount);
-  if (proof) formData.append("proof", proof);
 
   appendProducts(formData, products);
 

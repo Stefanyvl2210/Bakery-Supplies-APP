@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import classnames from "classnames";
 
 // material ui components
@@ -17,20 +17,49 @@ import SearchIcon from "@mui/icons-material/Search";
 import Product from "../../components/Product";
 import { useLocation } from "react-router-dom";
 import { getProducts } from "../../helpers/api/product";
-import { getCategories } from "../../helpers/api/category";
-import { getResourceCollection, getErrorMessage } from "../../helpers/api/response";
+import { getCategoryTree } from "../../helpers/api/category";
+import {
+  getErrorMessage,
+  getPaginationMeta,
+  getResourceCollection,
+} from "../../helpers/api/response";
+import Loader from "../../components/Loader";
+import {
+  CATALOG_SECTIONS,
+  findCatalogRoot,
+  flattenCategoryChildren,
+  flattenCategoryTree,
+  isCatalogRoot,
+} from "../../helpers/categories";
+
+const PRODUCTS_PER_PAGE = 6;
+const SEARCH_DEBOUNCE_MS = 350;
 
 const Products = () => {
   const location = useLocation();
   const classes = useStyles();
   const [search, setSearch] = useState("");
+  const [debouncedSearch, setDebouncedSearch] = useState("");
   const [filter, setFilter] = useState("");
   const [products, setProducts] = useState([]);
-  const [allProducts, setAllProducts] = useState([]);
   const [filterCategories, setFilterCategories] = useState([]);
+  const [categoryScope, setCategoryScope] = useState({
+    ready: false,
+    id: null,
+  });
+  const [pagination, setPagination] = useState(null);
   const [message, setMessage] = useState("");
-  const requestedCategory = location.state?.category || "";
-  const pageTitle = location.state?.title || "Products";
+  const [loading, setLoading] = useState(true);
+  const [loadingMore, setLoadingMore] = useState(false);
+  const productRequestId = useRef(0);
+  const requestedCategory =
+    new URLSearchParams(location.search).get("category") ||
+    location.state?.category ||
+    "";
+  const pageTitle =
+    CATALOG_SECTIONS[requestedCategory]?.title ||
+    location.state?.title ||
+    "Products";
 
   const handleChange = (event) => {
     setFilter(event.target.value);
@@ -40,80 +69,157 @@ const Products = () => {
     setSearch(event.target.value);
   };
 
-  const applyFilters = React.useCallback(() => {
-    let nextProducts = allProducts;
+  useEffect(() => {
+    const timeoutId = window.setTimeout(() => {
+      setDebouncedSearch(search.trim());
+    }, SEARCH_DEBOUNCE_MS);
 
-    if (filter) {
-      const selectedCategoryIds = filterCategories
-        .filter(
-          (category) =>
-            String(category.id) === String(filter) ||
-            String(category.parent_id) === String(filter)
-        )
-        .map((category) => String(category.id));
-
-      nextProducts = nextProducts.filter((product) =>
-        product.categories?.some((category) =>
-          selectedCategoryIds.includes(String(category.id))
-        )
-      );
-    }
-
-    if (search) {
-      nextProducts = nextProducts.filter((product) => {
-        const name = product.name ? product.name.toLowerCase() : "";
-        return name.includes(search.toLowerCase());
-      });
-    }
-
-    setProducts(nextProducts);
-  }, [allProducts, filter, filterCategories, search]);
+    return () => window.clearTimeout(timeoutId);
+  }, [search]);
 
   useEffect(() => {
-    const loadProducts = async () => {
+    let cancelled = false;
+
+    const loadCategories = async () => {
+      productRequestId.current += 1;
+      setLoading(true);
+      setLoadingMore(false);
+      setCategoryScope({ ready: false, id: null });
+      setPagination(null);
+      setProducts([]);
+      setMessage("");
+
       try {
-        const categoriesResponse = await getCategories();
-        const categoryData = getResourceCollection(categoriesResponse);
+        const categoriesResponse = await getCategoryTree();
+        if (cancelled) return;
+
+        const categoryTree = getResourceCollection(categoriesResponse);
         const parentCategory = requestedCategory
-          ? categoryData.find((category) => {
-              const slug = String(category.slug || "").toLowerCase();
-              const name = String(category.name || "").toLowerCase();
-              const target = String(requestedCategory).toLowerCase();
-
-              return slug === target || name === target;
-            })
+          ? findCatalogRoot(categoryTree, requestedCategory)
           : null;
-        const scopedCategories = parentCategory
-          ? categoryData.filter(
-              (category) =>
-                category.id === parentCategory.id ||
-                category.parent_id === parentCategory.id
-            )
-          : categoryData;
-        const productsResponse = await getProducts(
-          parentCategory ? { category_id: parentCategory.id } : {}
-        );
-        const productData = getResourceCollection(productsResponse);
 
-        setAllProducts(productData);
+        if (requestedCategory && !parentCategory) {
+          setFilterCategories([]);
+          setMessage("This product section is unavailable.");
+          setLoading(false);
+          return;
+        }
+
+        const scopedCategories = parentCategory
+          ? flattenCategoryChildren(parentCategory)
+          : flattenCategoryTree(categoryTree).filter(
+              (category) => !isCatalogRoot(category)
+            );
+
+        setFilter("");
         setFilterCategories(scopedCategories);
-        setMessage(productData.length ? "" : "No products available.");
+        setCategoryScope({
+          ready: true,
+          id: parentCategory?.id ?? null,
+        });
       } catch (error) {
+        if (cancelled) return;
+
+        setFilterCategories([]);
         setMessage(getErrorMessage(error, "Unable to load products."));
+        setLoading(false);
       }
     };
 
-    loadProducts();
+    loadCategories();
+
+    return () => {
+      cancelled = true;
+    };
   }, [requestedCategory]);
 
   useEffect(() => {
-    applyFilters();
-  }, [applyFilters]);
-  
+    if (!categoryScope.ready) return;
+
+    const requestId = ++productRequestId.current;
+
+    const loadFirstPage = async () => {
+      setLoading(true);
+      setLoadingMore(false);
+      setPagination(null);
+      setMessage("");
+
+      try {
+        const productsResponse = await getProducts({
+          page: 1,
+          per_page: PRODUCTS_PER_PAGE,
+          ...(filter || categoryScope.id
+            ? { category_id: filter || categoryScope.id }
+            : {}),
+          ...(debouncedSearch ? { search: debouncedSearch } : {}),
+        });
+
+        if (requestId !== productRequestId.current) return;
+
+        const productData = getResourceCollection(productsResponse);
+
+        setProducts(productData);
+        setPagination(getPaginationMeta(productsResponse));
+        setMessage(productData.length ? "" : "No products available.");
+      } catch (error) {
+        if (requestId !== productRequestId.current) return;
+
+        setProducts([]);
+        setMessage(getErrorMessage(error, "Unable to load products."));
+      } finally {
+        if (requestId === productRequestId.current) {
+          setLoading(false);
+        }
+      }
+    };
+
+    loadFirstPage();
+  }, [categoryScope, debouncedSearch, filter]);
+
+  const hasMoreProducts =
+    Number(pagination?.current_page || 0) <
+    Number(pagination?.last_page || 0);
+
+  const handleLoadMore = async () => {
+    if (!hasMoreProducts || loadingMore) return;
+
+    const requestId = ++productRequestId.current;
+    const nextPage = Number(pagination.current_page) + 1;
+
+    setLoadingMore(true);
+    setMessage("");
+
+    try {
+      const productsResponse = await getProducts({
+        page: nextPage,
+        per_page: PRODUCTS_PER_PAGE,
+        ...(filter || categoryScope.id
+          ? { category_id: filter || categoryScope.id }
+          : {}),
+        ...(debouncedSearch ? { search: debouncedSearch } : {}),
+      });
+
+      if (requestId !== productRequestId.current) return;
+
+      const productData = getResourceCollection(productsResponse);
+
+      setProducts((currentProducts) => [...currentProducts, ...productData]);
+      setPagination(getPaginationMeta(productsResponse));
+    } catch (error) {
+      if (requestId !== productRequestId.current) return;
+
+      setMessage(getErrorMessage(error, "Unable to load more products."));
+    } finally {
+      if (requestId === productRequestId.current) {
+        setLoadingMore(false);
+      }
+    }
+  };
+
   return (
     <>
       <Grid container className={classes.container}>
-        <Grid item xs={12} > 
+        <Grid item xs={12} >
           <h2 className={classes.title}>{pageTitle}</h2>
         </Grid>
 
@@ -124,14 +230,16 @@ const Products = () => {
           alignItems="flex-end"
           sx={{maxWidth: 1440}}
         >
-          <Grid 
-            className={classnames(classes.inputContent)} 
-          > 
+          <Grid
+            className={classnames(classes.inputContent)}
+          >
             <TextField
               field="search"
               width="300px !important"
               label="Search"
+              value={search}
               onChange={handleChangeSearch}
+              disabled={loading}
               fullWidth
               className={classes.input}
               sx={{fontSize: "18px !important", lineHeight: "20px !important"}}
@@ -156,6 +264,7 @@ const Products = () => {
                 label="filter by"
                 placeholder="filter by..."
                 onChange={handleChange}
+                disabled={loading}
                 fullWidth
                 className={classnames(classes.input)}
               >
@@ -177,19 +286,27 @@ const Products = () => {
         </Grid>
       </Grid>
       <Grid container className={classes.containerProduct}>
-        {message && <Grid item xs={12} className={classes.total}>{message}</Grid>}
-        <Product productList={products} />
-        <Grid item xs={12} sx={{textAlign: 'center'}}>
-          {search === "" && products.length > 0 ?
-          <Button
-            color="primary"
-            variant="contained"
-            className={classes.button}
-            disabled
-          >
-            {products.length} products
-          </Button> : ""}
-        </Grid>
+        {loading ? (
+          <Loader label="Loading products…" minHeight={300} />
+        ) : (
+          <>
+            {message && <Grid item xs={12} className={classes.total}>{message}</Grid>}
+            <Product productList={products} />
+            {hasMoreProducts ? (
+              <Grid item xs={12} sx={{textAlign: "center"}}>
+                <Button
+                  color="primary"
+                  variant="contained"
+                  className={classes.button}
+                  disabled={loadingMore}
+                  onClick={handleLoadMore}
+                >
+                  {loadingMore ? "Loading..." : "Load more"}
+                </Button>
+              </Grid>
+            ) : null}
+          </>
+        )}
       </Grid>
     </>
   );
